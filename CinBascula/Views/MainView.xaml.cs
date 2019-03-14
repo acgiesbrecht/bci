@@ -16,13 +16,14 @@ using System.Windows.Shapes;
 namespace CinBascula
 {
     /// <summary>
-    /// Lógica de interacción para MainWindow.xaml
+    /// Interaction logic for TestView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainView : UserControl
     {
-        public MainWindow()
+        public MainView()
         {
             InitializeComponent();
+            DataContext = new MainViewModel();
         }
     }
 }
