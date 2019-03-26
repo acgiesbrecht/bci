@@ -1,14 +1,14 @@
-﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CinBascula.Models
 {
-    [Table("XX.X_OPM_BCI_PESADAS_ALL")]
+    
     public class XX_OPM_BCI_PESADAS_ALL : ReactiveObject
     {
-        [ExplicitKey]
+        [Key]
         [Reactive] public int PESADA_ID { get; set; }
         [Reactive] public int ORG_ID { get; set; }
         [Reactive] public long ORGANIZATION_ID { get; set; }

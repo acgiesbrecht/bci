@@ -1,6 +1,6 @@
-﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
+using System.ComponentModel.DataAnnotations;
 
 namespace CinBascula.Models
 {
@@ -10,7 +10,7 @@ namespace CinBascula.Models
         [Reactive] public string CODIGO_ITEM { get; set; }        
         [Reactive] public long ORGANIZATION_ID { get; set; }
         [Reactive] public string ORGANIZATION_CODE { get; set; }
-        [ExplicitKey]
+        [Key]
         [Reactive] public string NRO_CONTRATO { get; set; }                    
     }
 }

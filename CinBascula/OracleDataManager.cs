@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CinBascula.Models;
-using Dapper;
-using Dapper.Contrib.Extensions;
 using Oracle.ManagedDataAccess.Client;
 
 namespace CinBascula
@@ -15,7 +13,7 @@ namespace CinBascula
     class OracleDataManager
     {
 
-        public List<XX_OPM_BCI_ITEMS_V> GetInventoryItemList()
+        /*public List<XX_OPM_BCI_ITEMS_V> GetInventoryItemList()
         {
             using (var dbConnection = GetConnection())
             {
@@ -82,7 +80,7 @@ namespace CinBascula
             const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
             var connection = new OracleConnection(connectionString);
             return connection;
-        }
+        }*/
 
     }
 }

@@ -1,5 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,7 @@ namespace CinBascula.Models
 {
     public sealed class XX_OPM_BCI_ORGS_COMPLEJO : ReactiveObject
     {
-
-        [ExplicitKey]
+        
         [Reactive] public long Id { get; set; }
         [Reactive] public string ShortDescription { get; set; }
         [Reactive] public string LongDerscription { get; set; }

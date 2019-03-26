@@ -33,19 +33,29 @@ namespace CinBascula.ViewModels
         public MainViewModel()
         {
 
-            loadLookUps();
-            
-            InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-            ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
+            using (var context = new OracleDbContext())
+            {
+                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(context.XX_OPM_BCI_ITEMS_V.ToList());
+            }
+                
 
-            PesadasPendientesList = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
-            PesadasPendientesList.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
-            PesadasPendientesList.ToList().ForEach(x => x.Organisation = OrganisationCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
-            PesadasPendientesList.ToList().ForEach(x => x.PuntoDescarga = PuntoDescargaCollection.FirstOrDefault(c => c.Id.Equals(x.PUNTO_DESCARGA)));
-            PesadasPendientesList.ToList().ForEach(x => x.Establecimiento = EstabAllCollection.FirstOrDefault(c => c.Id.Equals(x.ESTABLECIMIENTO)));
-            PesadasPendientesList.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
-                        
-            visibilityLote = false;
+                /*
+                loadLookUps();
+
+                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
+                ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
+
+                PesadasPendientesList = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
+                PesadasPendientesList.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
+                PesadasPendientesList.ToList().ForEach(x => x.Organisation = OrganisationCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
+                PesadasPendientesList.ToList().ForEach(x => x.PuntoDescarga = PuntoDescargaCollection.FirstOrDefault(c => c.Id.Equals(x.PUNTO_DESCARGA)));
+                PesadasPendientesList.ToList().ForEach(x => x.Establecimiento = EstabAllCollection.FirstOrDefault(c => c.Id.Equals(x.ESTABLECIMIENTO)));
+                PesadasPendientesList.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
+                            */
+
+
+
+                visibilityLote = false;
             visibilityContrato = false;
 
             SetBruto = ReactiveCommand.Create(SetBrutoImpl);
@@ -61,7 +71,7 @@ namespace CinBascula.ViewModels
                 */
             Peso = 9999;            
         }
-
+        /*
         private void loadLookUps()
         {            
             EstabAllCollection = oracleDataManager.GetEstabAllList();
@@ -70,7 +80,7 @@ namespace CinBascula.ViewModels
             OrganisationCollection = oracleDataManager.GetOrgsComplejoList();
             PuntoDescargaCollection = oracleDataManager.GetPuntoDescargaList();
             TipoActividadCollection = oracleDataManager.GetTipoActividadList();
-        }        
+        } */       
 
         [Reactive] public XX_OPM_BCI_PESADAS_ALL SelectedPesada { get; set; }
         [Reactive] public bool visibilityLote { get; set; }

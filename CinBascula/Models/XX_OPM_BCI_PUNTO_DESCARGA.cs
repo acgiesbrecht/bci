@@ -1,5 +1,4 @@
-﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
+﻿using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
@@ -12,7 +11,6 @@ namespace CinBascula.Models
     public sealed class XX_OPM_BCI_PUNTO_DESCARGA : ReactiveObject
     {
 
-        [ExplicitKey]
         [Reactive] public string Id { get; set; }
         [Reactive] public string Description { get; set; }
         [Reactive] public string OrganisationTag { get; set; }
