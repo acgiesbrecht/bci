@@ -1,0 +1,392 @@
+﻿<reactiveui:ReactiveWindow
+    x:Class="CinBascula.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dotNetKitControls="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveui="http://reactiveui.net"
+    xmlns:viewmodels="clr-namespace:CinBascula.ViewModels"
+    xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+    Width="800"
+    Height="600"
+    x:TypeArguments="viewmodels:MainViewModel"
+    Background="#FFBFDEBF"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <ResourceDictionary>
+            <!--  This style applies to all auto-complete comboboxes in the window by default.  -->
+            <Style TargetType="dotNetKitControls:AutoCompleteComboBox">
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+            <Style x:Key="PanelStyle" TargetType="{x:Type StackPanel}">
+                <Setter Property="Margin" Value="3" />
+                <Setter Property="Orientation" Value="Horizontal" />
+            </Style>
+            <Style x:Key="TextBoxStyle" TargetType="{x:Type xctk:AutoSelectTextBox}">
+                <Setter Property="AutoSelectBehavior" Value="OnFocus" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+                <Setter Property="AutoMoveFocus" Value="True" />
+                <Setter Property="AutoWordSelection" Value="True" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontWeight" Value="Bold" />
+            </Style>
+            <Style x:Key="LabelColumnStyle" TargetType="{x:Type Label}">
+                <Setter Property="Width" Value="150" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+            </Style>
+            <Style x:Key="ComboStyle" TargetType="{x:Type dotNetKitControls:AutoCompleteComboBox}">
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+            <Style TargetType="{x:Type DataGrid}">
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            <Style TargetType="{x:Type TabControl}">
+                <Setter Property="FontSize" Value="16" />
+            </Style>
+            <Style TargetType="{x:Type Button}">
+                <Setter Property="Background" Value="Black" />
+                <Setter Property="Foreground" Value="#FFBFDEBF" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Border
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Black"
+                                BorderThickness="1">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="#FFBFDEBF" />
+                        <Setter Property="Foreground" Value="Black" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
+    <StackPanel
+        Margin="10"
+        Background="#FFBFDEBF"
+        Grid.IsSharedSizeScope="True"
+        Orientation="Vertical">
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical">
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}" />
+                    <Button
+                        Name="BtnNewPesada"
+                        Width="130"
+                        Height="35"
+                        Margin="2"
+                        Padding="5"
+                        Content="Nueva Pesada"
+                        FontSize="16" />
+                </StackPanel>
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}">Articulo</Label>
+                    <dotNetKitControls:AutoCompleteComboBox
+                        Name="InventoryItemsAutoCompleteComboBox"
+                        Width="300"
+                        SelectedValuePath="INVENTORY_ITEM_ID"
+                        TextSearch.TextPath="DESCRIPCION_ITEM">
+                        <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DESCRIPCION_ITEM}" />
+                                    <TextBlock FontWeight="Light">
+                                        <Run Text="{Binding CODIGO_ITEM, Mode=OneTime}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    </dotNetKitControls:AutoCompleteComboBox>
+                </StackPanel>
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}">Tipo de Actividad</Label>
+                    <dotNetKitControls:AutoCompleteComboBox
+                        Name="TipoActividadAutoCompleteComboBox"
+                        Width="200"
+                        SelectedValuePath="Id"
+                        TextSearch.TextPath="Descripcion">
+                        <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                                    <!--<TextBlock>
+                            Some descriptions. Id = <Run Text="{Binding Id, Mode=OneTime}" />.
+                            </TextBlock>-->
+                                </StackPanel>
+                            </DataTemplate>
+                        </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    </dotNetKitControls:AutoCompleteComboBox>
+                </StackPanel>
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}">Oragnizacion</Label>
+                    <dotNetKitControls:AutoCompleteComboBox
+                        Name="OrganizacionAutoCompleteComboBox"
+                        Width="150"
+                        SelectedValuePath="Id"
+                        TextSearch.TextPath="Descripcion">
+                        <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                                    <TextBlock FontWeight="Light">
+                                        <Run Text="{Binding Id, Mode=OneTime}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    </dotNetKitControls:AutoCompleteComboBox>
+                </StackPanel>
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}">Punto de descarga</Label>
+                    <dotNetKitControls:AutoCompleteComboBox
+                        Name="PuntoDeDescargaAutoCompleteComboBox"
+                        Width="150"
+                        SelectedValuePath="Id"
+                        TextSearch.TextPath="Descripcion">
+                        <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                                    <TextBlock FontWeight="Light">
+                                        <Run Text="{Binding Id, Mode=OneTime}" />
+                                    </TextBlock>
+                                </StackPanel>
+                            </DataTemplate>
+                        </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    </dotNetKitControls:AutoCompleteComboBox>
+                </StackPanel>
+                <StackPanel Style="{StaticResource PanelStyle}">
+                    <Label Style="{StaticResource LabelColumnStyle}">Chapa</Label>
+                    <xctk:MaskedTextBox
+                        Width="60"
+                        HorizontalContentAlignment="Center"
+                        CharacterCasing="Upper"
+                        Mask="AAA-###"
+                        Style="{StaticResource TextBoxStyle}" />
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Width="60" />
+            <StackPanel HorizontalAlignment="Right" Style="{StaticResource PanelStyle}">
+                <GroupBox Header="Bascula">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <RadioButton
+                                Grid.Column="0"
+                                Margin="5"
+                                Content="Automatico"
+                                GroupName="Bascula" />
+                            <RadioButton
+                                Grid.Column="1"
+                                Margin="5"
+                                Content="Manual"
+                                GroupName="Bascula" />
+                        </StackPanel>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <xctk:MaskedTextBox
+                                Name="PesoTextBox"
+                                Width="150"
+                                Height="75"
+                                Padding="5"
+                                VerticalContentAlignment="Center"
+                                Background="Black"
+                                FontSize="40"
+                                FontWeight="Bold"
+                                Foreground="#FFBFDEBF"
+                                TextAlignment="Right" />
+                            <StackPanel Orientation="Vertical">
+                                <Button
+                                    Name="BtnBruto"
+                                    Width="70"
+                                    Height="35"
+                                    Margin="2"
+                                    Content="Bruto"
+                                    FontSize="20" />
+                                <Button
+                                    Name="BtnTara"
+                                    Width="70"
+                                    Height="35"
+                                    Margin="2"
+                                    Content="Tara"
+                                    FontSize="20" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <Label
+                                Width="90"
+                                Content="Peso Bruto"
+                                FontSize="16" />
+                            <Label
+                                x:Name="PesoBrutoLabel"
+                                Width="70"
+                                HorizontalContentAlignment="Right"
+                                Background="White"
+                                FontSize="16" />
+                            <Label Content="Kg" FontSize="16" />
+                        </StackPanel>
+                        <StackPanel Margin="5" Orientation="Horizontal">
+                            <Label
+                                Width="90"
+                                Content="Peso Tara"
+                                FontSize="16" />
+                            <Label
+                                x:Name="PesoTaraLabel"
+                                Width="70"
+                                HorizontalContentAlignment="Right"
+                                Background="White"
+                                FontSize="16" />
+                            <Label Content="Kg" FontSize="16" />
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Style="{StaticResource PanelStyle}">
+            <Label
+                x:Name="TipoEstablecimientoLabel"
+                Content=""
+                Style="{StaticResource LabelColumnStyle}" />
+            <dotNetKitControls:AutoCompleteComboBox
+                x:Name="EstablecimientoAutoCompleteComboBox"
+                Width="450"
+                SelectedValuePath="Id"
+                TextSearch.TextPath="Descripcion">
+                <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock FontWeight="Light">
+                                <Run Text="{Binding Id, Mode=OneTime}" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+            </dotNetKitControls:AutoCompleteComboBox>
+        </StackPanel>
+        <StackPanel Name="ContratoPanel" Style="{StaticResource PanelStyle}">
+            <Label Style="{StaticResource LabelColumnStyle}">Contrato</Label>
+            <dotNetKitControls:AutoCompleteComboBox
+                Width="300"
+                ItemsSource="{Binding ContratoList}"
+                SelectedItem="{Binding SelectedContrato}"
+                SelectedValuePath="Id"
+                TextSearch.TextPath="Descripcion">
+                <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock>
+                                Codigo =<Run Text="{Binding Id, Mode=OneTime}" />
+                                .</TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+            </dotNetKitControls:AutoCompleteComboBox>
+        </StackPanel>
+        <StackPanel Name="LotePanel" Style="{StaticResource PanelStyle}">
+            <Label Style="{StaticResource LabelColumnStyle}">Lote</Label>
+            <dotNetKitControls:AutoCompleteComboBox
+                Width="300"
+                ItemsSource="{Binding ContratoList}"
+                SelectedItem="{Binding SelectedContrato}"
+                SelectedValuePath="Id"
+                TextSearch.TextPath="Descripcion">
+                <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock>
+                                Codigo =<Run Text="{Binding Id, Mode=OneTime}" />
+                                .</TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
+            </dotNetKitControls:AutoCompleteComboBox>
+        </StackPanel>
+        <StackPanel Style="{StaticResource PanelStyle}">
+            <Label Style="{StaticResource LabelColumnStyle}" />
+            <Button
+                Name="BtnGuardar"
+                Width="130"
+                Height="35"
+                Margin="2"
+                Padding="5"
+                Content="Guaardar"
+                FontSize="16" />
+        </StackPanel>
+        <Separator Margin="10" />
+        <StackPanel Style="{StaticResource PanelStyle}">
+            <TabControl Margin="10">
+                <TabItem Header="Pendientes">
+                    <DataGrid
+                        Name="PendientesDataGrid"
+                        Height="88"
+                        Margin="0,0,0,0"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        FontSize="12">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Binding="{Binding PESADA_ID}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="ID" />
+                            <DataGridTextColumn
+                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Fecha/Hora" />
+                            <DataGridTextColumn
+                                Binding="{Binding MATRICULA}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Chapa" />
+                            <DataGridTextColumn
+                                Binding="{Binding InventoryItem}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Articulo" />
+                            <DataGridTextColumn
+                                Binding="{Binding Establecimiento}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Establecimiento" />
+                            <DataGridTextColumn
+                                Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Peso Bruto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Peso Tara">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Completas" />
+            </TabControl>
+        </StackPanel>
+    </StackPanel>
+</reactiveui:ReactiveWindow>
