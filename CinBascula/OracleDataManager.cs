@@ -49,7 +49,7 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
-                return new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(dbConnection.Query<XX_OPM_BCI_ORGS_COMPLEJO>("Select CODIGO AS Id, SIGNIFICADO AS ShortDescription, DESCRIPCION AS LongDescription FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ORGS_COMPLEJO'").AsList());
+                return new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(dbConnection.Query<XX_OPM_BCI_ORGS_COMPLEJO>("Select CODIGO AS Id, SIGNIFICADO AS Tag, DESCRIPCION AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ORGS_COMPLEJO'").AsList());
             }
         }
 
@@ -57,7 +57,7 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
-                return new ObservableCollection<XX_OPM_BCI_PUNTO_DESCARGA>(dbConnection.Query<XX_OPM_BCI_PUNTO_DESCARGA>("Select CODIGO AS Id, SIGNIFICADO AS Description, TAG AS OrganisationTag FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_PUNTO_DESCARGA'").AsList());
+                return new ObservableCollection<XX_OPM_BCI_PUNTO_DESCARGA>(dbConnection.Query<XX_OPM_BCI_PUNTO_DESCARGA>("Select CODIGO AS Id, SIGNIFICADO AS Description, TAG AS Tag FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_PUNTO_DESCARGA'").AsList());
             }
         }
 

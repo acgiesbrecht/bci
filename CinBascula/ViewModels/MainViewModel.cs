@@ -1,19 +1,14 @@
 ﻿using CinBascula.Models;
-using DynamicData;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Ports;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace CinBascula.ViewModels
 {
-    public class MainViewModel : ReactiveObject
+    public class MainViewModel
     {
         private SerialPort serialPort = new SerialPort();
         private OracleDataManager oracleDataManager = new OracleDataManager();
@@ -36,6 +31,7 @@ namespace CinBascula.ViewModels
             loadLookUps();
             
             InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
+
             ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
 
             PesadasPendientesList = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
@@ -48,7 +44,7 @@ namespace CinBascula.ViewModels
             visibilityLote = false;
             visibilityContrato = false;
 
-            SetBruto = ReactiveCommand.Create(SetBrutoImpl);
+            /*SetBruto = ReactiveCommand.Create(SetBrutoImpl);
             SetTara = ReactiveCommand.Create(SetTaraImpl);
             NewPesada = ReactiveCommand.Create(NewPesadaImpl);
             Guardar = ReactiveCommand.Create(GuardarImpl);
@@ -72,12 +68,12 @@ namespace CinBascula.ViewModels
             TipoActividadCollection = oracleDataManager.GetTipoActividadList();
         }        
 
-        [Reactive] public XX_OPM_BCI_PESADAS_ALL SelectedPesada { get; set; }
-        [Reactive] public bool visibilityLote { get; set; }
-        [Reactive] public bool visibilityContrato { get; set; }
+        public XX_OPM_BCI_PESADAS_ALL SelectedPesada { get; set; }
+        public bool visibilityLote { get; set; }
+        public bool visibilityContrato { get; set; }
 
         private bool autoBascula;
-        [Reactive] public bool AutoBascula
+        public bool AutoBascula
         {
             get => autoBascula;
             set
@@ -101,24 +97,24 @@ namespace CinBascula.ViewModels
                         serialPort.Close();
                     }
                 }
-                this.RaiseAndSetIfChanged(ref autoBascula, value);                
+                //this.RaiseAndSetIfChanged(ref autoBascula, value);                
             }
         }
         
-        [Reactive] public int Peso { get; set; }                
+        public int Peso { get; set; }                
 
-        public ReactiveCommand<Unit, Unit> SetBruto { get; }
+        //public ReactiveCommand<Unit, Unit> SetBruto { get; }
         public void SetBrutoImpl() {SelectedPesada.PESO_BRUTO = Peso;}
 
-        public ReactiveCommand<Unit, Unit> SetTara { get; }
+ ///       public ReactiveCommand<Unit, Unit> SetTara { get; }
         public void SetTaraImpl()
         {SelectedPesada.PESO_TARA = Peso;}        
 
-        public ReactiveCommand<Unit, Unit> NewPesada { get; }
+    //    public ReactiveCommand<Unit, Unit> NewPesada { get; }
         public void NewPesadaImpl()
         {SelectedPesada = new XX_OPM_BCI_PESADAS_ALL();}
 
-        public ReactiveCommand<Unit, Unit> Guardar { get; }
+      //  public ReactiveCommand<Unit, Unit> Guardar { get; }
         public void GuardarImpl()
         { Console.WriteLine(SelectedPesada.ORGANIZATION_ID); }
                

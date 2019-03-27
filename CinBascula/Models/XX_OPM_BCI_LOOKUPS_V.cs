@@ -1,6 +1,4 @@
 ﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +9,12 @@ namespace CinBascula.Models
 {
 
     [Table("XX_OPM_BCI_LOOKUPS_V")]
-    public class XX_OPM_BCI_LOOKUPS_V : ReactiveObject
+    public class XX_OPM_BCI_LOOKUPS_V
     {        
-        [Reactive] public string LOOKUP_TYPE { get; set; }        
-        [Reactive] public string CODIGO { get; set; }
-        [Reactive] public string SIGNIFICADO { get; set; }
-        [Reactive] public string DESCRPCION { get; set; }
-        [Reactive] public string TAG { get; set; }
+        public string LOOKUP_TYPE { get; set; }        
+        public string CODIGO { get; set; }
+        public string SIGNIFICADO { get; set; }
+        public string DESCRPCION { get; set; }
+        public string TAG { get; set; }
     }
 }

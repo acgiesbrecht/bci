@@ -1,6 +1,4 @@
 ﻿using Dapper.Contrib.Extensions;
-using ReactiveUI;
-using ReactiveUI.Fody.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,14 +8,14 @@ using System.Threading.Tasks;
 namespace CinBascula.Models
 {
 
-    public class XX_OPM_BCI_ESTAB : ReactiveObject
+    public class XX_OPM_BCI_ESTAB
     {
 
         [ExplicitKey]
-        [Reactive] public string Id { get; set; }
-        [Reactive] public string Significado { get; set; }
-        [Reactive] public string Derscripcion { get; set; }
-        [Reactive] public string ApAr { get; set; }
+        public string Id { get; set; }
+        public string Significado { get; set; }
+        public string Derscripcion { get; set; }
+        public string ApAr { get; set; }
 
         public override string ToString()
         {
