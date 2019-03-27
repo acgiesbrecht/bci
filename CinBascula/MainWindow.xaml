@@ -118,7 +118,8 @@
                         Name="TipoActividadAutoCompleteComboBox"
                         Width="200"
                         SelectedValuePath="Id"
-                        TextSearch.TextPath="Description" SelectionChanged="TipoActividadAutoCompleteComboBox_SelectionChanged">
+                        SelectionChanged="TipoActividadAutoCompleteComboBox_SelectionChanged"
+                        TextSearch.TextPath="Description">
                         <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
@@ -194,7 +195,7 @@
                                 GroupName="Bascula" />
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
-                            <xctk:MaskedTextBox
+                            <TextBox
                                 Name="PesoTextBox"
                                 Width="150"
                                 Height="75"
@@ -204,6 +205,7 @@
                                 FontSize="40"
                                 FontWeight="Bold"
                                 Foreground="#FFBFDEBF"
+                                Text="{Binding Path=PesoActual, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 TextAlignment="Right" />
                             <StackPanel Orientation="Vertical">
                                 <Button
@@ -211,6 +213,7 @@
                                     Width="70"
                                     Height="35"
                                     Margin="2"
+                                    Click="BtnBruto_Click"
                                     Content="Bruto"
                                     FontSize="20" />
                                 <Button
@@ -218,6 +221,7 @@
                                     Width="70"
                                     Height="35"
                                     Margin="2"
+                                    Click="BtnTara_Click"
                                     Content="Tara"
                                     FontSize="20" />
                             </StackPanel>
@@ -228,10 +232,10 @@
                                 Content="Peso Bruto"
                                 FontSize="16" />
                             <Label
-                                x:Name="PesoBrutoLabel"
                                 Width="70"
                                 HorizontalContentAlignment="Right"
                                 Background="White"
+                                Content="{Binding PesoBruto, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
                                 FontSize="16" />
                             <Label Content="Kg" FontSize="16" />
                         </StackPanel>
@@ -261,13 +265,14 @@
                 x:Name="EstablecimientoAutoCompleteComboBox"
                 Width="450"
                 SelectedValuePath="Id"
-                TextSearch.TextPath="Descripcion">
+                TextSearch.TextPath="Description">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock FontWeight="Bold" Text="{Binding RazonSocial}" />
                             <TextBlock FontWeight="Light">
-                                <Run Text="{Binding Id, Mode=OneTime}" />
+                                RUC:<Run Text="{Binding RUC, Mode=OneTime}" />
+                                <Run Text="{Binding Descripcion, Mode=OneTime}" />
                             </TextBlock>
                         </StackPanel>
                     </DataTemplate>

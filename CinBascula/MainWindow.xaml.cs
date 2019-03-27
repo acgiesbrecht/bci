@@ -2,8 +2,10 @@
 using CinBascula.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 
 namespace CinBascula
@@ -11,7 +13,7 @@ namespace CinBascula
     /// <summary>
     /// Interaction logic for TestView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private SerialPort serialPort = new SerialPort();
         private OracleDataManager oracleDataManager = new OracleDataManager();
@@ -24,6 +26,10 @@ namespace CinBascula
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabARCollection;
         public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> ContratosCollection;
         public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasPendientesList;
+        
+        public int PesoActual { get; set; }
+        public int PesoBruto { get; set; }
+        public int PesoTara { get; set; }
 
         public MainWindow()
         {
@@ -34,6 +40,8 @@ namespace CinBascula
 
             TipoActividadAutoCompleteComboBox.ItemsSource = TipoActividadCollection;
             OrganisationAutoCompleteComboBox.ItemsSource = OrganisationCollection;
+
+            PesoActual = 9955;
         }
 
         
@@ -41,14 +49,23 @@ namespace CinBascula
         {
             TipoActividadAutoCompleteComboBox.SelectedValue = ((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).TIPO_ACTIVIDAD;
             OrganisationAutoCompleteComboBox.SelectedValue = ((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).ORGANIZATION_ID;
+            if (((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).CODIGO_ITEM.Equals("050.002198"))
+            {
+                LotePanel.Visibility = Visibility.Visible;                
+            }
+            else
+            {
+                LotePanel.Visibility = Visibility.Hidden;
+            }
+            
         }
 
         private void loadLookUps()
         {
-            EstabAllCollection = oracleDataManager.GetEstabAllList();
+            EstabAllCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAllList());
             EstabAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AP")));
             EstabARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AR")));
-            OrganisationCollection = oracleDataManager.GetOrgsComplejoList();
+            OrganisationCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
             PuntoDescargaCollection = oracleDataManager.GetPuntoDescargaList();
             TipoActividadCollection = oracleDataManager.GetTipoActividadList();
         }
@@ -65,14 +82,28 @@ namespace CinBascula
                 {
                 case "1":
                         TipoEstablecimientoLabel.Content = "Proveedor";
+                        EstablecimientoAutoCompleteComboBox.ItemsSource = EstabAPCollection;
                         break;
                     case "2":
                         TipoEstablecimientoLabel.Content = "Cliente";
-                        break;
+                        EstablecimientoAutoCompleteComboBox.ItemsSource = EstabARCollection;
+                    break;
                     default:
                         TipoEstablecimientoLabel.Content = "Establecimiento";
                         break;                
             }
         }
+
+        private void BtnBruto_Click(object sender, RoutedEventArgs e)
+        {
+            PesoBruto = PesoActual;
+        }
+
+        private void BtnTara_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;        
     }
 }

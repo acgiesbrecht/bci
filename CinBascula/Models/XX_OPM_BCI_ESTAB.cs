@@ -13,13 +13,24 @@ namespace CinBascula.Models
 
         [ExplicitKey]
         public string Id { get; set; }
-        public string Significado { get; set; }
-        public string Derscripcion { get; set; }
+        public string RazonSocial { get; set; }
+        public string Descripcion { get; set; }
+        public string RUC { get; set; }
         public string ApAr { get; set; }
+        public string Description => RazonSocial + AdditionalData;
+        public string AdditionalData {
+            get { 
+                if(Descripcion == null){
+                    return  " - " + RUC;
+                }else{
+                    return " - " + RUC + " - " + Descripcion;
+                }
+            }
+        }
 
         public override string ToString()
         {
-            return Significado;
+            return RazonSocial + " - " + RUC;
         }
 
     }

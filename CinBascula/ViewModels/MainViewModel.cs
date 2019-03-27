@@ -60,10 +60,10 @@ namespace CinBascula.ViewModels
 
         private void loadLookUps()
         {            
-            EstabAllCollection = oracleDataManager.GetEstabAllList();
+            EstabAllCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAllList());
             EstabAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AP")));
             EstabARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AR")));
-            OrganisationCollection = oracleDataManager.GetOrgsComplejoList();
+            OrganisationCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
             PuntoDescargaCollection = oracleDataManager.GetPuntoDescargaList();
             TipoActividadCollection = oracleDataManager.GetTipoActividadList();
         }        

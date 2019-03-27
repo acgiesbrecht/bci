@@ -23,33 +23,33 @@ namespace CinBascula
             }
         }
 
-        public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> GetContratosList()
+        public List<XX_OPM_BCI_CONTRATOS_V> GetContratosList()
         {
             using (var dbConnection = GetConnection())
             {
-                return new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(dbConnection.Query<XX_OPM_BCI_CONTRATOS_V>("Select * FROM XX_OPM_BCI_CONTRATOS_V").AsList());
+                return dbConnection.Query<XX_OPM_BCI_CONTRATOS_V>("Select * FROM XX_OPM_BCI_CONTRATOS_V").AsList();
             }
         }
 
         
 
-        public ObservableCollection<XX_OPM_BCI_ESTAB> GetEstabAllList()
-        {
+        public List<XX_OPM_BCI_ESTAB> GetEstabAllList()
+        {   
             using (var dbConnection = GetConnection())
             {
-                return new ObservableCollection<XX_OPM_BCI_ESTAB>(dbConnection.Query<XX_OPM_BCI_ESTAB>("Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, 'AP' AS ApAr" +
-                    " FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ESTAB_AP'" +
+                return dbConnection.Query<XX_OPM_BCI_ESTAB>("Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION as Descripcion, RUC, 'AP' AS ApAr" +
+                    " FROM APPS.XX_OPM_BCI_ESTAB_AP_V" +
                     " UNION ALL" +
-                    " Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, 'AR' AS ApAr" +
-                    " FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ESTAB_AR'").AsList());
+                    " Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION as Descripcion, RUC, 'AR' AS ApAr" +
+                    " FROM APPS.XX_OPM_BCI_ESTAB_AR_V").AsList();
             }
         }
 
-        public ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO> GetOrgsComplejoList()
+        public List<XX_OPM_BCI_ORGS_COMPLEJO> GetOrgsComplejoList()
         {
             using (var dbConnection = GetConnection())
             {
-                return new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(dbConnection.Query<XX_OPM_BCI_ORGS_COMPLEJO>("Select CODIGO AS Id, SIGNIFICADO AS Tag, DESCRIPCION AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ORGS_COMPLEJO'").AsList());
+                return dbConnection.Query<XX_OPM_BCI_ORGS_COMPLEJO>("Select CODIGO AS Id, SIGNIFICADO AS Tag, DESCRIPCION AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ORGS_COMPLEJO'").AsList();
             }
         }
 
