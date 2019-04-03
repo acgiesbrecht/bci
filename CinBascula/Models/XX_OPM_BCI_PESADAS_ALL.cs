@@ -1,10 +1,11 @@
 ﻿using Dapper.Contrib.Extensions;
 using System;
+using System.ComponentModel;
 
 namespace CinBascula.Models
 {
     [Table("XX.X_OPM_BCI_PESADAS_ALL")]
-    public class XX_OPM_BCI_PESADAS_ALL
+    public class XX_OPM_BCI_PESADAS_ALL : INotifyPropertyChanged
     {
         [ExplicitKey]
         public int PESADA_ID { get; set; }
@@ -16,12 +17,12 @@ namespace CinBascula.Models
         public long INVENTORY_ITEM_ID { get; set; }
         public XX_OPM_BCI_ITEMS_V InventoryItem { get; set; }
         public string PUNTO_DESCARGA { get; set; }
-        public XX_OPM_BCI_PUNTO_DESCARGA PuntoDescarga { get; set; }
+        public XX_OPM_BCI_PUNTO_OPERACION PuntoOperacion { get; set; }
         public string ESTABLECIMIENTO { get; set; }
         public XX_OPM_BCI_ESTAB Establecimiento { get; set; }
         public string OBSERVACIONES { get; set; }
         public int NRO_BASCULA { get; set; }
-        public string LOTE { get; set; }
+        public string LOTE { get; set; }        
         public string CONTRATO { get; set; }
         public XX_OPM_BCI_CONTRATOS_V Contrato { get; set; }
         public string MATRICULA { get; set; }        
@@ -31,6 +32,7 @@ namespace CinBascula.Models
         public int? PESO_TARA { get; set; }
         public char? MODO_PESO_TARA { get; set; }
         public DateTime? FECHA_PESO_TARA { get; set; }
+        public char? CANCELADO { get; set; }
         public DateTime CREATION_DATE { get; set; }
         public int CREATED_BY { get; set; }
         public DateTime LAST_UPDATE_DATE { get; set; }
@@ -40,7 +42,9 @@ namespace CinBascula.Models
         {
             ORG_ID = 82;
             CREATED_BY = 3;
+            CREATION_DATE = DateTime.Now;
             LAST_UPDATED_BY = 3;
+            LAST_UPDATE_DATE = DateTime.Now;
         }
 
         public DateTime? EntryDate
@@ -73,5 +77,6 @@ namespace CinBascula.Models
             }
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

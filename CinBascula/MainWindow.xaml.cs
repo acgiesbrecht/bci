@@ -1,5 +1,7 @@
 ﻿using CinBascula.Models;
 using CinBascula.ViewModels;
+using DotNetKit.Windows.Controls;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,6 +9,8 @@ using System.IO.Ports;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace CinBascula
 {
@@ -15,95 +19,98 @@ namespace CinBascula
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private SerialPort serialPort = new SerialPort();
-        private OracleDataManager oracleDataManager = new OracleDataManager();
-        public ObservableCollection<XX_OPM_BCI_ITEMS_V> InventoryItemsCollection;
-        public ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD> TipoActividadCollection;                
-        public ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO> OrganisationCollection;
-        public ObservableCollection<XX_OPM_BCI_PUNTO_DESCARGA> PuntoDescargaCollection;        
-        public ObservableCollection<XX_OPM_BCI_ESTAB> EstabAllCollection;
-        public ObservableCollection<XX_OPM_BCI_ESTAB> EstabAPCollection;
-        public ObservableCollection<XX_OPM_BCI_ESTAB> EstabARCollection;
-        public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> ContratosCollection;
-        public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasPendientesList;
-        
-        public int PesoActual { get; set; }
-        public int PesoBruto { get; set; }
-        public int PesoTara { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        MainViewModel viewModel = new MainViewModel();                        
 
+        
+                        
         public MainWindow()
         {
+
+            DataContext = viewModel;
             InitializeComponent();
-            loadLookUps();
-            InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-            InventoryItemsAutoCompleteComboBox.ItemsSource = InventoryItemsCollection;
 
-            TipoActividadAutoCompleteComboBox.ItemsSource = TipoActividadCollection;
-            OrganisationAutoCompleteComboBox.ItemsSource = OrganisationCollection;
-
-            PesoActual = 9955;
+            reset();
+            //viewModel.loadData();               
         }
-
         
         private void InventoryItemsAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            TipoActividadAutoCompleteComboBox.SelectedValue = ((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).TIPO_ACTIVIDAD;
-            OrganisationAutoCompleteComboBox.SelectedValue = ((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).ORGANIZATION_ID;
-            if (((XX_OPM_BCI_ITEMS_V)(InventoryItemsAutoCompleteComboBox.SelectedItem)).CODIGO_ITEM.Equals("050.002198"))
-            {
-                LotePanel.Visibility = Visibility.Visible;                
-            }
-            else
-            {
-                LotePanel.Visibility = Visibility.Hidden;
-            }
-            
+            viewModel.SelectedInventoryItemChanged();                   
         }
 
-        private void loadLookUps()
+        private void TipoActividadAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            EstabAllCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAllList());
-            EstabAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AP")));
-            EstabARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(EstabAllCollection.Where(t => t.ApAr.Equals("AR")));
-            OrganisationCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
-            PuntoDescargaCollection = oracleDataManager.GetPuntoDescargaList();
-            TipoActividadCollection = oracleDataManager.GetTipoActividadList();
+            viewModel.SelectedTipoActividadChanged();            
         }
 
         private void OrganisationAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {                                        
-                    PuntoDeDescargaAutoCompleteComboBox.ItemsSource = PuntoDescargaCollection.Where(o => o.Tag.Equals(((XX_OPM_BCI_ORGS_COMPLEJO)OrganisationAutoCompleteComboBox.SelectedItem).Tag));
-                    PuntoDeDescargaAutoCompleteComboBox.SelectedIndex = 0;                
-            }
-
-        private void TipoActividadAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {            
-                switch (TipoActividadAutoCompleteComboBox.SelectedValue)
-                {
-                case "1":
-                        TipoEstablecimientoLabel.Content = "Proveedor";
-                        EstablecimientoAutoCompleteComboBox.ItemsSource = EstabAPCollection;
-                        break;
-                    case "2":
-                        TipoEstablecimientoLabel.Content = "Cliente";
-                        EstablecimientoAutoCompleteComboBox.ItemsSource = EstabARCollection;
-                    break;
-                    default:
-                        TipoEstablecimientoLabel.Content = "Establecimiento";
-                        break;                
-            }
+        {
+            viewModel.SelectedOrganisationChanged();
+            PuntosOperacionAutoCompleteComboBox.SelectedIndex = 0;
         }
-
+ 
         private void BtnBruto_Click(object sender, RoutedEventArgs e)
         {
-            PesoBruto = PesoActual;
+            viewModel.PesoBruto = viewModel.PesoActual;
         }
 
         private void BtnTara_Click(object sender, RoutedEventArgs e)
         {
+            viewModel.PesoTara = viewModel.PesoActual;
+        }
+        
+        private void BtnNewPesada_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.CreateNewPesada();
+            
+            BtnBruto.IsEnabled = true;
+            BtnTara.IsEnabled = true;
+            BtnGuardar.IsEnabled = true;
 
+            InventoryItemsAutoCompleteComboBox.IsEnabled = true;
+            TipoActividadAutoCompleteComboBox.IsEnabled = true;
+            OrganisationAutoCompleteComboBox.IsEnabled = true;
+            PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
+            MatriculaTextBox.IsEnabled = true;
+            EstablecimientoAutoCompleteComboBox.IsEnabled = true;            
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;        
+        private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            viewModel.SelectedPesadaPendientesChanged();
+            
+        }
+
+        private void BtnGuardar_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.Save();  
+        }
+
+        private void reset()
+        {
+            viewModel.reset();            
+
+            InventoryItemsAutoCompleteComboBox.SelectedIndex = -1;
+            InventoryItemsAutoCompleteComboBox.IsEnabled = false;
+            TipoActividadAutoCompleteComboBox.SelectedIndex = -1;
+            TipoActividadAutoCompleteComboBox.IsEnabled = false;
+            OrganisationAutoCompleteComboBox.SelectedIndex = -1;
+            OrganisationAutoCompleteComboBox.IsEnabled = false;
+            PuntosOperacionAutoCompleteComboBox.SelectedIndex = -1;
+            PuntosOperacionAutoCompleteComboBox.IsEnabled = false;
+            MatriculaTextBox.Text = null;
+            MatriculaTextBox.IsEnabled = false;
+            EstablecimientoAutoCompleteComboBox.SelectedIndex = -1;
+            EstablecimientoAutoCompleteComboBox.IsEnabled = false;
+            ContratoAutoCompleteComboBox.SelectedIndex = -1;
+            ContratoAutoCompleteComboBox.IsEnabled = false;
+            LoteAutoCompleteComboBox.SelectedIndex = -1;
+            LoteAutoCompleteComboBox.IsEnabled = false;
+            PesoTextBox.Text = null;            
+            BtnBruto.IsEnabled = false;
+            BtnTara.IsEnabled = false;
+            BtnGuardar.IsEnabled = false;
+        }        
     }
 }

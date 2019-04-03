@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CinBascula.Models
 {
-    public sealed class XX_OPM_BCI_PUNTO_DESCARGA
+    public sealed class XX_OPM_BCI_PUNTO_OPERACION
     {
 
         [ExplicitKey]

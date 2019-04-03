@@ -18,7 +18,7 @@
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <PublishUrl>ftp://192.168.1.26/var/www/html/dotnet/cinbascula/</PublishUrl>
+    <PublishUrl>C:\Users\adriang\Documents\Visual Studio 2017\Projects\CinBascula\publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -29,9 +29,10 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://192.168.1.26/dotnet/cinbascula/</InstallUrl>
+    <UpdateUrl>http://192.168.1.26/software/dotnet/CinBascula/</UpdateUrl>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>8</ApplicationRevision>
+    <ApplicationRevision>11</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -145,14 +146,13 @@
     <Compile Include="Models\XX_OPM_BCI_PESADAS_ALL.cs" />
     <Compile Include="Models\XX_OPM_BCI_ITEMS_V.cs" />
     <Compile Include="Models\XX_OPM_BCI_ORGS_COMPLEJO.cs" />
-    <Compile Include="Models\XX_OPM_BCI_PUNTO_DESCARGA.cs" />
+    <Compile Include="Models\XX_OPM_BCI_PUNTO_OPERACION.cs" />
     <Compile Include="Models\XX_OPM_BCI_TIPO_ACTIVIDAD.cs" />
     <Compile Include="OracleDataManager.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModelBase.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

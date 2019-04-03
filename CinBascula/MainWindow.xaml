@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dotNetKitControls="clr-namespace:DotNetKit.Windows.Controls;assembly=DotNetKit.Wpf.AutoCompleteComboBox"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:s="clr-namespace:System;assembly=mscorlib"
     xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
     Width="800"
     Height="600"
@@ -89,6 +90,7 @@
                         Height="35"
                         Margin="2"
                         Padding="5"
+                        Click="BtnNewPesada_Click"
                         Content="Nueva Pesada"
                         FontSize="16" />
                 </StackPanel>
@@ -97,7 +99,8 @@
                     <dotNetKitControls:AutoCompleteComboBox
                         Name="InventoryItemsAutoCompleteComboBox"
                         Width="300"
-                        SelectedValuePath="INVENTORY_ITEM_ID"
+                        ItemsSource="{Binding InventoryItemsCollection}"
+                        SelectedItem="{Binding SelectedInventoryItem}"
                         SelectionChanged="InventoryItemsAutoCompleteComboBox_SelectionChanged"
                         TextSearch.TextPath="DESCRIPCION_ITEM">
                         <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
@@ -112,12 +115,13 @@
                         </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     </dotNetKitControls:AutoCompleteComboBox>
                 </StackPanel>
-                <StackPanel Style="{StaticResource PanelStyle}">
+                <StackPanel IsEnabled="{Binding PesadaNueva}" Style="{StaticResource PanelStyle}">
                     <Label Style="{StaticResource LabelColumnStyle}">Tipo de Actividad</Label>
                     <dotNetKitControls:AutoCompleteComboBox
                         Name="TipoActividadAutoCompleteComboBox"
                         Width="200"
-                        SelectedValuePath="Id"
+                        ItemsSource="{Binding TiposActividadCollection}"
+                        SelectedItem="{Binding SelectedTipoActividad}"
                         SelectionChanged="TipoActividadAutoCompleteComboBox_SelectionChanged"
                         TextSearch.TextPath="Description">
                         <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
@@ -137,7 +141,8 @@
                     <dotNetKitControls:AutoCompleteComboBox
                         Name="OrganisationAutoCompleteComboBox"
                         Width="300"
-                        SelectedValuePath="Id"
+                        ItemsSource="{Binding OrganisationsCollection}"
+                        SelectedItem="{Binding SelectedOrganisation}"
                         SelectionChanged="OrganisationAutoCompleteComboBox_SelectionChanged"
                         TextSearch.TextPath="Description">
                         <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
@@ -152,12 +157,13 @@
                         </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     </dotNetKitControls:AutoCompleteComboBox>
                 </StackPanel>
-                <StackPanel Style="{StaticResource PanelStyle}">
-                    <Label Style="{StaticResource LabelColumnStyle}">Punto de descarga</Label>
+                <StackPanel Style="{StaticResource PanelStyle}" Visibility="{Binding PuntoOperacionVisibility}">
+                    <Label Content="{Binding PuntoOperacionLabel}" Style="{StaticResource LabelColumnStyle}" />
                     <dotNetKitControls:AutoCompleteComboBox
-                        Name="PuntoDeDescargaAutoCompleteComboBox"
+                        Name="PuntosOperacionAutoCompleteComboBox"
                         Width="150"
-                        SelectedValuePath="Id"
+                        ItemsSource="{Binding PuntosOperacionCollection}"
+                        SelectedItem="{Binding SelectedPuntoOperacion}"
                         TextSearch.TextPath="Description">
                         <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                             <DataTemplate>
@@ -171,11 +177,14 @@
                 <StackPanel Style="{StaticResource PanelStyle}">
                     <Label Style="{StaticResource LabelColumnStyle}">Chapa</Label>
                     <xctk:MaskedTextBox
-                        Width="60"
+                        Name="MatriculaTextBox"
+                        Width="80"
                         HorizontalContentAlignment="Center"
                         CharacterCasing="Upper"
-                        Mask="AAA-###"
-                        Style="{StaticResource TextBoxStyle}" />
+                        Mask="LLL-###"
+                        Style="{StaticResource TextBoxStyle}"
+                        ValueDataType="{x:Type s:String}"
+                        Value="{Binding SelectedMatricula}" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Width="60" />
@@ -187,8 +196,10 @@
                                 Grid.Column="0"
                                 Margin="5"
                                 Content="Automatico"
-                                GroupName="Bascula" />
+                                GroupName="Bascula"
+                                IsChecked="{Binding AutoBascula}" />
                             <RadioButton
+                                Name="ManualRadioButton"
                                 Grid.Column="1"
                                 Margin="5"
                                 Content="Manual"
@@ -205,7 +216,9 @@
                                 FontSize="40"
                                 FontWeight="Bold"
                                 Foreground="#FFBFDEBF"
-                                Text="{Binding Path=PesoActual, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding ManualBascula}"
+                                MaxLength="5"
+                                Text="{Binding Path=PesoActual, Mode=TwoWay}"
                                 TextAlignment="Right" />
                             <StackPanel Orientation="Vertical">
                                 <Button
@@ -215,7 +228,8 @@
                                     Margin="2"
                                     Click="BtnBruto_Click"
                                     Content="Bruto"
-                                    FontSize="20" />
+                                    FontSize="20"
+                                    IsEnabled="{Binding BtnBrutoIsEnabled}" />
                                 <Button
                                     Name="BtnTara"
                                     Width="70"
@@ -223,7 +237,8 @@
                                     Margin="2"
                                     Click="BtnTara_Click"
                                     Content="Tara"
-                                    FontSize="20" />
+                                    FontSize="20"
+                                    IsEnabled="{Binding BtnTaraIsEnabled}" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
@@ -235,7 +250,7 @@
                                 Width="70"
                                 HorizontalContentAlignment="Right"
                                 Background="White"
-                                Content="{Binding PesoBruto, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                                Content="{Binding PesoBruto}"
                                 FontSize="16" />
                             <Label Content="Kg" FontSize="16" />
                         </StackPanel>
@@ -249,6 +264,7 @@
                                 Width="70"
                                 HorizontalContentAlignment="Right"
                                 Background="White"
+                                Content="{Binding PesoTara}"
                                 FontSize="16" />
                             <Label Content="Kg" FontSize="16" />
                         </StackPanel>
@@ -259,12 +275,13 @@
         <StackPanel Style="{StaticResource PanelStyle}">
             <Label
                 x:Name="TipoEstablecimientoLabel"
-                Content=""
+                Content="{Binding EstablecimientoLabel}"
                 Style="{StaticResource LabelColumnStyle}" />
             <dotNetKitControls:AutoCompleteComboBox
                 x:Name="EstablecimientoAutoCompleteComboBox"
                 Width="450"
-                SelectedValuePath="Id"
+                ItemsSource="{Binding EstabsCollection}"
+                SelectedItem="{Binding SelectedEstab}"
                 TextSearch.TextPath="Description">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     <DataTemplate>
@@ -282,8 +299,9 @@
         <StackPanel Name="ContratoPanel" Style="{StaticResource PanelStyle}">
             <Label Style="{StaticResource LabelColumnStyle}">Contrato</Label>
             <dotNetKitControls:AutoCompleteComboBox
+                x:Name="ContratoAutoCompleteComboBox"
                 Width="300"
-                ItemsSource="{Binding ContratoList}"
+                ItemsSource="{Binding ContratosCollection}"
                 SelectedItem="{Binding SelectedContrato}"
                 SelectedValuePath="Id"
                 TextSearch.TextPath="Descripcion">
@@ -299,12 +317,16 @@
                 </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
             </dotNetKitControls:AutoCompleteComboBox>
         </StackPanel>
-        <StackPanel Name="LotePanel" Style="{StaticResource PanelStyle}">
+        <StackPanel
+            Name="LotePanel"
+            Style="{StaticResource PanelStyle}"
+            Visibility="{Binding LoteVisibility}">
             <Label Style="{StaticResource LabelColumnStyle}">Lote</Label>
             <dotNetKitControls:AutoCompleteComboBox
+                Name="LoteAutoCompleteComboBox"
                 Width="300"
-                ItemsSource="{Binding ContratoList}"
-                SelectedItem="{Binding SelectedContrato}"
+                ItemsSource="{Binding LotesCollection}"
+                SelectedItem="{Binding SelectedLote}"
                 SelectedValuePath="Id"
                 TextSearch.TextPath="Descripcion">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
@@ -327,42 +349,56 @@
                 Height="35"
                 Margin="2"
                 Padding="5"
+                Click="BtnGuardar_Click"
                 Content="Guaardar"
-                FontSize="16" />
+                FontSize="16"
+                IsEnabled="{Binding BtnGuardarIsEnabled}" />
         </StackPanel>
         <Separator Margin="10" />
         <StackPanel Style="{StaticResource PanelStyle}">
             <TabControl Margin="10">
                 <TabItem Header="Pendientes">
                     <DataGrid
-                        Name="PendientesDataGrid"
+                        Name="PesadasPendientesDataGrid"
                         Height="88"
                         Margin="0,0,0,0"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
-                        FontSize="12">
+                        FontSize="12"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding PesadasPendientesView}"
+                        SelectedItem="{Binding SelectedPesadaPendiente}"
+                        SelectionChanged="PesadasPendientesDataGrid_SelectionChanged"
+                        SelectionMode="Single"
+                        VerticalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <DataGridTextColumn
+                                Width="50"
                                 Binding="{Binding PESADA_ID}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="ID" />
                             <DataGridTextColumn
+                                Width="100"
                                 Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Fecha/Hora" />
                             <DataGridTextColumn
+                                Width="60"
                                 Binding="{Binding MATRICULA}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Chapa" />
                             <DataGridTextColumn
+                                Width="145"
                                 Binding="{Binding InventoryItem}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Articulo" />
                             <DataGridTextColumn
+                                Width="230"
                                 Binding="{Binding Establecimiento}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Establecimiento" />
                             <DataGridTextColumn
+                                Width="70"
                                 Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Peso Bruto">
@@ -373,6 +409,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn
+                                Width="70"
                                 Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Peso Tara">
@@ -386,8 +423,71 @@
 
                     </DataGrid>
                 </TabItem>
-                <TabItem Header="Completas" />
+                <TabItem Header="Completas">
+                    <DataGrid
+                        Name="PesadasCompletasDataGrid"
+                        Height="88"
+                        Margin="0,0,0,0"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        FontSize="12"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding PesadasCompletasView}"
+                        SelectionMode="Single"
+                        VerticalScrollBarVisibility="Visible">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="50"
+                                Binding="{Binding PESADA_ID}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="ID" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Fecha/Hora" />
+                            <DataGridTextColumn
+                                Width="60"
+                                Binding="{Binding MATRICULA}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Chapa" />
+                            <DataGridTextColumn
+                                Width="145"
+                                Binding="{Binding InventoryItem}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Articulo" />
+                            <DataGridTextColumn
+                                Width="230"
+                                Binding="{Binding Establecimiento}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Establecimiento" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Peso Bruto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Peso Tara">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
             </TabControl>
         </StackPanel>
+
     </StackPanel>
 </Window>
