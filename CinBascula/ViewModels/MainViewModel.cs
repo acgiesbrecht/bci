@@ -45,8 +45,8 @@ namespace CinBascula.ViewModels
         public XX_OPM_BCI_ESTAB SelectedEstab { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsCollection { get; set; }
         public Visibility LoteVisibility { get; set; }
-        public string SelectedLote { get; set; }
-        public ObservableCollection<string> LotesCollection { get; set; }
+        public XX_OPM_BCI_LOTE SelectedLote { get; set; }
+        public ObservableCollection<XX_OPM_BCI_LOTE> LotesCollection { get; set; }
         public Visibility ContratoVisibility { get; set; }
         public XX_OPM_BCI_CONTRATOS_V SelectedContrato { get; set; }
         public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> ContratosCollection { get; set; }        
@@ -136,15 +136,7 @@ namespace CinBascula.ViewModels
             if (SelectedInventoryItem != null)
             {
                 SelectedTipoActividad = TiposActividadCollection.First(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
-                SelectedOrganisation = OrganisationsCollection.First(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);
-                if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
-                {
-                    LoteVisibility = Visibility.Visible;
-                }
-                else
-                {
-                    LoteVisibility = Visibility.Hidden;
-                }
+                SelectedOrganisation = OrganisationsCollection.First(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
             }
           
         }
@@ -229,6 +221,34 @@ namespace CinBascula.ViewModels
             }
         }
 
+        public void SelectedEstabChanged()
+        {
+            if (SelectedInventoryItem != null && SelectedEstab != null) {
+                LoteVisibility = Visibility.Visible;
+                LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
+            }
+
+            /*if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
+            {
+                LoteVisibility = Visibility.Visible;
+                LotesCollection = new ObservableCollection<string>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
+            }
+            else
+            {
+                LoteVisibility = Visibility.Hidden;
+            }*/
+        }
+
+        public void CreateNewLote() {
+            XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();
+            XX_OPM_BCI_LOTE newLote = new XX_OPM_BCI_LOTE();
+            newLote.ID = maxLote.Year + "-" +
+                (int.Parse(maxLote.LoteCodigo) + 1).ToString("D3") + "-" +
+                SelectedEstab.Id;
+            LotesCollection.Add(newLote);
+            SelectedLote = newLote;
+        }
+
         public void Save(){
             if (PesadaActual!=null)
             {
@@ -246,7 +266,7 @@ namespace CinBascula.ViewModels
                     }
                     if (SelectedLote != null)
                     {
-                        PesadaActual.LOTE = SelectedLote;
+                        PesadaActual.LOTE = SelectedLote.ID;
                     }
                     if (PesoBruto != null)
                     {
@@ -297,8 +317,7 @@ namespace CinBascula.ViewModels
             SelectedPuntoOperacion = null;
             SelectedMatricula = null;
             SelectedContrato = null;
-            SelectedLote = null;
-            
+            SelectedLote = null;           
 
             AutoBascula = true;
         }

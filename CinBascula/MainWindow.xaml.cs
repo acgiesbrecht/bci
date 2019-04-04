@@ -49,7 +49,12 @@ namespace CinBascula
             viewModel.SelectedOrganisationChanged();
             PuntosOperacionAutoCompleteComboBox.SelectedIndex = 0;
         }
- 
+
+        private void EstablecimientoAutoCompleteComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            viewModel.SelectedEstabChanged();
+        }
+
         private void BtnBruto_Click(object sender, RoutedEventArgs e)
         {
             viewModel.PesoBruto = viewModel.PesoActual;
@@ -78,9 +83,8 @@ namespace CinBascula
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            viewModel.SelectedPesadaPendientesChanged();
-            
-        }
+            viewModel.SelectedPesadaPendientesChanged();            
+        }        
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -111,6 +115,11 @@ namespace CinBascula
             BtnBruto.IsEnabled = false;
             BtnTara.IsEnabled = false;
             BtnGuardar.IsEnabled = false;
-        }        
+        }
+
+        private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.CreateNewLote();
+        }
     }
 }

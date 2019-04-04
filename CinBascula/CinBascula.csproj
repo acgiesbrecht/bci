@@ -140,6 +140,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\XX_OPM_BCI_LOTE.cs" />
     <Compile Include="Models\XX_OPM_BCI_CONTRATOS_V.cs" />
     <Compile Include="Models\XX_OPM_BCI_ESTAB.cs" />
     <Compile Include="Models\XX_OPM_BCI_LOOKUPS_V.cs" />

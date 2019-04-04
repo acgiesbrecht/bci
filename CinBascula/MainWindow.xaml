@@ -282,6 +282,7 @@
                 Width="450"
                 ItemsSource="{Binding EstabsCollection}"
                 SelectedItem="{Binding SelectedEstab}"
+                SelectionChanged="EstablecimientoAutoCompleteComboBox_SelectionChanged"
                 TextSearch.TextPath="Description">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     <DataTemplate>
@@ -340,6 +341,12 @@
                     </DataTemplate>
                 </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
             </dotNetKitControls:AutoCompleteComboBox>
+            <Label />
+            <Button
+                Width="65"
+                Content="Nuevo"
+                FontSize="16" 
+                Click="NewLoteBtn_Click"/>
         </StackPanel>
         <StackPanel Style="{StaticResource PanelStyle}">
             <Label Style="{StaticResource LabelColumnStyle}" />
@@ -354,13 +361,13 @@
                 FontSize="16"
                 IsEnabled="{Binding BtnGuardarIsEnabled}" />
         </StackPanel>
-        <Separator Margin="10" />
+        <!--<Separator Margin="10" />-->
         <StackPanel Style="{StaticResource PanelStyle}">
             <TabControl Margin="10">
                 <TabItem Header="Pendientes">
                     <DataGrid
                         Name="PesadasPendientesDataGrid"
-                        Height="88"
+                        Height="98"
                         Margin="0,0,0,0"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"

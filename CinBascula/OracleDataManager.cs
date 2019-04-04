@@ -111,13 +111,21 @@ namespace CinBascula
             }
         }
 
-        public List<string> GetLotesByEstablecimiento(string EstablecimientoCodigo)
+        public List<XX_OPM_BCI_LOTE> GetLotesByEstablecimiento(string EstablecimientoCodigo)
         {
             using (var dbConnection = GetConnection())
             {
                 var param = new DynamicParameters();
                 param.Add("ESTAB", EstablecimientoCodigo);
-                return dbConnection.QueryAsync<string>("SELECT DISTINCT LOTE FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE").Result.ToList();
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+            }
+        }
+
+        public XX_OPM_BCI_LOTE GetMaxLoteCurrentYear()
+        {
+            using (var dbConnection = GetConnection())
+            {
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT MAX(LOTE) AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%')").Result.Single();
             }
         }
 
