@@ -125,7 +125,9 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
-                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT MAX(LOTE) AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%')").Result.Single();
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT COALESCE(MAX(LOTE), CONCAT(TO_CHAR(SYSDATE, 'YY'), '-000-0000')) AS ID " +
+                    "FROM XX_OPM_BCI_PESADAS_ALL " +
+                    "WHERE LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%')").Result.Single();
             }
         }
 

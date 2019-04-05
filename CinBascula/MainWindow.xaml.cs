@@ -69,22 +69,22 @@ namespace CinBascula
         {
             viewModel.CreateNewPesada();
             
-            BtnBruto.IsEnabled = true;
-            BtnTara.IsEnabled = true;
-            BtnGuardar.IsEnabled = true;
+            
 
             InventoryItemsAutoCompleteComboBox.IsEnabled = true;
             TipoActividadAutoCompleteComboBox.IsEnabled = true;
             OrganisationAutoCompleteComboBox.IsEnabled = true;
             PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
             MatriculaTextBox.IsEnabled = true;
-            EstablecimientoAutoCompleteComboBox.IsEnabled = true;            
+            EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
+            ContratoAutoCompleteComboBox.IsEnabled = true;
+            LoteAutoCompleteComboBox.IsEnabled = true;
         }
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            viewModel.SelectedPesadaPendientesChanged();            
-        }        
+            viewModel.SelectedPesadaPendientesChanged();
+        }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -95,31 +95,31 @@ namespace CinBascula
         {
             viewModel.reset();            
 
-            InventoryItemsAutoCompleteComboBox.SelectedIndex = -1;
+            //InventoryItemsAutoCompleteComboBox.SelectedIndex = -1;
             InventoryItemsAutoCompleteComboBox.IsEnabled = false;
-            TipoActividadAutoCompleteComboBox.SelectedIndex = -1;
+            //TipoActividadAutoCompleteComboBox.SelectedIndex = -1;
             TipoActividadAutoCompleteComboBox.IsEnabled = false;
-            OrganisationAutoCompleteComboBox.SelectedIndex = -1;
+            //OrganisationAutoCompleteComboBox.SelectedIndex = -1;
             OrganisationAutoCompleteComboBox.IsEnabled = false;
-            PuntosOperacionAutoCompleteComboBox.SelectedIndex = -1;
+            //PuntosOperacionAutoCompleteComboBox.SelectedIndex = -1;
             PuntosOperacionAutoCompleteComboBox.IsEnabled = false;
-            MatriculaTextBox.Text = null;
+            //MatriculaTextBox.Text = null;
             MatriculaTextBox.IsEnabled = false;
-            EstablecimientoAutoCompleteComboBox.SelectedIndex = -1;
+            //EstablecimientoAutoCompleteComboBox.SelectedIndex = -1;
             EstablecimientoAutoCompleteComboBox.IsEnabled = false;
-            ContratoAutoCompleteComboBox.SelectedIndex = -1;
+            //ContratoAutoCompleteComboBox.SelectedIndex = -1;
             ContratoAutoCompleteComboBox.IsEnabled = false;
-            LoteAutoCompleteComboBox.SelectedIndex = -1;
+            //LoteAutoCompleteComboBox.SelectedIndex = -1;
             LoteAutoCompleteComboBox.IsEnabled = false;
-            PesoTextBox.Text = null;            
-            BtnBruto.IsEnabled = false;
-            BtnTara.IsEnabled = false;
-            BtnGuardar.IsEnabled = false;
+            //PesadasPendientesDataGrid.SelectedIndex = -1;
+            //PesoTextBox.Text = null;                        
         }
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
         {
             viewModel.CreateNewLote();
         }
+
+        
     }
 }

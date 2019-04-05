@@ -328,14 +328,14 @@
                 Width="300"
                 ItemsSource="{Binding LotesCollection}"
                 SelectedItem="{Binding SelectedLote}"
-                SelectedValuePath="Id"
-                TextSearch.TextPath="Descripcion">
+                SelectedValuePath="ID"
+                TextSearch.TextPath="ID">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock FontWeight="Bold" Text="{Binding LoteCodigo}" />
                             <TextBlock>
-                                Codigo =<Run Text="{Binding Id, Mode=OneTime}" />
+                                Codigo =<Run Text="{Binding ID, Mode=OneTime}" />
                                 .</TextBlock>
                         </StackPanel>
                     </DataTemplate>
@@ -344,9 +344,9 @@
             <Label />
             <Button
                 Width="65"
+                Click="NewLoteBtn_Click"
                 Content="Nuevo"
-                FontSize="16" 
-                Click="NewLoteBtn_Click"/>
+                FontSize="16" />
         </StackPanel>
         <StackPanel Style="{StaticResource PanelStyle}">
             <Label Style="{StaticResource LabelColumnStyle}" />
@@ -436,11 +436,14 @@
                         Height="88"
                         Margin="0,0,0,0"
                         AutoGenerateColumns="False"
+                        BorderThickness="0"
                         CanUserAddRows="False"
                         FontSize="12"
+                        HorizontalGridLinesBrush="#FFBFDEBF"
                         IsReadOnly="True"
                         ItemsSource="{Binding PesadasCompletasView}"
                         SelectionMode="Single"
+                        VerticalGridLinesBrush="#FFBFDEBF"
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <DataGridTextColumn
@@ -450,7 +453,7 @@
                                 Header="ID" />
                             <DataGridTextColumn
                                 Width="100"
-                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                Binding="{Binding ExitDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Fecha/Hora" />
                             <DataGridTextColumn

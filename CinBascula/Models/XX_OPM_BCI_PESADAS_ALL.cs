@@ -77,6 +77,27 @@ namespace CinBascula.Models
             }
         }
 
+        public DateTime? ExitDate
+        {
+            get{
+                if (FECHA_PESO_BRUTO != null && FECHA_PESO_TARA != null)
+                {
+                    if (FECHA_PESO_BRUTO > FECHA_PESO_TARA)
+                    {
+                        return FECHA_PESO_TARA;
+                    }
+                    else
+                    {
+                        return FECHA_PESO_BRUTO;
+                    }
+                }            
+                else
+                {
+                return null;
+                }
+            }
+        }        
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }

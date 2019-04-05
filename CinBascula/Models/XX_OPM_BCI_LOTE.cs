@@ -9,6 +9,7 @@ namespace CinBascula.Models
 {
     public class XX_OPM_BCI_LOTE
     {
+        
         [ExplicitKey]
         public string ID { get; set; }
         public string Year { get

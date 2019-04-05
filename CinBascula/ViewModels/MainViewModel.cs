@@ -20,7 +20,7 @@ namespace CinBascula.ViewModels
         public bool NewPesada { get; set; }
         public bool UpdatePesada { get; set; }
         public bool NewOrUpdatePesada { get; set; }
-        public int PesoActual { get; set; }
+        public int? PesoActual { get; set; }
         public int? PesoBruto { get; set; }
         public int? PesoTara { get; set; }
 
@@ -93,7 +93,10 @@ namespace CinBascula.ViewModels
         public void CreateNewPesada()
         {
             PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
-            NewPesada = true;            
+            NewPesada = true;
+            BtnBrutoIsEnabled = true;
+            BtnTaraIsEnabled = true;
+            BtnGuardarIsEnabled = true;
         }
 
         public void loadData()
@@ -106,8 +109,7 @@ namespace CinBascula.ViewModels
             EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
             EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
             
-            ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
-            //LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesList());
+            ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());            
 
             PesadasAllCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
             PesadasAllCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
@@ -127,7 +129,6 @@ namespace CinBascula.ViewModels
                     p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
                 }
             }
-
             PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));            
         }
 
@@ -138,7 +139,10 @@ namespace CinBascula.ViewModels
                 SelectedTipoActividad = TiposActividadCollection.First(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
                 SelectedOrganisation = OrganisationsCollection.First(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
             }
-          
+            if (SelectedEstab != null && SelectedInventoryItem != null)
+            {
+                UpdateLotePanel();
+            }
         }
 
         public void SelectedTipoActividadChanged()
@@ -174,6 +178,14 @@ namespace CinBascula.ViewModels
             }
         }
 
+        public void SelectedEstabChanged()
+        {
+            if (SelectedEstab != null && SelectedInventoryItem != null)
+            {
+                UpdateLotePanel();
+            }
+        }
+
         public void SelectedPesadaPendientesChanged()
         {
             if (SelectedPesadaPendiente != null)
@@ -185,24 +197,20 @@ namespace CinBascula.ViewModels
                 SelectedOrganisation = OrganisationsCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ORGANIZATION_ID));
                 
                 SelectedMatricula = PesadaActual.MATRICULA;
-                if (SelectedTipoActividad.Id == 2)
-                {
+                if (SelectedTipoActividad.Id == 2){
                     SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.PUNTO_DESCARGA));
                     SelectedEstab = EstabsARCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ESTABLECIMIENTO));
-                }
-                else
-                {
+                }else{
                     SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.PUNTO_DESCARGA));
                     SelectedEstab = EstabsAPCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ESTABLECIMIENTO));
                 }
-
                 if (PesadaActual.CONTRATO != null)
                 {
                     SelectedContrato = ContratosCollection.FirstOrDefault(i => i.NRO_CONTRATO.Equals(PesadaActual.CONTRATO));
                 }
                 if (PesadaActual.LOTE != null)
                 {
-                    //SelectedLote = LoteCollection.First(i => i..Equals(PesadaActual.LOTE));
+                    UpdateLotePanel();                    
                 }
                 if (PesadaActual.PESO_BRUTO != null)
                 {
@@ -219,28 +227,22 @@ namespace CinBascula.ViewModels
                 BtnGuardarIsEnabled = true;
                 UpdatePesada = true;
             }
-        }
+        }        
 
-        public void SelectedEstabChanged()
+        private void UpdateLotePanel()
         {
-            if (SelectedInventoryItem != null && SelectedEstab != null) {
-                LoteVisibility = Visibility.Visible;
-                LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
+            if (SelectedInventoryItem != null && SelectedEstab != null){ 
+                if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
+                {
+                    LoteVisibility = Visibility.Visible;
+                    LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
+                    SelectedLote = LotesCollection.FirstOrDefault(i => i.ID.Equals(PesadaActual.LOTE));
+                }
             }
-
-            /*if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
-            {
-                LoteVisibility = Visibility.Visible;
-                LotesCollection = new ObservableCollection<string>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
-            }
-            else
-            {
-                LoteVisibility = Visibility.Hidden;
-            }*/
         }
 
         public void CreateNewLote() {
-            XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();
+            XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();            
             XX_OPM_BCI_LOTE newLote = new XX_OPM_BCI_LOTE();
             newLote.ID = maxLote.Year + "-" +
                 (int.Parse(maxLote.LoteCodigo) + 1).ToString("D3") + "-" +
@@ -307,6 +309,7 @@ namespace CinBascula.ViewModels
         {
             UpdatePesada = false;
             NewPesada = false;
+            PesoActual = null;
             PesoBruto = null;
             PesoTara = null;
             PesadaActual = null;
@@ -316,10 +319,15 @@ namespace CinBascula.ViewModels
             SelectedOrganisation = null;
             SelectedPuntoOperacion = null;
             SelectedMatricula = null;
+            SelectedEstab = null;
             SelectedContrato = null;
             SelectedLote = null;           
 
             AutoBascula = true;
+
+            BtnBrutoIsEnabled = false;
+            BtnTaraIsEnabled = false;
+            BtnGuardarIsEnabled = false;
         }
 
         private void serialStart()
