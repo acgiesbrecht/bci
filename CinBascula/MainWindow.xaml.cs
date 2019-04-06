@@ -1,6 +1,7 @@
 ﻿using CinBascula.Models;
 using CinBascula.ViewModels;
 using DotNetKit.Windows.Controls;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,7 +18,7 @@ namespace CinBascula
     /// <summary>
     /// Interaction logic for TestView.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : MetroWindow, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
         MainViewModel viewModel = new MainViewModel();                        
