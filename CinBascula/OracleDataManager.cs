@@ -95,19 +95,34 @@ namespace CinBascula
             }
         }
 
-        public List<string> GetLoteList()
+        /*public List<string> GetLoteList()
         {
             using (var dbConnection = GetConnection())
             {
                 return dbConnection.QueryAsync<string>("Select CODIGO AS Id, SIGNIFICADO AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_LOTE'").Result.ToList();
             }
-        }
+        }*/
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadas()
         {
             using (var dbConnection = GetConnection())
             {
                 return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("Select * from XX_OPM_BCI_PESADAS_ALL ORDER BY PESADA_ID DESC").Result.ToList();
+            }
+        }
+
+        public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItem(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
+        {
+            using (var dbConnection = GetConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("ESTAB", estab);
+                param.Add("INVENTORY_ITEM_ID", item);
+                return dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
+                    "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
+                    "AND PROVEEDOR = :ESTAB " +
+                    "AND SYSDATE BETWEEN TO_DATE(FECHA_INICIO_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS') AND TO_DATE(FECHA_FIN_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS')" +
+                    "", param).Result.ToList();
             }
         }
 

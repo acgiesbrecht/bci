@@ -47,7 +47,7 @@ namespace CinBascula.ViewModels
         public Visibility LoteVisibility { get; set; }
         public XX_OPM_BCI_LOTE SelectedLote { get; set; }
         public ObservableCollection<XX_OPM_BCI_LOTE> LotesCollection { get; set; }
-        public Visibility ContratoVisibility { get; set; }
+        public Visibility ContratoVisibility {get; set;}
         public XX_OPM_BCI_CONTRATOS_V SelectedContrato { get; set; }
         public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> ContratosCollection { get; set; }        
         public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasAllCollection { get; set; }
@@ -227,7 +227,21 @@ namespace CinBascula.ViewModels
                 BtnGuardarIsEnabled = true;
                 UpdatePesada = true;
             }
-        }        
+        }
+
+        private void UpdateContratoPanel()
+        {
+            if (SelectedInventoryItem != null && SelectedEstab != null)
+            {
+                ContratoVisibility = Visibility.Visible;
+                ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratoByEstablecimientoAndItem(SelectedEstab, SelectedInventoryItem));
+                    SelectedContrato = ContratosCollection.FirstOrDefault(i => i.NRO_CONTRATO.Equals(PesadaActual.CONTRATO));                
+            }
+            else
+            {
+                ContratoVisibility = Visibility.Hidden;
+            }
+        }
 
         private void UpdateLotePanel()
         {
@@ -238,6 +252,13 @@ namespace CinBascula.ViewModels
                     LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
                     SelectedLote = LotesCollection.FirstOrDefault(i => i.ID.Equals(PesadaActual.LOTE));
                 }
+                else
+                {
+                    LoteVisibility = Visibility.Hidden;
+                }
+            }
+            else{
+                LoteVisibility = Visibility.Hidden;
             }
         }
 
@@ -321,13 +342,14 @@ namespace CinBascula.ViewModels
             SelectedMatricula = null;
             SelectedEstab = null;
             SelectedContrato = null;
-            SelectedLote = null;           
+            SelectedLote = null;
+            //UpdateLotePanel();
 
             AutoBascula = true;
 
             BtnBrutoIsEnabled = false;
             BtnTaraIsEnabled = false;
-            BtnGuardarIsEnabled = false;
+            BtnGuardarIsEnabled = false;            
         }
 
         private void serialStart()

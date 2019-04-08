@@ -289,7 +289,10 @@
                 </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
             </dotNetKitControls:AutoCompleteComboBox>
         </StackPanel>
-        <StackPanel Name="ContratoPanel" Style="{StaticResource PanelStyle}">
+        <StackPanel
+            Name="ContratoPanel"
+            Style="{StaticResource PanelStyle}"
+            Visibility="{Binding ContratoVisibility}">
             <Label Style="{StaticResource LabelColumnStyle}">Contrato</Label>
             <dotNetKitControls:AutoCompleteComboBox
                 x:Name="ContratoAutoCompleteComboBox"
