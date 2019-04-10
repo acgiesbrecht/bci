@@ -80,7 +80,7 @@
                         Margin="2"
                         Padding="5"
                         Click="BtnGuardar_Click"
-                        Content="Guaardar"
+                        Content="Guardar"
                         FontSize="14"
                         IsEnabled="{Binding BtnGuardarIsEnabled}" />
                 </StackPanel>
@@ -127,7 +127,7 @@
                     </dotNetKitControls:AutoCompleteComboBox>
                 </StackPanel>
                 <StackPanel Style="{StaticResource PanelStyle}">
-                    <Label Style="{StaticResource LabelColumnStyle}">Oragnizacion</Label>
+                    <Label Style="{StaticResource LabelColumnStyle}">Organizacion</Label>
                     <dotNetKitControls:AutoCompleteComboBox
                         Name="OrganisationAutoCompleteComboBox"
                         Width="300"
@@ -299,14 +299,14 @@
                 Width="300"
                 ItemsSource="{Binding ContratosCollection}"
                 SelectedItem="{Binding SelectedContrato}"
-                SelectedValuePath="Id"
-                TextSearch.TextPath="Descripcion">
+                SelectedValuePath="NRO_CONTRATO"
+                TextSearch.TextPath="NRO_CONTRATO">
                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock FontWeight="Bold" Text="{Binding Descripcion}" />
+                            <TextBlock FontWeight="Bold" Text="{Binding NRO_CONTRATO}" />
                             <TextBlock>
-                                Codigo =<Run Text="{Binding Id, Mode=OneTime}" />
+                                Codigo =<Run Text="{Binding NRO_CONTRATO, Mode=OneTime}" />
                                 .</TextBlock>
                         </StackPanel>
                     </DataTemplate>
@@ -415,17 +415,15 @@
                 <TabItem Header="Completas">
                     <DataGrid
                         Name="PesadasCompletasDataGrid"
-                        Height="88"
+                        Height="180"
                         Margin="0,0,0,0"
                         AutoGenerateColumns="False"
-                        BorderThickness="0"
                         CanUserAddRows="False"
                         FontSize="12"
-                        HorizontalGridLinesBrush="#FFBFDEBF"
                         IsReadOnly="True"
                         ItemsSource="{Binding PesadasCompletasView}"
                         SelectionMode="Single"
-                        VerticalGridLinesBrush="#FFBFDEBF"
+                        Style="{StaticResource AzureDataGrid}"
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.Columns>
                             <DataGridTextColumn
@@ -435,7 +433,7 @@
                                 Header="ID" />
                             <DataGridTextColumn
                                 Width="100"
-                                Binding="{Binding ExitDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Fecha/Hora" />
                             <DataGridTextColumn
@@ -449,7 +447,7 @@
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Articulo" />
                             <DataGridTextColumn
-                                Width="230"
+                                Width="250"
                                 Binding="{Binding Establecimiento}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Establecimiento" />
@@ -457,7 +455,7 @@
                                 Width="70"
                                 Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
                                 ClipboardContentBinding="{x:Null}"
-                                Header="Peso Bruto">
+                                Header="Bruto">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />
@@ -468,7 +466,7 @@
                                 Width="70"
                                 Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
                                 ClipboardContentBinding="{x:Null}"
-                                Header="Peso Tara">
+                                Header="Tara">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Right" />

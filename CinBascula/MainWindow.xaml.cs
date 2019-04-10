@@ -89,7 +89,14 @@ namespace CinBascula
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.Save();  
+            MessageBoxResult result = MessageBox.Show("Está seguro que desea guardar el registro actual?",
+                                          "Confirmation",
+                                          MessageBoxButton.YesNo,
+                                          MessageBoxImage.Question);           
+            if (result == MessageBoxResult.Yes)
+            {
+                viewModel.Save();
+            }
         }
 
         private void reset()

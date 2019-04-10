@@ -107,7 +107,7 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
-                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("Select * from XX_OPM_BCI_PESADAS_ALL ORDER BY PESADA_ID DESC").Result.ToList();
+                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("Select * from XX_OPM_BCI_PESADAS_ALL").Result.ToList();
             }
         }
 
@@ -126,13 +126,23 @@ namespace CinBascula
             }
         }
 
-        public List<XX_OPM_BCI_LOTE> GetLotesByEstablecimiento(string EstablecimientoCodigo)
+        public List<XX_OPM_BCI_LOTE> GetLotesAlgodonByEstablecimiento(string EstablecimientoCodigo)
         {
             using (var dbConnection = GetConnection())
             {
                 var param = new DynamicParameters();
                 param.Add("ESTAB", EstablecimientoCodigo);
                 return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+            }
+        }
+
+        public List<XX_OPM_BCI_LOTE> GetLotesDAE()
+        {
+            using (var dbConnection = GetConnection())
+            {
+                var param = new DynamicParameters();
+                //param.Add("ESTAB", EstablecimientoCodigo);
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL ORDER BY LOTE", param).Result.ToList();
             }
         }
 

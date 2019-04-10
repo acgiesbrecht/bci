@@ -41,6 +41,7 @@ namespace CinBascula.ViewModels
         public ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION> PuntosCargaCollection { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsAPCollection { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsARCollection { get; set; }
+        public ObservableCollection<XX_OPM_BCI_ESTAB> EstabServiciosCollection { get; set; }
         public string EstablecimientoLabel { get; set; }
         public XX_OPM_BCI_ESTAB SelectedEstab { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsCollection { get; set; }
@@ -71,23 +72,7 @@ namespace CinBascula.ViewModels
 
         public MainViewModel()
         {
-            loadData();            
-
-            PesadasPendientesView = new CollectionViewSource { Source = PesadasAllCollection }.View;
-            PesadasPendientesView.Filter = o =>
-            {
-                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                return p.PESO_BRUTO == null
-                       || p.PESO_TARA == null;
-            };
-
-            PesadasCompletasView = new CollectionViewSource { Source = PesadasAllCollection }.View;
-            PesadasCompletasView.Filter = o =>
-            {
-                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                return p.PESO_BRUTO != null
-                       && p.PESO_TARA != null;
-            };
+            loadData();                        
         }
 
         public void CreateNewPesada()
@@ -108,7 +93,12 @@ namespace CinBascula.ViewModels
             PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
             EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
             EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
-            
+            EstabServiciosCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>();
+            XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
+            estab.Id = "9999";
+            estab.RazonSocial = "Cliente Servicios";
+            EstabServiciosCollection.ToList().Add(estab);
+
             ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());            
 
             PesadasAllCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
@@ -129,15 +119,36 @@ namespace CinBascula.ViewModels
                     p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
                 }
             }
-            PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));            
+            PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
+            PesadasPendientesView = new CollectionViewSource { Source = PesadasAllCollection }.View;            
+            PesadasPendientesView.Filter = o =>
+            {
+                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
+                return p.PESO_BRUTO == null
+                       || p.PESO_TARA == null;
+            };
+            PesadasPendientesView.SortDescriptions.Add(
+                new SortDescription("EntryDate", ListSortDirection.Descending));
+            PesadasPendientesView.Refresh();
+
+            PesadasCompletasView = new CollectionViewSource { Source = PesadasAllCollection }.View;            
+            PesadasCompletasView.Filter = o =>
+            {
+                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
+                return p.PESO_BRUTO != null
+                       && p.PESO_TARA != null;
+            };
+            PesadasCompletasView.SortDescriptions.Add(
+                new SortDescription("ExitDate", ListSortDirection.Descending));
+            PesadasCompletasView.Refresh();
         }
 
         public void SelectedInventoryItemChanged()
         {
             if (SelectedInventoryItem != null)
             {
-                SelectedTipoActividad = TiposActividadCollection.First(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
-                SelectedOrganisation = OrganisationsCollection.First(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
+                SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
+                SelectedOrganisation = OrganisationsCollection.FirstOrDefault(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
             }
             if (SelectedEstab != null && SelectedInventoryItem != null)
             {
@@ -161,6 +172,11 @@ namespace CinBascula.ViewModels
                         EstabsCollection = EstabsARCollection;
                     PuntoOperacionLabel = "Punto de Carga";
                     break;
+                    case 3L:
+                        EstablecimientoLabel = "";                        
+                        EstabsCollection = EstabServiciosCollection;
+                        PuntoOperacionLabel = "";
+                        break;
                     default:
                     EstablecimientoLabel = "Establecimiento";
                     PuntoOperacionLabel = "Punto de Descarga";
@@ -249,7 +265,7 @@ namespace CinBascula.ViewModels
                 if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
                 {
                     LoteVisibility = Visibility.Visible;
-                    LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesByEstablecimiento(SelectedEstab.Id));
+                    LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesAlgodonByEstablecimiento(SelectedEstab.Id));
                     SelectedLote = LotesCollection.FirstOrDefault(i => i.ID.Equals(PesadaActual.LOTE));
                 }
                 else
@@ -343,7 +359,7 @@ namespace CinBascula.ViewModels
             SelectedEstab = null;
             SelectedContrato = null;
             SelectedLote = null;
-            //UpdateLotePanel();
+            //UpdateLotePanel();            
 
             AutoBascula = true;
 
