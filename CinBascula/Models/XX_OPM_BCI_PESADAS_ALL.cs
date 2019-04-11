@@ -37,6 +37,8 @@ namespace CinBascula.Models
         public int CREATED_BY { get; set; }
         public DateTime LAST_UPDATE_DATE { get; set; }
         public int LAST_UPDATED_BY { get; set; }
+        public string ESTADO { get; set; }
+        public string DISPOSICION { get; set; }
 
         public XX_OPM_BCI_PESADAS_ALL()
         {

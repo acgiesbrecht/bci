@@ -57,7 +57,7 @@
         </ResourceDictionary>
     </Window.Resources>
     <StackPanel
-        Margin="10"
+        Margin="0"
         Grid.IsSharedSizeScope="True"
         Orientation="Vertical">
         <StackPanel Orientation="Horizontal">
@@ -178,7 +178,10 @@
                 </StackPanel>
             </StackPanel>
             <StackPanel Width="60" />
-            <StackPanel HorizontalAlignment="Right" Style="{StaticResource PanelStyle}">
+            <StackPanel
+                HorizontalAlignment="Right"
+                KeyboardNavigation.TabNavigation="None"
+                Style="{StaticResource PanelStyle}">
                 <GroupBox Header="Bascula">
                     <StackPanel Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
@@ -329,7 +332,7 @@
                     <DataTemplate>
                         <StackPanel>
                             <TextBlock FontWeight="Bold" Text="{Binding LoteCodigo}" />
-                            <TextBlock>
+                            <TextBlock FontWeight="Light">
                                 <Run Text="{Binding ID, Mode=OneTime}" />
                             </TextBlock>
                         </StackPanel>
@@ -348,7 +351,7 @@
                 <TabItem Header="Pendientes">
                     <DataGrid
                         Name="PesadasPendientesDataGrid"
-                        Height="180"
+                        Height="160"
                         Margin="0,0,0,0"
                         AutoGenerateColumns="False"
                         CanUserAddRows="False"
@@ -478,6 +481,18 @@
                 </TabItem>
             </TabControl>
         </StackPanel>
-
+        <StatusBar>
+            <StatusBarItem>
+                <Button
+                    Height="18"
+                    Click="ButtonStatus_Click"
+                    Content="..." />
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock FontWeight="Light">
+                    <Run Text="{Binding StatusMessage.Size, Mode=OneTime}" />
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
     </StackPanel>
 </Controls:MetroWindow>

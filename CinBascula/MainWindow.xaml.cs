@@ -128,6 +128,9 @@ namespace CinBascula
             viewModel.CreateNewLote();
         }
 
-        
+        private void ButtonStatus_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(viewModel.StatusMessage);
+        }
     }
 }

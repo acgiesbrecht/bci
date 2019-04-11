@@ -16,11 +16,11 @@ namespace CinBascula
     {
 
         public List<XX_OPM_BCI_ITEMS_V> GetInventoryItemList()
-        {
-            using (var dbConnection = GetConnection())
-            {
+        {            
+                using (var dbConnection = GetConnection())
+                {
                 return dbConnection.QueryAsync<XX_OPM_BCI_ITEMS_V>("Select * FROM APPS.XX_OPM_BCI_ITEMS_V ORDER BY DESCRIPCION_ITEM").Result.ToList();
-            }
+                }            
         }
 
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratosList()
@@ -107,7 +107,24 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
-                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("Select * from XX_OPM_BCI_PESADAS_ALL").Result.ToList();
+                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
+                    "FROM XX_OPM_BCI_PESADAS_ALL p " +
+                    "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
+                    "ON p.PESADA_ID = v.PESADA_ID").Result.ToList();
+            }
+        }
+
+        public XX_OPM_BCI_PESADAS_ALL GetPesadaByID(int id)
+        {
+            using (var dbConnection = GetConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("PESADA_ID", id);
+                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
+                    "FROM XX_OPM_BCI_PESADAS_ALL p " +
+                    "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
+                    "ON p.PESADA_ID = v.PESADA_ID " +
+                    "WHERE p.PESADA_ID = :PESADA_ID", param).Result.FirstOrDefault();
             }
         }
 

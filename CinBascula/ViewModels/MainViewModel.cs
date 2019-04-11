@@ -20,6 +20,8 @@ namespace CinBascula.ViewModels
         public bool NewPesada { get; set; }
         public bool UpdatePesada { get; set; }
         public bool NewOrUpdatePesada { get; set; }
+        public bool isLoading { get; set; }
+
         public int? PesoActual { get; set; }
         public int? PesoBruto { get; set; }
         public int? PesoTara { get; set; }
@@ -70,77 +72,82 @@ namespace CinBascula.ViewModels
         public bool BtnTaraIsEnabled { get; set; }
         public bool BtnGuardarIsEnabled { get; set; }
 
+        public string StatusMessage { get; set; }
+
         public MainViewModel()
         {
+            reset();
             loadData();                        
-        }
-
-        public void CreateNewPesada()
-        {
-            PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
-            NewPesada = true;
-            BtnBrutoIsEnabled = true;
-            BtnTaraIsEnabled = true;
-            BtnGuardarIsEnabled = true;
-        }
+        }        
 
         public void loadData()
         {
-            InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-            TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
-            OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
-            PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
-            PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
-            EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
-            EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
-            EstabServiciosCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>();
-            XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
-            estab.Id = "9999";
-            estab.RazonSocial = "Cliente Servicios";
-            EstabServiciosCollection.ToList().Add(estab);
-
-            ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());            
-
-            PesadasAllCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
-            PesadasAllCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
-            PesadasAllCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
-            PesadasAllCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));            
-            
-            foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasAllCollection)
+            try
             {
-                if (p.TIPO_ACTIVIDAD == 2)
+                isLoading = true;
+                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
+                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+                OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
+                PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
+                PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
+                EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
+                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
+                EstabServiciosCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>();
+                XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
+                estab.Id = "9999";
+                estab.RazonSocial = "Cliente Servicios";
+                EstabServiciosCollection.ToList().Add(estab);
+
+                ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
+
+                PesadasAllCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
+                PesadasAllCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
+                PesadasAllCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
+                PesadasAllCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
+
+                foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasAllCollection)
                 {
-                    p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                    p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                    if (p.TIPO_ACTIVIDAD == 2)
+                    {
+                        p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+                        p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                    }
+                    else
+                    {
+                        p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+                        p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                    }
                 }
-                else
+                PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
+                PesadasPendientesView = new CollectionViewSource { Source = PesadasAllCollection }.View;
+                PesadasPendientesView.Filter = o =>
                 {
-                    p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                    p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
-                }
+                    XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
+                /*return p.PESO_BRUTO == null
+                       || p.PESO_TARA == null;*/
+                    return !p.ESTADO.Equals("Cerrado");
+                };
+                PesadasPendientesView.SortDescriptions.Add(
+                    new SortDescription("EntryDate", ListSortDirection.Descending));
+                PesadasPendientesView.Refresh();
+
+                PesadasCompletasView = new CollectionViewSource { Source = PesadasAllCollection }.View;
+                PesadasCompletasView.Filter = o =>
+                {
+                    XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
+                /*return p.PESO_BRUTO != null
+                       && p.PESO_TARA != null;*/
+                    return p.ESTADO.Equals("Cerrado");
+                };
+                PesadasCompletasView.SortDescriptions.Add(
+                    new SortDescription("ExitDate", ListSortDirection.Descending));
+                PesadasCompletasView.Refresh();
+                isLoading = false;
             }
-            PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
-            PesadasPendientesView = new CollectionViewSource { Source = PesadasAllCollection }.View;            
-            PesadasPendientesView.Filter = o =>
+            catch (Exception ex)
             {
-                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                return p.PESO_BRUTO == null
-                       || p.PESO_TARA == null;
-            };
-            PesadasPendientesView.SortDescriptions.Add(
-                new SortDescription("EntryDate", ListSortDirection.Descending));
-            PesadasPendientesView.Refresh();
-
-            PesadasCompletasView = new CollectionViewSource { Source = PesadasAllCollection }.View;            
-            PesadasCompletasView.Filter = o =>
-            {
-                XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                return p.PESO_BRUTO != null
-                       && p.PESO_TARA != null;
-            };
-            PesadasCompletasView.SortDescriptions.Add(
-                new SortDescription("ExitDate", ListSortDirection.Descending));
-            PesadasCompletasView.Refresh();
+                StatusMessage = ex.ToString();
+            }
         }
 
         public void SelectedInventoryItemChanged()
@@ -183,14 +190,29 @@ namespace CinBascula.ViewModels
                     EstabsCollection = EstabsAPCollection;                        
                     break;
                 }
+                SelectedOrganisationChanged();
             }            
         }
 
-            public void SelectedOrganisationChanged()
+        public void SelectedOrganisationChanged()
         {            
             if (SelectedOrganisation != null)
             {
-                PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));                
+                if (SelectedTipoActividad != null)
+                {
+                    switch (SelectedTipoActividad.Id)
+                    {
+                        case 1L:
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
+                            break;
+                        case 2L:
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosCargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
+                            break;
+                        default:
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
+                            break;
+                    }
+                }                
             }
         }
 
@@ -202,12 +224,27 @@ namespace CinBascula.ViewModels
             }
         }
 
+        public void CreateNewPesada()
+        {
+            reset();
+            PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
+            NewPesada = true;
+            BtnBrutoIsEnabled = true;
+            BtnTaraIsEnabled = true;
+            BtnGuardarIsEnabled = true;
+        }
+
         public void SelectedPesadaPendientesChanged()
         {
-            if (SelectedPesadaPendiente != null)
+            if (!isLoading && SelectedPesadaPendiente != null)
             {
-                reset();
-                PesadaActual = SelectedPesadaPendiente;
+                //reset();
+                PesadaActual = oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
+                if (!PesadaActual.ESTADO.Equals("Completo"))
+                {
+                    //MessageBox.Show("Aun no hay datos de calidad registradas.");                    
+                    //return;
+                }
                 SelectedInventoryItem = InventoryItemsCollection.FirstOrDefault(i => i.INVENTORY_ITEM_ID.Equals(PesadaActual.INVENTORY_ITEM_ID));
                 SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.TIPO_ACTIVIDAD));
                 SelectedOrganisation = OrganisationsCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ORGANIZATION_ID));
@@ -232,12 +269,26 @@ namespace CinBascula.ViewModels
                 {
                     PesoBruto = PesadaActual.PESO_BRUTO;
                     BtnBrutoIsEnabled = false;
-                    BtnTaraIsEnabled = true;
+                    if (PesadaActual.ESTADO.Equals("Completo"))
+                    {
+                        BtnTaraIsEnabled = true;
+                    }
+                    else
+                    {
+                        BtnTaraIsEnabled = false;
+                    }
                 }
                 if (PesadaActual.PESO_TARA != null)
                 {
                     PesoTara = PesadaActual.PESO_TARA;
-                    BtnBrutoIsEnabled = true;
+                    if (PesadaActual.ESTADO.Equals("Completo"))
+                    {
+                        BtnBrutoIsEnabled = true;
+                    }
+                    else
+                    {
+                        BtnBrutoIsEnabled = false;
+                    }
                     BtnTaraIsEnabled = false;
                 }
                 BtnGuardarIsEnabled = true;
@@ -359,7 +410,10 @@ namespace CinBascula.ViewModels
             SelectedEstab = null;
             SelectedContrato = null;
             SelectedLote = null;
-            //UpdateLotePanel();            
+            UpdateLotePanel();
+            UpdateContratoPanel();
+
+            SelectedPesadaPendiente = null;
 
             AutoBascula = true;
 
@@ -370,7 +424,7 @@ namespace CinBascula.ViewModels
 
         private void serialStart()
         {
-            serialPort.PortName = "COM1";
+           /* serialPort.PortName = "COM1";
             serialPort.BaudRate = 9600;
             serialPort.DataBits = 8;
             serialPort.Parity = Parity.None;
@@ -379,7 +433,8 @@ namespace CinBascula.ViewModels
             serialPort.ReadBufferSize = 64;
             serialPort.Open();
             serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(SerialPortRecieve);
-        }
+    */    
+    }
 
         private void serialStop()
         {
@@ -393,7 +448,7 @@ namespace CinBascula.ViewModels
         {
             try
             {
-                PesoActual = int.Parse(serialPort.ReadLine().Substring(0, 4).Trim());
+      //          PesoActual = int.Parse(serialPort.ReadLine().Substring(0, 4).Trim());
             }
             catch (Exception ex)
             {
