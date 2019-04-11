@@ -22,9 +22,7 @@ namespace CinBascula
     {
         public event PropertyChangedEventHandler PropertyChanged;
         MainViewModel viewModel = new MainViewModel();                        
-
         
-                        
         public MainWindow()
         {
 
@@ -70,8 +68,6 @@ namespace CinBascula
         {
             viewModel.CreateNewPesada();
             
-            
-
             InventoryItemsAutoCompleteComboBox.IsEnabled = true;
             TipoActividadAutoCompleteComboBox.IsEnabled = true;
             OrganisationAutoCompleteComboBox.IsEnabled = true;
@@ -80,6 +76,12 @@ namespace CinBascula
             EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
             ContratoAutoCompleteComboBox.IsEnabled = true;
             LoteAutoCompleteComboBox.IsEnabled = true;
+        }
+
+        private void BtnCancelar_Click(object sender, RoutedEventArgs e)
+        {            
+            viewModel.loadData();
+            reset();
         }
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -125,12 +127,21 @@ namespace CinBascula
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.CreateNewLote();
+            viewModel.CreateNewLoteAlgodon();
         }
 
         private void ButtonStatus_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(viewModel.StatusMessage);
+        }
+
+        private void ClearBrutoBtn_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.PesoBruto = 0;
+        }
+        private void ClearTaraBtn_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.PesoTara = 0;
         }
     }
 }

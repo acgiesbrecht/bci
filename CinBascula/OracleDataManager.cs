@@ -156,10 +156,10 @@ namespace CinBascula
         public List<XX_OPM_BCI_LOTE> GetLotesDAE()
         {
             using (var dbConnection = GetConnection())
-            {
-                var param = new DynamicParameters();
-                //param.Add("ESTAB", EstablecimientoCodigo);
-                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL ORDER BY LOTE", param).Result.ToList();
+            {                
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL " +
+                    " WHERE LENGTH (LOTE) > 11" +
+                    " ORDER BY LOTE").Result.ToList();
             }
         }
 

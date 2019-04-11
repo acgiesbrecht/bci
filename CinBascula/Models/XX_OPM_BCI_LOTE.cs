@@ -12,21 +12,24 @@ namespace CinBascula.Models
         
         [ExplicitKey]
         public string ID { get; set; }
-        public string Year { get
+        public string Descripcion
+        {
+            get
             {
-                return ID.Substring(0, 2);
+                if (ID.Length == 11)
+                {
+                    return ID.Substring(3, 3);
+                }
+                else
+                {
+                    return ID;
+                }                
             }
-        }
-        public string LoteCodigo { get
-            {
-                return ID.Substring(3, 3);
-            }
-        }
+        }        
 
         public override string ToString()
         {
-            return ID;
+            return Descripcion;
         }
-
     }
 }
