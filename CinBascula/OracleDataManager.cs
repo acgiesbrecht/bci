@@ -133,8 +133,8 @@ namespace CinBascula
             using (var dbConnection = GetConnection())
             {
                 var param = new DynamicParameters();
-                param.Add("ESTAB", estab);
-                param.Add("INVENTORY_ITEM_ID", item);
+                param.Add("ESTAB", estab.Id);
+                param.Add("INVENTORY_ITEM_ID", item.INVENTORY_ITEM_ID);
                 return dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
                     "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
                     "AND PROVEEDOR = :ESTAB " +

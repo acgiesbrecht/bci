@@ -35,6 +35,7 @@ namespace CinBascula.ViewModels
 
         public XX_OPM_BCI_TIPO_ACTIVIDAD SelectedTipoActividad { get; set; }
         public ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD> TiposActividadCollection { get; set; }
+        public ICollectionView TiposActividadView { get; set; }
         public XX_OPM_BCI_ORGS_COMPLEJO SelectedOrganisation { get; set; }
         public ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO> OrganisationsCollection { get; set; }        
         public string SelectedMatricula { get; set; }
@@ -96,9 +97,11 @@ namespace CinBascula.ViewModels
                 {
                     XX_OPM_BCI_ITEMS_V p = o as XX_OPM_BCI_ITEMS_V;                    
                     return p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM);
-                };                
+                };
+                InventoryItemsView.Refresh();
 
                 TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+                
                 OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
                 PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
                 PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
@@ -166,13 +169,21 @@ namespace CinBascula.ViewModels
         {
             if (SelectedInventoryItem != null)
             {
-                SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
+                TiposActividadView = new CollectionViewSource { Source = TiposActividadCollection }.View;
+                TiposActividadView.Filter = o =>
+                {
+                    XX_OPM_BCI_TIPO_ACTIVIDAD p = o as XX_OPM_BCI_TIPO_ACTIVIDAD;
+                    bool res = InventoryItemsCollection.Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID).Any(a => a.TIPO_ACTIVIDAD == p.Id);
+                    return res; 
+                };
+                //InventoryItemsView.Refresh();
+
+                //SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
+                SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD) TiposActividadView.CurrentItem;
                 SelectedOrganisation = OrganisationsCollection.FirstOrDefault(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
             }
-            if (SelectedEstab != null && SelectedInventoryItem != null)
-            {
-                UpdateLotePanel();
-            }
+            UpdateLotePanel();
+            UpdateContratoPanel();
         }
 
         public void SelectedTipoActividadChanged()
@@ -229,11 +240,9 @@ namespace CinBascula.ViewModels
         }
 
         public void SelectedEstabChanged()
-        {
-            if (SelectedEstab != null && SelectedInventoryItem != null)
-            {
-                UpdateLotePanel();
-            }
+        {            
+            UpdateLotePanel();
+            UpdateContratoPanel();
         }
 
         public void CreateNewPesada()
@@ -375,6 +384,7 @@ namespace CinBascula.ViewModels
                     {
                         PesadaActual.LOTE = SelectedLote.ID;
                     }
+                    PesadaActual.OBSERVACIONES = SelectedObervaciones;
                     if (PesoBruto != null)
                     {
                         PesadaActual.PESO_BRUTO = PesoBruto;
@@ -390,6 +400,7 @@ namespace CinBascula.ViewModels
                     oracleDataManager.insertNewPesada(PesadaActual);
                 }
                 else if(UpdatePesada){
+                    PesadaActual.OBSERVACIONES = SelectedObervaciones;
                     if (PesadaActual.PESO_BRUTO == null && PesoBruto != null)
                     {
                         PesadaActual.PESO_BRUTO = PesoBruto;

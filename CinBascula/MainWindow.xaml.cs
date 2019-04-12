@@ -76,6 +76,7 @@ namespace CinBascula
             EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
             ContratoAutoCompleteComboBox.IsEnabled = true;
             LoteAutoCompleteComboBox.IsEnabled = true;
+            ObservacionesTextBox.IsEnabled = true;
         }
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)

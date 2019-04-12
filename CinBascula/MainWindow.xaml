@@ -102,7 +102,7 @@
                         <dotNetKitControls:AutoCompleteComboBox
                             Name="TipoActividadAutoCompleteComboBox"
                             Width="200"
-                            ItemsSource="{Binding TiposActividadCollection}"
+                            ItemsSource="{Binding TiposActividadView}"
                             SelectedItem="{Binding SelectedTipoActividad}"
                             SelectionChanged="TipoActividadAutoCompleteComboBox_SelectionChanged"
                             TextSearch.TextPath="Description">
@@ -209,9 +209,6 @@
                                 <DataTemplate>
                                     <StackPanel>
                                         <TextBlock FontWeight="Bold" Text="{Binding NRO_CONTRATO}" />
-                                        <TextBlock>
-                                            Codigo =<Run Text="{Binding NRO_CONTRATO, Mode=OneTime}" />
-                                            .</TextBlock>
                                     </StackPanel>
                                 </DataTemplate>
                             </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
@@ -247,7 +244,10 @@
                     </StackPanel>
                     <StackPanel Style="{StaticResource PanelStyle}">
                         <Label Style="{StaticResource LabelColumnStyle}">Observaciones</Label>
-                        <TextBox Width="450" Text="{Binding SelectedObervaciones}" />
+                        <TextBox
+                            Name="ObservacionesTextBox"
+                            Width="450"
+                            Text="{Binding SelectedObervaciones}" />
                     </StackPanel>
                     <StackPanel Style="{StaticResource PanelStyle}" />
                 </StackPanel>
@@ -374,146 +374,151 @@
             </StackPanel>
 
             <Separator Height="10" />
-            <StackPanel Style="{StaticResource PanelStyle}">
-                <TabControl Margin="5">
-                    <TabItem Header="Pendientes">
-                        <DataGrid
-                            Name="PesadasPendientesDataGrid"
-                            Height="260"
-                            Margin="0,0,0,0"
-                            AutoGenerateColumns="False"
-                            CanUserAddRows="False"
-                            FontSize="12"
-                            IsReadOnly="True"
-                            ItemsSource="{Binding PesadasPendientesView}"
-                            SelectedItem="{Binding SelectedPesadaPendiente}"
-                            SelectionChanged="PesadasPendientesDataGrid_SelectionChanged"
-                            SelectionMode="Single"
-                            Style="{StaticResource AzureDataGrid}"
-                            VerticalScrollBarVisibility="Visible">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn
-                                    Width="50"
-                                    Binding="{Binding PESADA_ID}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="ID" />
-                                <DataGridTextColumn
-                                    Width="100"
-                                    Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Fecha/Hora" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    Binding="{Binding MATRICULA}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Chapa" />
-                                <DataGridTextColumn
-                                    Width="200"
-                                    Binding="{Binding InventoryItem}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Articulo" />
-                                <DataGridTextColumn
-                                    Width="410"
-                                    Binding="{Binding Establecimiento}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Establecimiento" />
-                                <DataGridTextColumn
-                                    Width="70"
-                                    Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Bruto">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Right" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridTextColumn
-                                    Width="70"
-                                    Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Tara">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Right" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                            </DataGrid.Columns>
 
-                        </DataGrid>
-                    </TabItem>
-                    <TabItem Header="Completas">
-                        <DataGrid
-                            Name="PesadasCompletasDataGrid"
-                            Height="260"
-                            Margin="0,0,0,0"
-                            AutoGenerateColumns="False"
-                            CanUserAddRows="False"
-                            FontSize="12"
-                            IsReadOnly="True"
-                            ItemsSource="{Binding PesadasCompletasView}"
-                            SelectionMode="Single"
-                            Style="{StaticResource AzureDataGrid}"
-                            VerticalScrollBarVisibility="Visible">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn
-                                    Width="50"
-                                    Binding="{Binding PESADA_ID}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="ID" />
-                                <DataGridTextColumn
-                                    Width="100"
-                                    Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Fecha/Hora" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    Binding="{Binding MATRICULA}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Chapa" />
-                                <DataGridTextColumn
-                                    Width="200"
-                                    Binding="{Binding InventoryItem}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Articulo" />
-                                <DataGridTextColumn
-                                    Width="410"
-                                    Binding="{Binding Establecimiento}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Establecimiento" />
-                                <DataGridTextColumn
-                                    Width="70"
-                                    Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Bruto">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Right" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                                <DataGridTextColumn
-                                    Width="70"
-                                    Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
-                                    ClipboardContentBinding="{x:Null}"
-                                    Header="Tara">
-                                    <DataGridTextColumn.ElementStyle>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="HorizontalAlignment" Value="Right" />
-                                        </Style>
-                                    </DataGridTextColumn.ElementStyle>
-                                </DataGridTextColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </TabItem>
-                </TabControl>
-            </StackPanel>
         </StackPanel>
-        <StatusBar DockPanel.Dock="Bottom">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" />
-            </StatusBarItem>
-        </StatusBar>
+        <StackPanel
+            DockPanel.Dock="Bottom"
+            Grid.IsSharedSizeScope="True"
+            Orientation="Vertical">
+            <TabControl Margin="5">
+                <TabItem Header="Pendientes">
+                    <DataGrid
+                        Name="PesadasPendientesDataGrid"
+                        Height="260"
+                        Margin="0,0,0,0"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        FontSize="12"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding PesadasPendientesView}"
+                        SelectedItem="{Binding SelectedPesadaPendiente}"
+                        SelectionChanged="PesadasPendientesDataGrid_SelectionChanged"
+                        SelectionMode="Single"
+                        Style="{StaticResource AzureDataGrid}"
+                        VerticalScrollBarVisibility="Visible">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="50"
+                                Binding="{Binding PESADA_ID}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="ID" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Fecha/Hora" />
+                            <DataGridTextColumn
+                                Width="60"
+                                Binding="{Binding MATRICULA}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Chapa" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding InventoryItem}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Articulo" />
+                            <DataGridTextColumn
+                                Width="410"
+                                Binding="{Binding Establecimiento}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Establecimiento" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Bruto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Tara">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Completas">
+                    <DataGrid
+                        Name="PesadasCompletasDataGrid"
+                        Height="260"
+                        Margin="0,0,0,0"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        FontSize="12"
+                        IsReadOnly="True"
+                        ItemsSource="{Binding PesadasCompletasView}"
+                        SelectionMode="Single"
+                        Style="{StaticResource AzureDataGrid}"
+                        VerticalScrollBarVisibility="Visible">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="50"
+                                Binding="{Binding PESADA_ID}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="ID" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding EntryDate, StringFormat=\{0:dd/MM/yy HH:mm\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Fecha/Hora" />
+                            <DataGridTextColumn
+                                Width="60"
+                                Binding="{Binding MATRICULA}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Chapa" />
+                            <DataGridTextColumn
+                                Width="200"
+                                Binding="{Binding InventoryItem}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Articulo" />
+                            <DataGridTextColumn
+                                Width="410"
+                                Binding="{Binding Establecimiento}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Establecimiento" />
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Bruto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="70"
+                                Binding="{Binding PESO_TARA, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Tara">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+            <StatusBar>
+                <StatusBarItem>
+                    <TextBlock Text="{Binding StatusMessage}" />
+                </StatusBarItem>
+            </StatusBar>
+        </StackPanel>
+
     </DockPanel>
 </Controls:MetroWindow>
