@@ -83,10 +83,12 @@ namespace CinBascula
         {            
             viewModel.loadData();
             reset();
+            viewModel.resetEditFields();
         }
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            //reset();
             viewModel.SelectedPesadaPendientesChanged();
         }
 
@@ -104,7 +106,7 @@ namespace CinBascula
 
         private void reset()
         {
-            viewModel.reset();            
+            viewModel.resetEditFields();            
 
             //InventoryItemsAutoCompleteComboBox.SelectedIndex = -1;
             InventoryItemsAutoCompleteComboBox.IsEnabled = false;

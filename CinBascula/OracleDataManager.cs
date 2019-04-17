@@ -19,6 +19,10 @@ namespace CinBascula
         {            
                 using (var dbConnection = GetConnection())
                 {
+                dbConnection.Open();                
+                OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
+                oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
+                dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_ITEMS_V>("Select * FROM APPS.XX_OPM_BCI_ITEMS_V ORDER BY DESCRIPCION_ITEM").Result.ToList();
                 }            
         }
@@ -107,6 +111,10 @@ namespace CinBascula
         {
             using (var dbConnection = GetConnection())
             {
+                dbConnection.Open();
+                OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
+                oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
+                dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
                     "FROM XX_OPM_BCI_PESADAS_ALL p " +
                     "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
@@ -120,6 +128,10 @@ namespace CinBascula
             {
                 var param = new DynamicParameters();
                 param.Add("PESADA_ID", id);
+                dbConnection.Open();
+                OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
+                oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
+                dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
                     "FROM XX_OPM_BCI_PESADAS_ALL p " +
                     "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
@@ -238,12 +250,14 @@ namespace CinBascula
             }
         }
 
-        public IDbConnection GetConnection()
+        public OracleConnection GetConnection()
         {
             const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
-            var connection = new OracleConnection(connectionString);
+            var connection = new OracleConnection(connectionString);            
             return connection;
         }
+        
+        //alter session set nls_language = 'LATIN AMERICAN SPANISH';
 
     }
 }

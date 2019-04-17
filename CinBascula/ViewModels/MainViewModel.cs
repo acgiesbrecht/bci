@@ -82,7 +82,8 @@ namespace CinBascula.ViewModels
 
         public MainViewModel()
         {
-            reset();
+            resetEditFields();
+            resetTables();
             loadData();                        
         }        
 
@@ -92,13 +93,7 @@ namespace CinBascula.ViewModels
             {
                 isLoading = true;
                 InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-                InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection }.View;
-                InventoryItemsView.Filter = o =>
-                {
-                    XX_OPM_BCI_ITEMS_V p = o as XX_OPM_BCI_ITEMS_V;                    
-                    return p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM);
-                };
-                InventoryItemsView.Refresh();
+                InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;                
 
                 TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
                 
@@ -169,14 +164,11 @@ namespace CinBascula.ViewModels
         {
             if (SelectedInventoryItem != null)
             {
-                TiposActividadView = new CollectionViewSource { Source = TiposActividadCollection }.View;
-                TiposActividadView.Filter = o =>
-                {
-                    XX_OPM_BCI_TIPO_ACTIVIDAD p = o as XX_OPM_BCI_TIPO_ACTIVIDAD;
-                    bool res = InventoryItemsCollection.Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID).Any(a => a.TIPO_ACTIVIDAD == p.Id);
-                    return res; 
-                };
-                //InventoryItemsView.Refresh();
+                TiposActividadView = new CollectionViewSource {
+                    Source = TiposActividadCollection
+                    .Where(p => InventoryItemsCollection
+                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                        .Any(a => a.TIPO_ACTIVIDAD == p.Id)) }.View;                
 
                 //SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
                 SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD) TiposActividadView.CurrentItem;
@@ -226,15 +218,16 @@ namespace CinBascula.ViewModels
                     switch (SelectedTipoActividad.Id)
                     {
                         case 1L:
-                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));                            
                             break;
                         case 2L:
-                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosCargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosCargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));                            
                             break;
                         default:
                             PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
                             break;
                     }
+                    SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault();
                 }                
             }
         }
@@ -247,7 +240,8 @@ namespace CinBascula.ViewModels
 
         public void CreateNewPesada()
         {
-            reset();            
+            resetEditFields();
+            resetTables();
             PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
             NewPesada = true;
             BtnBrutoIsEnabled = true;
@@ -258,7 +252,8 @@ namespace CinBascula.ViewModels
         public void SelectedPesadaPendientesChanged()
         {
             if (!isLoading && SelectedPesadaPendiente != null)
-            {                
+            {
+                resetEditFields();
                 PesadaActual = oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
                 if (!PesadaActual.ESTADO.Equals("Completo"))
                 {
@@ -286,31 +281,17 @@ namespace CinBascula.ViewModels
                     UpdateLotePanel();                    
                 }
                 SelectedObervaciones = PesadaActual.OBSERVACIONES;
+                PesoBruto = PesadaActual.PESO_BRUTO;
                 if (PesadaActual.PESO_BRUTO != null)
-                {
-                    PesoBruto = PesadaActual.PESO_BRUTO;
+                {                    
                     BtnBrutoIsEnabled = false;
-                    if (PesadaActual.ESTADO.Equals("Completo"))
-                    {
-                        BtnTaraIsEnabled = true;
-                    }
-                    else
-                    {
-                        BtnTaraIsEnabled = false;
-                    }
+                    BtnTaraIsEnabled = PesadaActual.ESTADO.Equals("Completo");                    
                 }
+                PesoTara = PesadaActual.PESO_TARA;
                 if (PesadaActual.PESO_TARA != null)
-                {
-                    PesoTara = PesadaActual.PESO_TARA;
-                    if (PesadaActual.ESTADO.Equals("Completo"))
-                    {
-                        BtnBrutoIsEnabled = true;
-                    }
-                    else
-                    {
-                        BtnBrutoIsEnabled = false;
-                    }
+                {                    
                     BtnTaraIsEnabled = false;
+                    BtnBrutoIsEnabled = PesadaActual.ESTADO.Equals("Completo");                                        
                 }
                 BtnGuardarIsEnabled = true;
                 UpdatePesada = true;
@@ -416,12 +397,13 @@ namespace CinBascula.ViewModels
                     PesadaActual.LAST_UPDATE_DATE = DateTime.Now;
                     oracleDataManager.updatePesada(PesadaActual);
                 }
-                reset();
+                resetEditFields();
+                resetTables();
                 loadData();
             }          
             }
 
-        public void reset()
+        public void resetEditFields()
         {
             UpdatePesada = false;
             NewPesada = false;
@@ -441,13 +423,16 @@ namespace CinBascula.ViewModels
             UpdateLotePanel();
             UpdateContratoPanel();
 
-            SelectedPesadaPendiente = null;
-
             AutoBascula = true;
 
             BtnBrutoIsEnabled = false;
             BtnTaraIsEnabled = false;
             BtnGuardarIsEnabled = false;            
+        }
+
+        public void resetTables()
+        {
+            SelectedPesadaPendiente = null;
         }
 
         private void serialStart()
