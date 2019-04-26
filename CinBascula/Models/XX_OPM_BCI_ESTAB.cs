@@ -16,6 +16,7 @@ namespace CinBascula.Models
         public string RazonSocial { get; set; }
         public string Descripcion { get; set; }
         public string RUC { get; set; }        
+        public string ES_SOCIO { get; set; }
         public string Description => RazonSocial + AdditionalData;
         public string AdditionalData {
             get { 

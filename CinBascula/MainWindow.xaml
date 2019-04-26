@@ -118,12 +118,12 @@
                             </dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                         </dotNetKitControls:AutoCompleteComboBox>
                     </StackPanel>
-                    <StackPanel Style="{StaticResource PanelStyle}">
+                    <StackPanel Style="{StaticResource PanelStyle}" Visibility="{Binding OrganisationVisibility}" >
                         <Label Style="{StaticResource LabelColumnStyle}">Organizacion</Label>
                         <dotNetKitControls:AutoCompleteComboBox
                             Name="OrganisationAutoCompleteComboBox"
                             Width="300"
-                            ItemsSource="{Binding OrganisationsCollection}"
+                            ItemsSource="{Binding OrganisationsView}"
                             SelectedItem="{Binding SelectedOrganisation}"
                             SelectionChanged="OrganisationAutoCompleteComboBox_SelectionChanged"
                             TextSearch.TextPath="Description">
@@ -140,7 +140,7 @@
                         </dotNetKitControls:AutoCompleteComboBox>
                     </StackPanel>
                     <StackPanel Style="{StaticResource PanelStyle}" Visibility="{Binding PuntoOperacionVisibility}">
-                        <Label Content="{Binding PuntoOperacionLabel}" Style="{StaticResource LabelColumnStyle}" />
+                        <Label Name="PuntoOperacionLabel" Content="{Binding PuntoOperacionLabel}" Style="{StaticResource LabelColumnStyle}" />
                         <dotNetKitControls:AutoCompleteComboBox
                             Name="PuntosOperacionAutoCompleteComboBox"
                             Width="150"
@@ -168,7 +168,7 @@
                             ValueDataType="{x:Type s:String}"
                             Value="{Binding SelectedMatricula}" />
                     </StackPanel>
-                    <StackPanel Style="{StaticResource PanelStyle}">
+                    <StackPanel Style="{StaticResource PanelStyle}" Visibility="{Binding EstablecimientoVisibility}" >
                         <Label
                             x:Name="TipoEstablecimientoLabel"
                             Content="{Binding EstablecimientoLabel}"

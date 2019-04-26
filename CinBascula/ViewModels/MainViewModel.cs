@@ -27,8 +27,7 @@ namespace CinBascula.ViewModels
         public int? PesoTara { get; set; }
 
         private SerialPort serialPort = new SerialPort();
-        public OracleDataManager oracleDataManager = new OracleDataManager();
-
+        public OracleDataManager oracleDataManager = new OracleDataManager();        
         public XX_OPM_BCI_ITEMS_V SelectedInventoryItem { get; set; }
         public ObservableCollection<XX_OPM_BCI_ITEMS_V> InventoryItemsCollection { get; set; }
         public ICollectionView InventoryItemsView { get; set; }
@@ -36,8 +35,10 @@ namespace CinBascula.ViewModels
         public XX_OPM_BCI_TIPO_ACTIVIDAD SelectedTipoActividad { get; set; }
         public ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD> TiposActividadCollection { get; set; }
         public ICollectionView TiposActividadView { get; set; }
+        public Visibility OrganisationVisibility { get; set; }
         public XX_OPM_BCI_ORGS_COMPLEJO SelectedOrganisation { get; set; }
-        public ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO> OrganisationsCollection { get; set; }        
+        public ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO> OrganisationsCollection { get; set; }
+        public ICollectionView OrganisationsView { get; set; }
         public string SelectedMatricula { get; set; }
         public Visibility PuntoOperacionVisibility { get; set; }
         public string PuntoOperacionLabel { get; set; }
@@ -48,6 +49,8 @@ namespace CinBascula.ViewModels
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsAPCollection { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsARCollection { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabServiciosCollection { get; set; }
+
+        public Visibility EstablecimientoVisibility { get; set; }
         public string EstablecimientoLabel { get; set; }
         public XX_OPM_BCI_ESTAB SelectedEstab { get; set; }
         public ObservableCollection<XX_OPM_BCI_ESTAB> EstabsCollection { get; set; }
@@ -164,49 +167,105 @@ namespace CinBascula.ViewModels
         {
             if (SelectedInventoryItem != null)
             {
-                TiposActividadView = new CollectionViewSource {
-                    Source = TiposActividadCollection
-                    .Where(p => InventoryItemsCollection
-                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
-                        .Any(a => a.TIPO_ACTIVIDAD == p.Id)) }.View;                
-
-                //SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(t => t.Id == SelectedInventoryItem.TIPO_ACTIVIDAD);
-                SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD) TiposActividadView.CurrentItem;
-                SelectedOrganisation = OrganisationsCollection.FirstOrDefault(o => o.Id == SelectedInventoryItem.ORGANIZATION_ID);                
+                UpdateTiposActividadPanel();
+                UpdateOrganisationPanel();
             }
             UpdateLotePanel();
             UpdateContratoPanel();
         }
 
+        private void UpdateTiposActividadPanel()
+        {
+            TiposActividadView = new CollectionViewSource
+            {
+                Source = TiposActividadCollection
+                    .Where(p => InventoryItemsCollection
+                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                        .Any(a => a.TIPO_ACTIVIDAD == p.Id))
+            }.View;
+            SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD)TiposActividadView.CurrentItem;
+        }
+
         public void SelectedTipoActividadChanged()
         {
             if (SelectedTipoActividad != null)
-            {                
+            {
+                BtnTaraIsEnabled = true;
+                BtnBrutoIsEnabled = true;
                 switch (SelectedTipoActividad.Id)
                 {
                     case 1L:
-                    EstablecimientoLabel = "Proveedor";
-                    PuntoOperacionLabel = "Punto de Descarga";
-                    EstabsCollection = EstabsAPCollection;
+                        OrganisationVisibility = Visibility.Visible;
+                        PuntoOperacionLabel = "Punto de Descarga";
+                        PuntoOperacionVisibility = Visibility.Visible;
+                        EstablecimientoLabel = "Proveedor";
+                        EstablecimientoVisibility = Visibility.Visible;
+                        EstabsCollection = EstabsAPCollection;
+                        if (NewPesada)
+                        {                            
+                            BtnTaraIsEnabled = false;
+                        }
                         break;
                     case 2L:
-                    EstablecimientoLabel = "Cliente";
+                        OrganisationVisibility = Visibility.Visible;
+                        PuntoOperacionLabel = "Punto de Carga";
+                        PuntoOperacionVisibility = Visibility.Visible;
+                        EstablecimientoLabel = "Cliente";
+                        EstablecimientoVisibility = Visibility.Visible;                                                
                         EstabsCollection = EstabsARCollection;
-                    PuntoOperacionLabel = "Punto de Carga";
-                    break;
+                        if (NewPesada)
+                        {                            
+                            BtnBrutoIsEnabled = false;
+                        }
+                        break;
                     case 3L:
-                        EstablecimientoLabel = "";                        
+                        OrganisationVisibility = Visibility.Hidden;
+                        EstablecimientoVisibility = Visibility.Hidden;
                         EstabsCollection = EstabServiciosCollection;
-                        PuntoOperacionLabel = "";
+                        PuntoOperacionVisibility = Visibility.Hidden;                        
                         break;
                     default:
-                    EstablecimientoLabel = "Establecimiento";
-                    PuntoOperacionLabel = "Punto de Descarga";
-                    EstabsCollection = EstabsAPCollection;                        
-                    break;
+                        OrganisationVisibility = Visibility.Visible;
+                        PuntoOperacionLabel = "Punto de Descarga";
+                        PuntoOperacionVisibility = Visibility.Visible;
+                        EstablecimientoLabel = "Establecimiento";
+                        EstablecimientoVisibility = Visibility.Visible;
+                        EstabsCollection = EstabsAPCollection;
+                        break;
                 }
-                SelectedOrganisationChanged();
+                //SelectedOrganisationChanged();
+                UpdateOrganisationPanel();
             }            
+        }
+
+        private void UpdateOrganisationPanel()
+        {                        
+            if (SelectedTipoActividad != null)
+            {
+                OrganisationsView = new CollectionViewSource
+                {
+                    Source = OrganisationsCollection
+                    .Where(p => InventoryItemsCollection
+                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                        .Any(a => a.ORGANIZATION_ID == p.Id)
+                        )
+                    .Where(p => InventoryItemsCollection
+                        .Where(i => i.TIPO_ACTIVIDAD == SelectedTipoActividad.Id)
+                        .Any(a => a.ORGANIZATION_ID == p.Id))
+                }.View;
+            }
+            else
+            {
+                OrganisationsView = new CollectionViewSource
+                {
+                    Source = OrganisationsCollection
+                    .Where(p => InventoryItemsCollection
+                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                        .Any(a => a.ORGANIZATION_ID == p.Id)                        
+                        )
+                }.View;
+            }
+            SelectedOrganisation = (XX_OPM_BCI_ORGS_COMPLEJO)OrganisationsView.CurrentItem;
         }
 
         public void SelectedOrganisationChanged()
@@ -246,7 +305,7 @@ namespace CinBascula.ViewModels
             NewPesada = true;
             BtnBrutoIsEnabled = true;
             BtnTaraIsEnabled = true;
-            BtnGuardarIsEnabled = true;
+            BtnGuardarIsEnabled = true;            
         }
 
         public void SelectedPesadaPendientesChanged()
@@ -257,8 +316,8 @@ namespace CinBascula.ViewModels
                 PesadaActual = oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
                 if (!PesadaActual.ESTADO.Equals("Completo"))
                 {
-                    //MessageBox.Show("Aun no hay datos de calidad registradas.");                    
-                    //return;
+                    MessageBox.Show("Aun no hay datos de calidad registradas.");                    
+                    return;
                 }
                 SelectedInventoryItem = InventoryItemsCollection.FirstOrDefault(i => i.INVENTORY_ITEM_ID.Equals(PesadaActual.INVENTORY_ITEM_ID));
                 SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.TIPO_ACTIVIDAD));
@@ -301,14 +360,21 @@ namespace CinBascula.ViewModels
         private void UpdateContratoPanel()
         {
             ContratoVisibility = Visibility.Hidden;
-            if (SelectedInventoryItem != null && SelectedEstab != null)
+            if (SelectedInventoryItem != null && SelectedEstab != null && SelectedTipoActividad.Id == 1)
             {                
                 ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratoByEstablecimientoAndItem(SelectedEstab, SelectedInventoryItem));
                 if (ContratosCollection.Count > 0)
                 {
                     ContratoVisibility = Visibility.Visible;
-                }
-                SelectedContrato = ContratosCollection.FirstOrDefault(i => i.NRO_CONTRATO.Equals(PesadaActual.CONTRATO));                
+                    if(PesadaActual.CONTRATO != null)
+                    {
+                        SelectedContrato = ContratosCollection.FirstOrDefault(i => i.NRO_CONTRATO.Equals(PesadaActual.CONTRATO));
+                    }
+                    else
+                    {
+                        SelectedContrato = ContratosCollection.ElementAtOrDefault(0);
+                    }                    
+                }                
             }
         }
 
@@ -316,11 +382,16 @@ namespace CinBascula.ViewModels
         {
             LoteVisibility = Visibility.Hidden;
             NewLoteBtnVisibility = Visibility.Hidden;
-            if (SelectedInventoryItem != null && SelectedEstab != null){ 
+            LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>();
+            if (SelectedInventoryItem != null && SelectedEstab != null && SelectedTipoActividad.Id == 1)
+            {                
                 if (SelectedInventoryItem.CODIGO_ITEM.Equals("050.002198"))
                 {
                     LoteVisibility = Visibility.Visible;
-                    NewLoteBtnVisibility = Visibility.Visible;
+                    if (NewPesada)
+                    {
+                        NewLoteBtnVisibility = Visibility.Visible;
+                    }                    
                     LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesAlgodonByEstablecimiento(SelectedEstab.Id));
                     SelectedLote = LotesCollection.FirstOrDefault(i => i.ID.Equals(PesadaActual.LOTE));
                 }
@@ -328,7 +399,8 @@ namespace CinBascula.ViewModels
                 {
                     LoteVisibility = Visibility.Visible;
                     LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>(oracleDataManager.GetLotesDAE());
-                }
+                    SelectedLote = LotesCollection.FirstOrDefault(i => i.ID.Equals(PesadaActual.LOTE));
+                }                
             }            
         }
 
@@ -348,7 +420,7 @@ namespace CinBascula.ViewModels
 
         public void Save(){
             if (PesadaActual!=null)
-            {
+            {                
                 if (NewPesada)
                 {
                     PesadaActual.INVENTORY_ITEM_ID = SelectedInventoryItem.INVENTORY_ITEM_ID;
@@ -433,6 +505,61 @@ namespace CinBascula.ViewModels
         public void resetTables()
         {
             SelectedPesadaPendiente = null;
+        }
+
+        public Boolean validate()
+        {
+            if (SelectedInventoryItem == null)
+            {
+                MessageBox.Show("Debe seleccionar un articulo");                
+                return false;
+            }
+            if (SelectedTipoActividad == null)
+            {
+                MessageBox.Show("Debe seleccionar un tipo de actividad");                
+                return false;
+            }
+            if (SelectedOrganisation == null)
+            {
+                MessageBox.Show("Debe seleccionar una organizacion");                
+                return false;
+            }
+            if (SelectedPuntoOperacion == null)
+            {
+                MessageBox.Show("Debe seleccionar un " + PuntoOperacionLabel);                
+                return false;
+            }
+            if (SelectedMatricula == null)
+            {
+                MessageBox.Show("Debe ingresar un Nro de Chapa");                
+                return false;
+            }
+            if (SelectedEstab == null)
+            {
+                MessageBox.Show("Debe seleccionar un Establcimiento");                
+                return false;
+            }
+            if (LoteVisibility == Visibility.Visible && SelectedLote == null)
+            {
+                MessageBox.Show("Este articulo requiere asignacion de un Lote");                
+                return false;
+            }            
+            if (SelectedContrato == null && !SelectedEstab.ES_SOCIO.Equals("Si") && SelectedTipoActividad.Id == 1)
+            {
+                MessageBox.Show("Este proveedor debe tener un contrato habilitado");
+                return false;
+            }
+            if((PesoBruto == null && PesoTara == null) && NewPesada)
+            {
+                MessageBox.Show("Debe ingresar por lo menos un peso");
+                return false;
+            }
+            if ((PesoBruto == null || PesoTara == null) && UpdatePesada)
+            {
+                MessageBox.Show("Falta ingresar un peso");
+                return false;
+            }
+            return true;
         }
 
         private void serialStart()

@@ -8,10 +8,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO.Ports;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Deployment.Internal;
+using System.Deployment.Application;
 
 namespace CinBascula
 {
@@ -25,12 +28,20 @@ namespace CinBascula
         
         public MainWindow()
         {
-
             DataContext = viewModel;
             InitializeComponent();
 
             reset();
             //viewModel.loadData();               
+            //this.Title = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+            {
+                this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+            }
+            else
+            {
+                this.Title = "BCI - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            }
         }
         
         private void InventoryItemsAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -88,12 +99,16 @@ namespace CinBascula
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //reset();
+            reset();
             viewModel.SelectedPesadaPendientesChanged();
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
+            if (!viewModel.validate())
+            {
+                return;
+            }
             MessageBoxResult result = MessageBox.Show("Está seguro que desea guardar el registro actual?",
                                           "Confirmation",
                                           MessageBoxButton.YesNo,
@@ -107,26 +122,16 @@ namespace CinBascula
         private void reset()
         {
             viewModel.resetEditFields();            
-
-            //InventoryItemsAutoCompleteComboBox.SelectedIndex = -1;
-            InventoryItemsAutoCompleteComboBox.IsEnabled = false;
-            //TipoActividadAutoCompleteComboBox.SelectedIndex = -1;
-            TipoActividadAutoCompleteComboBox.IsEnabled = false;
-            //OrganisationAutoCompleteComboBox.SelectedIndex = -1;
-            OrganisationAutoCompleteComboBox.IsEnabled = false;
-            //PuntosOperacionAutoCompleteComboBox.SelectedIndex = -1;
-            PuntosOperacionAutoCompleteComboBox.IsEnabled = false;
-            //MatriculaTextBox.Text = null;
-            MatriculaTextBox.IsEnabled = false;
-            //EstablecimientoAutoCompleteComboBox.SelectedIndex = -1;
-            EstablecimientoAutoCompleteComboBox.IsEnabled = false;
-            //ContratoAutoCompleteComboBox.SelectedIndex = -1;
-            ContratoAutoCompleteComboBox.IsEnabled = false;
-            //LoteAutoCompleteComboBox.SelectedIndex = -1;
-            LoteAutoCompleteComboBox.IsEnabled = false;
-            //PesadasPendientesDataGrid.SelectedIndex = -1;
-            //PesoTextBox.Text = null;                        
-        }
+            
+            InventoryItemsAutoCompleteComboBox.IsEnabled = false;            
+            TipoActividadAutoCompleteComboBox.IsEnabled = false;            
+            OrganisationAutoCompleteComboBox.IsEnabled = false;            
+            PuntosOperacionAutoCompleteComboBox.IsEnabled = false;            
+            MatriculaTextBox.IsEnabled = false;            
+            EstablecimientoAutoCompleteComboBox.IsEnabled = false;            
+            ContratoAutoCompleteComboBox.IsEnabled = false;            
+            LoteAutoCompleteComboBox.IsEnabled = false;                   
+        }        
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
         {

@@ -40,7 +40,7 @@ namespace CinBascula
             using (var dbConnection = GetConnection())
             {
                 return dbConnection.QueryAsync<XX_OPM_BCI_ESTAB>(
-                    " Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION as Descripcion, RUC" +
+                    " Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION AS Descripcion, RUC, COALESCE(ES_SOCIO, 'No') AS ES_SOCIO" +
                     " FROM APPS.XX_OPM_BCI_ESTAB_AP_V ORDER BY RAZON_SOCIAL").Result.ToList();
             }
         }
@@ -147,11 +147,21 @@ namespace CinBascula
                 var param = new DynamicParameters();
                 param.Add("ESTAB", estab.Id);
                 param.Add("INVENTORY_ITEM_ID", item.INVENTORY_ITEM_ID);
-                return dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
+                List<XX_OPM_BCI_CONTRATOS_V> result; 
+                result = dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
                     "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
                     "AND PROVEEDOR = :ESTAB " +
                     "AND SYSDATE BETWEEN TO_DATE(FECHA_INICIO_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS') AND TO_DATE(FECHA_FIN_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS')" +
                     "", param).Result.ToList();
+                if (result.Count == 0 && !estab.ES_SOCIO.Equals("Si"))
+                {
+                    result = dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
+                    "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
+                    "AND PROVEEDOR IS NULL " +
+                    "AND SYSDATE BETWEEN TO_DATE(FECHA_INICIO_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS') AND TO_DATE(FECHA_FIN_VIGENCIA, 'YYYY/MM/DD HH24:MI:SS')" +
+                    "", param).Result.ToList();
+                }
+                return result;
             }
         }
 
