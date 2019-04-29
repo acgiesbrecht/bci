@@ -1,6 +1,6 @@
 ﻿using Dapper.Contrib.Extensions;
 
-namespace CinBascula.Models
+namespace BCI.Models
 {
     public class XX_OPM_BCI_CONTRATOS_V
     {

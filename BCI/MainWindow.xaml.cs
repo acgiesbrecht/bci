@@ -1,5 +1,5 @@
-﻿using CinBascula.Models;
-using CinBascula.ViewModels;
+﻿using BCI.Models;
+using BCI.ViewModels;
 using DotNetKit.Windows.Controls;
 using MahApps.Metro.Controls;
 using System;
@@ -15,8 +15,9 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Deployment.Internal;
 using System.Deployment.Application;
+using System.Windows.Media;
 
-namespace CinBascula
+namespace BCI
 {
     /// <summary>
     /// Interaction logic for TestView.xaml
@@ -142,11 +143,6 @@ namespace CinBascula
             viewModel.CreateNewLoteAlgodon();
         }
 
-        private void ButtonStatus_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(viewModel.StatusMessage);
-        }
-
         private void ClearBrutoBtn_Click(object sender, RoutedEventArgs e)
         {
             viewModel.PesoBruto = 0;
@@ -154,6 +150,15 @@ namespace CinBascula
         private void ClearTaraBtn_Click(object sender, RoutedEventArgs e)
         {
             viewModel.PesoTara = 0;
+        }
+
+        private void Hyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.ErrorLinkVisibility = Visibility.Hidden;
+            viewModel.StatusColor = this.WindowTitleBrush;
+            ErrorWindow errorWindow = new ErrorWindow();
+            errorWindow.ActualException = viewModel.ActualException;            
+            errorWindow.ShowDialog();
         }
     }
 }

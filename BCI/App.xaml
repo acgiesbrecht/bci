@@ -1,8 +1,8 @@
 ﻿<Application
-    x:Class="CinBascula.App"
+    x:Class="BCI.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="clr-namespace:CinBascula"
+    xmlns:local="clr-namespace:BCI"
     StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>

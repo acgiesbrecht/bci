@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace CinBascula
+namespace BCI
 {
     /// <summary>
     /// Lógica de interacción para App.xaml

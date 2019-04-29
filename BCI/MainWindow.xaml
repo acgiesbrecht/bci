@@ -1,5 +1,5 @@
 ﻿<Controls:MetroWindow
-    x:Class="CinBascula.MainWindow"
+    x:Class="BCI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
@@ -513,9 +513,9 @@
                     </DataGrid>
                 </TabItem>
             </TabControl>
-            <StatusBar>
-                <StatusBarItem>
-                    <TextBlock Text="{Binding StatusMessage}" />
+            <StatusBar Background="{Binding StatusColor}">
+                <StatusBarItem Visibility="{Binding ErrorLinkVisibility}">
+                    <Hyperlink  Click="Hyperlink_Click" Foreground="White">Error</Hyperlink>
                 </StatusBarItem>
             </StatusBar>
         </StackPanel>

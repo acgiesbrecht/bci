@@ -5,12 +5,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CinBascula.Models;
+using BCI.Models;
 using Dapper;
 using Dapper.Contrib.Extensions;
 using Oracle.ManagedDataAccess.Client;
 
-namespace CinBascula
+namespace BCI
 {
     public class OracleDataManager
     {
@@ -19,10 +19,10 @@ namespace CinBascula
         {            
                 using (var dbConnection = GetConnection())
                 {
-                dbConnection.Open();                
+                /*dbConnection.Open();                
                 OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
                 oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
-                dbConnection.SetSessionInfo(oracleGlobalization);
+                dbConnection.SetSessionInfo(oracleGlobalization);*/
                 return dbConnection.QueryAsync<XX_OPM_BCI_ITEMS_V>("Select * FROM APPS.XX_OPM_BCI_ITEMS_V ORDER BY DESCRIPCION_ITEM").Result.ToList();
                 }            
         }

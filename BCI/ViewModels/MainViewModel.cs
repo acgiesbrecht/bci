@@ -1,4 +1,4 @@
-﻿using CinBascula.Models;
+﻿using BCI.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,8 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using System.Windows.Media;
 
-namespace CinBascula.ViewModels
+namespace BCI.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
@@ -81,7 +82,9 @@ namespace CinBascula.ViewModels
         public bool BtnTaraIsEnabled { get; set; }
         public bool BtnGuardarIsEnabled { get; set; }
 
-        public string StatusMessage { get; set; }
+        public Visibility ErrorLinkVisibility { get; set; }        
+        public Exception ActualException { get; set; }
+        public Brush StatusColor { get; set; }
 
         public MainViewModel()
         {
@@ -158,7 +161,7 @@ namespace CinBascula.ViewModels
             }
             catch (Exception ex)
             {
-                StatusMessage = ex.Message;
+                showError(ex);
             }
         }
 
@@ -600,6 +603,13 @@ namespace CinBascula.ViewModels
                 PesoActual = -1;
             }
 
+        }
+
+        private void showError(Exception ex)
+        {
+            StatusColor = new SolidColorBrush(Colors.Red);
+            ActualException = ex;
+            ErrorLinkVisibility = Visibility.Visible;
         }
 
     }

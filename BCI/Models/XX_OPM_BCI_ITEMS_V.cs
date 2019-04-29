@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CinBascula.Models
+namespace BCI.Models
 {
     public sealed class XX_OPM_BCI_ITEMS_V : INotifyPropertyChanged
     {

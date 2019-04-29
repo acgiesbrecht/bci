@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel;
 
-namespace CinBascula.Models
+namespace BCI.Models
 {
     [Table("XX.X_OPM_BCI_PESADAS_ALL")]
     public class XX_OPM_BCI_PESADAS_ALL : INotifyPropertyChanged

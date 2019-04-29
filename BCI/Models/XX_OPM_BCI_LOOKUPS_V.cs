@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CinBascula.Models
+namespace BCI.Models
 {
 
     [Table("XX_OPM_BCI_LOOKUPS_V")]
