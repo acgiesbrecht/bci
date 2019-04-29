@@ -24,16 +24,16 @@ namespace CinBascula
     public partial class MainWindow : MetroWindow, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        MainViewModel viewModel = new MainViewModel();                        
-        
+        MainViewModel viewModel = new MainViewModel();
+        public bool isLoading { get; set; }
         public MainWindow()
         {
+            isLoading = true;
             DataContext = viewModel;
             InitializeComponent();
 
             reset();
-            //viewModel.loadData();               
-            //this.Title = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            
             if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
             {
                 this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
@@ -42,6 +42,7 @@ namespace CinBascula
             {
                 this.Title = "BCI - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
             }
+            isLoading = false;
         }
         
         private void InventoryItemsAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -99,8 +100,11 @@ namespace CinBascula
 
         private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            reset();
-            viewModel.SelectedPesadaPendientesChanged();
+            if (!isLoading)
+            {
+                reset();
+                viewModel.SelectedPesadaPendientesChanged();
+            }
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)

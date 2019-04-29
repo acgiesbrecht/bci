@@ -85,18 +85,18 @@ namespace CinBascula.ViewModels
 
         public MainViewModel()
         {
+            isLoading = true;
             resetEditFields();
             resetTables();
-            loadData();                        
+            loadData();
+            isLoading = false;
         }        
 
         public void loadData()
         {
             try
             {
-                isLoading = true;
-                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-                InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;                
+                UpdateInventoryItemsPanel();
 
                 TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
                 
@@ -154,13 +154,18 @@ namespace CinBascula.ViewModels
                 };
                 PesadasCompletasView.SortDescriptions.Add(
                     new SortDescription("ExitDate", ListSortDirection.Descending));
-                PesadasCompletasView.Refresh();
-                isLoading = false;
+                PesadasCompletasView.Refresh();                
             }
             catch (Exception ex)
             {
                 StatusMessage = ex.Message;
             }
+        }
+
+        public void UpdateInventoryItemsPanel()
+        {
+            InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
+            InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
         }
 
         public void SelectedInventoryItemChanged()

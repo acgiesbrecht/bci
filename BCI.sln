@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CinBascula", "CinBascula\CinBascula.csproj", "{58318A89-F2D7-4D1A-AC55-9F8661BA3F92}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCI", "BCI\BCI.csproj", "{58318A89-F2D7-4D1A-AC55-9F8661BA3F92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
