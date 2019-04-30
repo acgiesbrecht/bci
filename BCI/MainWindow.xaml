@@ -242,6 +242,29 @@
                             FontSize="14"
                             Visibility="{Binding NewLoteBtnVisibility}" />
                     </StackPanel>
+                    <StackPanel
+                        Name="NotaRemisionPanel"
+                        Style="{StaticResource PanelStyle}"
+                        Visibility="{Binding NotaRemisionVisibility}">
+                        <Label Style="{StaticResource LabelColumnStyle}">Nota de Remision</Label>
+                        <Label>N°</Label>
+                        <xctk:MaskedTextBox
+                            Name="RemisionTextBox"
+                            Width="125"
+                            HorizontalContentAlignment="Left"
+                            CharacterCasing="Upper"
+                            Mask="###-###-#######"
+                            Style="{StaticResource TextBoxStyle}"
+                            ValueDataType="{x:Type s:String}"
+                            Value="{Binding SelectedRemisionNro}" />
+                        <Label>Peso Neto</Label>
+                        <TextBox                            
+                            Width="100"
+                            FontWeight="Bold"
+                            FontSize="14"
+                            HorizontalContentAlignment="Right"                                                                                    
+                            Text="{Binding SelectedRemisionPeso}" />
+                    </StackPanel>
                     <StackPanel Style="{StaticResource PanelStyle}">
                         <Label Style="{StaticResource LabelColumnStyle}">Observaciones</Label>
                         <TextBox

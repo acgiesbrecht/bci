@@ -113,7 +113,7 @@ namespace BCI
             {
                 dbConnection.Open();
                 OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
-                oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
+                oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
                 dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
                     "FROM XX_OPM_BCI_PESADAS_ALL p " +
@@ -130,7 +130,7 @@ namespace BCI
                 param.Add("PESADA_ID", id);
                 dbConnection.Open();
                 OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
-                oracleGlobalization.DateLanguage = "LATIN AMERICAN SPANISH";
+                oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
                 dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
                     "FROM XX_OPM_BCI_PESADAS_ALL p " +
@@ -178,10 +178,11 @@ namespace BCI
         public List<XX_OPM_BCI_LOTE> GetLotesDAE()
         {
             using (var dbConnection = GetConnection())
-            {                
-                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL " +
+            {
+                /*return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL " +
                     " WHERE LENGTH (LOTE) > 11" +
-                    " ORDER BY LOTE").Result.ToList();
+                    " ORDER BY LOTE").Result.ToList();*/
+                return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("Select CODIGO AS ID FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_LOTES_DAE'").Result.ToList();
             }
         }
 

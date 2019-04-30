@@ -62,6 +62,9 @@ namespace BCI.ViewModels
         public Visibility ContratoVisibility {get; set;}
         public XX_OPM_BCI_CONTRATOS_V SelectedContrato { get; set; }
         public ObservableCollection<XX_OPM_BCI_CONTRATOS_V> ContratosCollection { get; set; }
+        public Visibility NotaRemisionVisibility { get; set; }
+        public String SelectedRemisionNro { get; set; }
+        public int? SelectedRemisionPeso { get; set; }
         public string SelectedObervaciones { get; set; }
         public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasAllCollection { get; set; }
         public XX_OPM_BCI_PESADAS_ALL SelectedPesadaPendiente { get; set; }
@@ -168,7 +171,7 @@ namespace BCI.ViewModels
         public void UpdateInventoryItemsPanel()
         {
             InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
-            InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
+            InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;            
         }
 
         public void SelectedInventoryItemChanged()
@@ -240,8 +243,7 @@ namespace BCI.ViewModels
                         EstablecimientoVisibility = Visibility.Visible;
                         EstabsCollection = EstabsAPCollection;
                         break;
-                }
-                //SelectedOrganisationChanged();
+                }                
                 UpdateOrganisationPanel();
             }            
         }
@@ -307,8 +309,9 @@ namespace BCI.ViewModels
 
         public void CreateNewPesada()
         {
+            UpdateInventoryItemsPanel();
             resetEditFields();
-            resetTables();
+            //resetTables();            
             PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
             NewPesada = true;
             BtnBrutoIsEnabled = true;
@@ -383,6 +386,20 @@ namespace BCI.ViewModels
                         SelectedContrato = ContratosCollection.ElementAtOrDefault(0);
                     }                    
                 }                
+            }
+        }
+
+        public void SelectedContratoChanged()
+        {
+            UpdateNotaRemisionPanel();
+        }
+
+        private void UpdateNotaRemisionPanel()
+        {
+            NotaRemisionVisibility = Visibility.Hidden;
+            if(SelectedContrato != null && SelectedContrato.PESO_ORIGEN == "SI")
+            {
+                NotaRemisionVisibility = Visibility.Visible;
             }
         }
 
@@ -557,7 +574,12 @@ namespace BCI.ViewModels
                 MessageBox.Show("Este proveedor debe tener un contrato habilitado");
                 return false;
             }
-            if((PesoBruto == null && PesoTara == null) && NewPesada)
+            if (SelectedContrato != null && NotaRemisionVisibility == Visibility.Visible && (SelectedRemisionNro == null || SelectedRemisionPeso == null))
+            {
+                MessageBox.Show("El contrato seleccionado requiere de datos de la Nota de Remision");
+                return false;
+            }
+            if ((PesoBruto == null && PesoTara == null) && NewPesada)
             {
                 MessageBox.Show("Debe ingresar por lo menos un peso");
                 return false;
