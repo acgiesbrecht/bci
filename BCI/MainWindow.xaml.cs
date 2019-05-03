@@ -89,7 +89,7 @@ namespace BCI
             EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
             ContratoAutoCompleteComboBox.IsEnabled = true;
             LoteAutoCompleteComboBox.IsEnabled = true;
-            ObservacionesTextBox.IsEnabled = true;
+            ObservacionesTextBox.IsEnabled = true;            
         }
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
@@ -99,14 +99,15 @@ namespace BCI
             viewModel.resetEditFields();
         }
 
-        private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        /*private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!isLoading)
             {
                 reset();
-                viewModel.SelectedPesadaPendientesChanged();
+                ObservacionesTextBox.IsEnabled = true;
+                viewModel.SelectedPesadaPendientesChanged();                
             }
-        }
+        }*/
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -135,7 +136,8 @@ namespace BCI
             MatriculaTextBox.IsEnabled = false;            
             EstablecimientoAutoCompleteComboBox.IsEnabled = false;            
             ContratoAutoCompleteComboBox.IsEnabled = false;            
-            LoteAutoCompleteComboBox.IsEnabled = false;                   
+            LoteAutoCompleteComboBox.IsEnabled = false;    
+            ObservacionesTextBox.IsEnabled = false;
         }        
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
@@ -159,6 +161,36 @@ namespace BCI
             ErrorWindow errorWindow = new ErrorWindow();
             errorWindow.ActualException = viewModel.ActualException;            
             errorWindow.ShowDialog();
+        }
+
+        private void ContratoAutoCompleteComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            viewModel.SelectedContratoChanged();
+        }
+
+        private void PesadasPendientesDataGrid_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (!isLoading)
+            {
+                reset();
+                PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
+                MatriculaTextBox.IsEnabled = true;
+                EstablecimientoAutoCompleteComboBox.IsEnabled = true;
+                ContratoAutoCompleteComboBox.IsEnabled = true;
+                LoteAutoCompleteComboBox.IsEnabled = true;
+                ObservacionesTextBox.IsEnabled = true;
+                viewModel.SelectedPesadaPendientesChanged();
+            }
+        }
+
+        private void EstabUpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ItemsUpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

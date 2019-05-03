@@ -24,6 +24,8 @@ namespace BCI.Models
         public int NRO_BASCULA { get; set; }
         public string LOTE { get; set; }        
         public string CONTRATO { get; set; }
+        public int? PESO_ORIGEN { get; set; }
+        public string NRO_NOTA_REMISION { get; set; }
         public XX_OPM_BCI_CONTRATOS_V Contrato { get; set; }
         public string MATRICULA { get; set; }        
         public int? PESO_BRUTO { get; set; }

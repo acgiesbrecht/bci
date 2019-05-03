@@ -28,7 +28,15 @@ namespace BCI.ViewModels
         {
             get
             {
-                return ActualException.InnerException.Message + "\n" + ActualException.InnerException.StackTrace.ToString();
+                if (ActualException.InnerException != null)
+                {
+                    return ActualException.InnerException.Message + "\n" + ActualException.InnerException.StackTrace.ToString();
+                }
+                else
+                {
+                    return null;
+                }
+                
             }
             set
             {

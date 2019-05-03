@@ -7,9 +7,11 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace BCI.ViewModels
 {
@@ -66,10 +68,11 @@ namespace BCI.ViewModels
         public String SelectedRemisionNro { get; set; }
         public int? SelectedRemisionPeso { get; set; }
         public string SelectedObervaciones { get; set; }
-        public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasAllCollection { get; set; }
+        public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasPendientesCollection { get; set; }
         public XX_OPM_BCI_PESADAS_ALL SelectedPesadaPendiente { get; set; }
         public ICollectionView PesadasPendientesView { get; set; }
-        public ICollectionView PesadasCompletasView { get; set; }
+        public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasCerradasCollection { get; set; }
+        public ICollectionView PesadasCerradasView { get; set; }
         private bool autoBascula;
         public bool AutoBascula
         {
@@ -89,83 +92,113 @@ namespace BCI.ViewModels
         public Exception ActualException { get; set; }
         public Brush StatusColor { get; set; }
 
+        private Timer timer = new Timer();
+
         public MainViewModel()
         {
             isLoading = true;
             resetEditFields();
             resetTables();
             loadData();
-            isLoading = false;
-        }        
+            timer.Interval = 10000;
+            timer.Elapsed += timer_Elapsed;
+            timer.Start();
+            isLoading = false;            
+        }
+
+        void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (SelectedInventoryItem == null)
+            {
+                UpdatePesadasPendientesDatagrid();
+            }            
+        }
 
         public void loadData()
         {
             try
             {
                 UpdateInventoryItemsPanel();
-
-                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+                UpdateTiposActividadPanel();
+                UpdateOrganisationPanel();
+                UpdatePuntoOperacionPanel();
                 
-                OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
-                PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
-                PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
                 EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
                 EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
                 EstabServiciosCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>();
-                XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
+                /*XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
                 estab.Id = "9999";
                 estab.RazonSocial = "Cliente Servicios";
-                EstabServiciosCollection.ToList().Add(estab);
+                EstabServiciosCollection.ToList().Add(estab);*/
 
-                ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
+                UpdateContratoPanel();
+                UpdatePesadasPendientesDatagrid();
+                UpdatePesadasCerradasDatagrid();
 
-                PesadasAllCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadas());
-                PesadasAllCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
-                PesadasAllCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
-                PesadasAllCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
 
-                foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasAllCollection)
-                {
-                    if (p.TIPO_ACTIVIDAD == 2)
-                    {
-                        p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                        p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
-                    }
-                    else
-                    {
-                        p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                        p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
-                    }
-                }
-                PesadasAllCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
-                PesadasPendientesView = new CollectionViewSource { Source = PesadasAllCollection }.View;
-                PesadasPendientesView.Filter = o =>
-                {
-                    XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                /*return p.PESO_BRUTO == null
-                       || p.PESO_TARA == null;*/
-                    return !p.ESTADO.Equals("Cerrado");
-                };
-                PesadasPendientesView.SortDescriptions.Add(
-                    new SortDescription("EntryDate", ListSortDirection.Descending));
-                PesadasPendientesView.Refresh();
-
-                PesadasCompletasView = new CollectionViewSource { Source = PesadasAllCollection }.View;
-                PesadasCompletasView.Filter = o =>
-                {
-                    XX_OPM_BCI_PESADAS_ALL p = o as XX_OPM_BCI_PESADAS_ALL;
-                /*return p.PESO_BRUTO != null
-                       && p.PESO_TARA != null;*/
-                    return p.ESTADO.Equals("Cerrado");
-                };
-                PesadasCompletasView.SortDescriptions.Add(
+                PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;                
+                PesadasCerradasView.SortDescriptions.Add(
                     new SortDescription("ExitDate", ListSortDirection.Descending));
-                PesadasCompletasView.Refresh();                
+                PesadasCerradasView.Refresh();                
             }
             catch (Exception ex)
             {
                 showError(ex);
             }
+        }
+
+        private void UpdatePesadasPendientesDatagrid()
+        {
+            PesadasPendientesCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasPendientes());
+            PesadasPendientesCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
+            PesadasPendientesCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
+            PesadasPendientesCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
+
+            foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasPendientesCollection)
+            {
+                if (p.TIPO_ACTIVIDAD == 2)
+                {
+                    p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+                    p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                }
+                else
+                {
+                    p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+                    p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                }
+            }
+            //PesadasPendientesCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
+            PesadasPendientesView = new CollectionViewSource { Source = PesadasPendientesCollection }.View;            
+            PesadasPendientesView.SortDescriptions.Add(
+                new SortDescription("EntryDate", ListSortDirection.Descending));
+            PesadasPendientesView.Refresh();
+        }
+
+        private void UpdatePesadasCerradasDatagrid()
+        {
+            PesadasCerradasCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasCerradas());
+            PesadasCerradasCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
+            //PesadasCerradasCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
+            PesadasCerradasCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
+
+            foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasCerradasCollection)
+            {
+                if (p.TIPO_ACTIVIDAD == 2)
+                {
+                    p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+              //      p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                }
+                else
+                {
+                    p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
+               //     p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
+                }
+            }
+            //PesadasCerradasCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
+            PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
+            PesadasCerradasView.SortDescriptions.Add(
+                new SortDescription("EntryDate", ListSortDirection.Descending));
+            PesadasCerradasView.Refresh();
         }
 
         public void UpdateInventoryItemsPanel()
@@ -187,14 +220,18 @@ namespace BCI.ViewModels
 
         private void UpdateTiposActividadPanel()
         {
-            TiposActividadView = new CollectionViewSource
+            TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+            if (SelectedInventoryItem != null)
             {
-                Source = TiposActividadCollection
+                TiposActividadView = new CollectionViewSource
+                {
+                    Source = TiposActividadCollection
                     .Where(p => InventoryItemsCollection
                         .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
                         .Any(a => a.TIPO_ACTIVIDAD == p.Id))
-            }.View;
-            SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD)TiposActividadView.CurrentItem;
+                }.View;
+                SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD)TiposActividadView.CurrentItem;
+            }            
         }
 
         public void SelectedTipoActividadChanged()
@@ -203,12 +240,11 @@ namespace BCI.ViewModels
             {
                 BtnTaraIsEnabled = true;
                 BtnBrutoIsEnabled = true;
+                UpdatePuntoOperacionPanel();
                 switch (SelectedTipoActividad.Id)
                 {
                     case 1L:
-                        OrganisationVisibility = Visibility.Visible;
-                        PuntoOperacionLabel = "Punto de Descarga";
-                        PuntoOperacionVisibility = Visibility.Visible;
+                        OrganisationVisibility = Visibility.Visible;                        
                         EstablecimientoLabel = "Proveedor";
                         EstablecimientoVisibility = Visibility.Visible;
                         EstabsCollection = EstabsAPCollection;
@@ -248,34 +284,61 @@ namespace BCI.ViewModels
             }            
         }
 
-        private void UpdateOrganisationPanel()
-        {                        
+        private void UpdatePuntoOperacionPanel()
+        {
+            PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
+            PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
             if (SelectedTipoActividad != null)
             {
-                OrganisationsView = new CollectionViewSource
+                switch (SelectedTipoActividad.Id)
                 {
-                    Source = OrganisationsCollection
-                    .Where(p => InventoryItemsCollection
-                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
-                        .Any(a => a.ORGANIZATION_ID == p.Id)
-                        )
-                    .Where(p => InventoryItemsCollection
-                        .Where(i => i.TIPO_ACTIVIDAD == SelectedTipoActividad.Id)
-                        .Any(a => a.ORGANIZATION_ID == p.Id))
-                }.View;
+                    case 1L:
+                        PuntoOperacionLabel = "Punto de Descarga";
+                        PuntoOperacionVisibility = Visibility.Visible;
+                        break;
+                    case 2L:                        
+                        PuntoOperacionLabel = "Punto de Carga";
+                        PuntoOperacionVisibility = Visibility.Visible;
+                        break;
+                    case 3L:                        
+                        PuntoOperacionVisibility = Visibility.Hidden;
+                        break;
+                }
             }
-            else
-            {
-                OrganisationsView = new CollectionViewSource
+        }
+
+        private void UpdateOrganisationPanel()
+        {
+            OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
+            if(SelectedInventoryItem != null)
+            {            
+                if (SelectedTipoActividad != null)
+                {                
+                    OrganisationsView = new CollectionViewSource
+                    {
+                        Source = OrganisationsCollection
+                        .Where(p => InventoryItemsCollection
+                            .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                            .Any(a => a.ORGANIZATION_ID == p.Id)
+                            )
+                        .Where(p => InventoryItemsCollection
+                            .Where(i => i.TIPO_ACTIVIDAD == SelectedTipoActividad.Id)
+                            .Any(a => a.ORGANIZATION_ID == p.Id))
+                    }.View;
+                }
+                else
                 {
-                    Source = OrganisationsCollection
-                    .Where(p => InventoryItemsCollection
-                        .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
-                        .Any(a => a.ORGANIZATION_ID == p.Id)                        
-                        )
-                }.View;
+                    OrganisationsView = new CollectionViewSource
+                    {
+                        Source = OrganisationsCollection
+                        .Where(p => InventoryItemsCollection
+                            .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                            .Any(a => a.ORGANIZATION_ID == p.Id)                        
+                            )
+                    }.View;
+                }
+                SelectedOrganisation = (XX_OPM_BCI_ORGS_COMPLEJO)OrganisationsView.CurrentItem;
             }
-            SelectedOrganisation = (XX_OPM_BCI_ORGS_COMPLEJO)OrganisationsView.CurrentItem;
         }
 
         public void SelectedOrganisationChanged()
@@ -327,10 +390,13 @@ namespace BCI.ViewModels
                 PesadaActual = oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
                 if (!PesadaActual.ESTADO.Equals("Completo"))
                 {
-                    MessageBox.Show("Aun no hay datos de calidad registradas.");                    
+                    //MessageBox.Show("Aun no hay datos de calidad registradas.");                    
                     return;
                 }
+
                 SelectedInventoryItem = InventoryItemsCollection.FirstOrDefault(i => i.INVENTORY_ITEM_ID.Equals(PesadaActual.INVENTORY_ITEM_ID));
+                //InventoryItemsView.MoveCurrentTo(oracleDataManager.GetInventoryItemById(PesadaActual.INVENTORY_ITEM_ID));
+                //SelectedInventoryItem = oracleDataManager.GetInventoryItemById(PesadaActual.INVENTORY_ITEM_ID);
                 SelectedTipoActividad = TiposActividadCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.TIPO_ACTIVIDAD));
                 SelectedOrganisation = OrganisationsCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ORGANIZATION_ID));
                 
@@ -346,6 +412,8 @@ namespace BCI.ViewModels
                 {
                     SelectedContrato = ContratosCollection.FirstOrDefault(i => i.NRO_CONTRATO.Equals(PesadaActual.CONTRATO));
                 }
+                SelectedRemisionNro = PesadaActual.NRO_NOTA_REMISION;
+                SelectedRemisionPeso = PesadaActual.PESO_ORIGEN;
                 if (PesadaActual.LOTE != null)
                 {
                     UpdateLotePanel();                    
@@ -370,6 +438,7 @@ namespace BCI.ViewModels
 
         private void UpdateContratoPanel()
         {
+            ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
             ContratoVisibility = Visibility.Hidden;
             if (SelectedInventoryItem != null && SelectedEstab != null && SelectedTipoActividad.Id == 1)
             {                
@@ -397,7 +466,7 @@ namespace BCI.ViewModels
         private void UpdateNotaRemisionPanel()
         {
             NotaRemisionVisibility = Visibility.Hidden;
-            if(SelectedContrato != null && SelectedContrato.PESO_ORIGEN == "SI")
+            if(SelectedContrato != null && SelectedContrato.PESO_ORIGEN == "Y")
             {
                 NotaRemisionVisibility = Visibility.Visible;
             }
@@ -445,9 +514,7 @@ namespace BCI.ViewModels
 
         public void Save(){
             if (PesadaActual!=null)
-            {                
-                if (NewPesada)
-                {
+            {                                
                     PesadaActual.INVENTORY_ITEM_ID = SelectedInventoryItem.INVENTORY_ITEM_ID;
                     PesadaActual.TIPO_ACTIVIDAD = SelectedTipoActividad.Id;
                     PesadaActual.ORGANIZATION_ID = SelectedOrganisation.Id;
@@ -458,11 +525,22 @@ namespace BCI.ViewModels
                     {
                         PesadaActual.CONTRATO = SelectedContrato.NRO_CONTRATO;
                     }
+                    if (SelectedRemisionNro != null)
+                    {
+                        PesadaActual.NRO_NOTA_REMISION = SelectedRemisionNro;
+                    }
+                    if (SelectedRemisionPeso != null)
+                    {
+                        PesadaActual.PESO_ORIGEN = SelectedRemisionPeso;
+                    }
                     if (SelectedLote != null)
                     {
                         PesadaActual.LOTE = SelectedLote.ID;
                     }
                     PesadaActual.OBSERVACIONES = SelectedObervaciones;
+                    
+                if (NewPesada)
+                {
                     if (PesoBruto != null)
                     {
                         PesadaActual.PESO_BRUTO = PesoBruto;
@@ -477,8 +555,7 @@ namespace BCI.ViewModels
                     }
                     oracleDataManager.insertNewPesada(PesadaActual);
                 }
-                else if(UpdatePesada){
-                    PesadaActual.OBSERVACIONES = SelectedObervaciones;
+                else if(UpdatePesada){                    
                     if (PesadaActual.PESO_BRUTO == null && PesoBruto != null)
                     {
                         PesadaActual.PESO_BRUTO = PesoBruto;
@@ -496,7 +573,9 @@ namespace BCI.ViewModels
                 }
                 resetEditFields();
                 resetTables();
-                loadData();
+                //loadData();
+                UpdatePesadasPendientesDatagrid();
+                UpdatePesadasCerradasDatagrid();
             }          
             }
 
@@ -518,7 +597,8 @@ namespace BCI.ViewModels
             SelectedContrato = null;
             SelectedLote = null;
             UpdateLotePanel();
-            UpdateContratoPanel();
+            //UpdateContratoPanel();
+            UpdateNotaRemisionPanel();
 
             AutoBascula = true;
 
@@ -626,6 +706,11 @@ namespace BCI.ViewModels
             }
 
         }
+
+        /*private void showWarning("")
+        {
+
+        }*/
 
         private void showError(Exception ex)
         {
