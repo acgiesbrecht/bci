@@ -116,12 +116,12 @@ namespace BCI
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasPendientes()
         {
-            return GetPesadas(" WHERE ESTADO != 'Cerrado'");
+            return GetPesadas(" WHERE ESTADO != 'Cerrado' ORDER BY FECHA_PESO_TARA DESC, FECHA_PESO_BRUTO DESC");
         }
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasCerradas()
         {
-            return GetPesadas(" WHERE ESTADO = 'Cerrado' FETCH FIRST 50 ROWS ONLY");
+            return GetPesadas(" WHERE ESTADO = 'Cerrado'  ORDER BY FECHA_PESO_TARA DESC, FECHA_PESO_BRUTO DESC FETCH FIRST 50 ROWS ONLY");
         }
 
         private List<XX_OPM_BCI_PESADAS_ALL> GetPesadas(String where)

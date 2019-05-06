@@ -32,16 +32,21 @@ namespace BCI
             isLoading = true;
             DataContext = viewModel;
             InitializeComponent();
-
-            reset();
+            try { 
+                reset();
             
-            if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
-            {
-                this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
+                {
+                    this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                }
+                else
+                {
+                    this.Title = "BCI - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                this.Title = "BCI - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                viewModel.showError(ex);
             }
             isLoading = false;
         }
@@ -58,8 +63,14 @@ namespace BCI
 
         private void OrganisationAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            viewModel.SelectedOrganisationChanged();
-            PuntosOperacionAutoCompleteComboBox.SelectedIndex = 0;
+            try { 
+                viewModel.SelectedOrganisationChanged();
+                PuntosOperacionAutoCompleteComboBox.SelectedIndex = 0;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
 
         private void EstablecimientoAutoCompleteComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -69,34 +80,56 @@ namespace BCI
 
         private void BtnBruto_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.PesoBruto = viewModel.PesoActual;
+            try { 
+                viewModel.PesoBruto = viewModel.PesoActual;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
 
         private void BtnTara_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.PesoTara = viewModel.PesoActual;
+            try { 
+                viewModel.PesoTara = viewModel.PesoActual;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
         
         private void BtnNewPesada_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.CreateNewPesada();
+            try { 
+                viewModel.CreateNewPesada();
             
-            InventoryItemsAutoCompleteComboBox.IsEnabled = true;
-            TipoActividadAutoCompleteComboBox.IsEnabled = true;
-            OrganisationAutoCompleteComboBox.IsEnabled = true;
-            PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
-            MatriculaTextBox.IsEnabled = true;
-            EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
-            ContratoAutoCompleteComboBox.IsEnabled = true;
-            LoteAutoCompleteComboBox.IsEnabled = true;
-            ObservacionesTextBox.IsEnabled = true;            
+                InventoryItemsAutoCompleteComboBox.IsEnabled = true;
+                TipoActividadAutoCompleteComboBox.IsEnabled = true;
+                OrganisationAutoCompleteComboBox.IsEnabled = true;
+                PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
+                MatriculaTextBox.IsEnabled = true;
+                EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
+                ContratoAutoCompleteComboBox.IsEnabled = true;
+                LoteAutoCompleteComboBox.IsEnabled = true;
+                ObservacionesTextBox.IsEnabled = true;
+            } catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
-        {            
-            viewModel.loadData();
-            reset();
-            viewModel.resetEditFields();
+        {
+            try { 
+                viewModel.loadData();
+                reset();
+                viewModel.resetEditFields();
+            }catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
 
         /*private void PesadasPendientesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -111,33 +144,45 @@ namespace BCI
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (!viewModel.validate())
-            {
-                return;
+            try { 
+                if (!viewModel.validate())
+                {
+                    return;
+                }
+                MessageBoxResult result = MessageBox.Show("Está seguro que desea guardar el registro actual?",
+                                              "Confirmation",
+                                              MessageBoxButton.YesNo,
+                                              MessageBoxImage.Question);           
+                if (result == MessageBoxResult.Yes)
+                {
+                    viewModel.Save();
+                }
             }
-            MessageBoxResult result = MessageBox.Show("Está seguro que desea guardar el registro actual?",
-                                          "Confirmation",
-                                          MessageBoxButton.YesNo,
-                                          MessageBoxImage.Question);           
-            if (result == MessageBoxResult.Yes)
+            catch (Exception ex)
             {
-                viewModel.Save();
+                viewModel.showError(ex);
             }
         }
 
         private void reset()
         {
-            viewModel.resetEditFields();            
+            try { 
+                viewModel.resetEditFields();            
             
-            InventoryItemsAutoCompleteComboBox.IsEnabled = false;            
-            TipoActividadAutoCompleteComboBox.IsEnabled = false;            
-            OrganisationAutoCompleteComboBox.IsEnabled = false;            
-            PuntosOperacionAutoCompleteComboBox.IsEnabled = false;            
-            MatriculaTextBox.IsEnabled = false;            
-            EstablecimientoAutoCompleteComboBox.IsEnabled = false;            
-            ContratoAutoCompleteComboBox.IsEnabled = false;            
-            LoteAutoCompleteComboBox.IsEnabled = false;    
-            ObservacionesTextBox.IsEnabled = false;
+                InventoryItemsAutoCompleteComboBox.IsEnabled = false;            
+                TipoActividadAutoCompleteComboBox.IsEnabled = false;            
+                OrganisationAutoCompleteComboBox.IsEnabled = false;            
+                PuntosOperacionAutoCompleteComboBox.IsEnabled = false;            
+                MatriculaTextBox.IsEnabled = false;            
+                EstablecimientoAutoCompleteComboBox.IsEnabled = false;            
+                ContratoAutoCompleteComboBox.IsEnabled = false;            
+                LoteAutoCompleteComboBox.IsEnabled = false;    
+                ObservacionesTextBox.IsEnabled = false;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }        
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
@@ -147,11 +192,23 @@ namespace BCI
 
         private void ClearBrutoBtn_Click(object sender, RoutedEventArgs e)
         {
+            try { 
             viewModel.PesoBruto = 0;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
         private void ClearTaraBtn_Click(object sender, RoutedEventArgs e)
         {
+            try { 
             viewModel.PesoTara = 0;
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
+            }
         }
 
         private void Hyperlink_Click(object sender, RoutedEventArgs e)
@@ -170,6 +227,7 @@ namespace BCI
 
         private void PesadasPendientesDataGrid_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            try { 
             if (!isLoading)
             {
                 reset();
@@ -180,6 +238,11 @@ namespace BCI
                 LoteAutoCompleteComboBox.IsEnabled = true;
                 ObservacionesTextBox.IsEnabled = true;
                 viewModel.SelectedPesadaPendientesChanged();
+            }
+            }
+            catch (Exception ex)
+            {
+                viewModel.showError(ex);
             }
         }
 
