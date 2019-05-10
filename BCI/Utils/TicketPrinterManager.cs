@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BCI.Utils;
+using System;
 using System.ComponentModel;
 
 namespace BCI

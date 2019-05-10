@@ -873,11 +873,13 @@ namespace BCI.ViewModels
             {
                 try
                 {
-                    PesoActual = int.Parse(serialPort.ReadLine().Substring(0, 4).Trim());
+                    string reading = serialPort.ReadLine();
+                    PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
                 }
                 catch (Exception ex)
                 {
-                    PesoActual = -1;
+                    PesoActual = null;
+                    showError(ex);
                 }
 
             }
