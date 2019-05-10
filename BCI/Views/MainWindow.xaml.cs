@@ -64,8 +64,7 @@ namespace BCI
         private void OrganisationAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             try { 
-                viewModel.SelectedOrganisationChanged();
-                PuntosOperacionAutoCompleteComboBox.SelectedIndex = 0;
+                viewModel.SelectedOrganisationChanged();                
             }
             catch (Exception ex)
             {
@@ -152,7 +151,8 @@ namespace BCI
                 MessageBoxResult result = MessageBox.Show("Está seguro que desea guardar el registro actual?",
                                               "Confirmation",
                                               MessageBoxButton.YesNo,
-                                              MessageBoxImage.Question);           
+                                              MessageBoxImage.Question);
+                //MessageBoxResult result = await this.ShowMessage("This is the title", "Some message");
                 if (result == MessageBoxResult.Yes)
                 {
                     viewModel.Save();
@@ -248,12 +248,18 @@ namespace BCI
 
         private void EstabUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            viewModel.UpdateEstablecimientoPanel();
         }
 
         private void ItemsUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            viewModel.UpdateInventoryItemsPanel();
         }
-    }
+
+        private void SettingsBtn_Click(object sender, RoutedEventArgs e)
+            {
+            SettingsWindow settingsWindow = new SettingsWindow();
+            settingsWindow.ShowDialog();
+            }
+        }
 }

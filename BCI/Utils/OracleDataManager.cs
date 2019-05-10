@@ -116,12 +116,14 @@ namespace BCI
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasPendientes()
         {
-            return GetPesadas(" WHERE ESTADO != 'Cerrado' ORDER BY FECHA_PESO_TARA DESC, FECHA_PESO_BRUTO DESC");
+            return GetPesadas(" WHERE ESTADO = 'Pendiente' OR ESTADO = 'Completo'" +
+                "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");            
         }
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasCerradas()
         {
-            return GetPesadas(" WHERE ESTADO = 'Cerrado'  ORDER BY FECHA_PESO_TARA DESC, FECHA_PESO_BRUTO DESC FETCH FIRST 50 ROWS ONLY");
+            return GetPesadas(" WHERE ESTADO = 'Cerrado'" +
+                "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");
         }
 
         private List<XX_OPM_BCI_PESADAS_ALL> GetPesadas(String where)

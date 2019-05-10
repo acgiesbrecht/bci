@@ -130,30 +130,23 @@ namespace BCI.ViewModels
         public void loadData()
         {
             try
-            {
+            {                
                 UpdateInventoryItemsPanel();
                 UpdateTiposActividadPanel();
                 UpdateOrganisationPanel();
                 UpdatePuntoOperacionPanel();
-                
-                EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
-                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
-                EstabServiciosCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>();
-                /*XX_OPM_BCI_ESTAB estab = new XX_OPM_BCI_ESTAB();
-                estab.Id = "9999";
-                estab.RazonSocial = "Cliente Servicios";
-                EstabServiciosCollection.ToList().Add(estab);*/
+                UpdateEstablecimientoPanel();                
 
                 UpdateContratoPanel();
                 UpdatePesadasPendientesDatagrid();
                 UpdatePesadasCerradasDatagrid();
 
-
+                /*
                 PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
                 PesadasCerradasView.SortDescriptions.Clear();
                 PesadasCerradasView.SortDescriptions.Add(
                     new SortDescription("ExitDate", ListSortDirection.Descending));
-                PesadasCerradasView.Refresh();                
+                PesadasCerradasView.Refresh();                */
             }
             catch (Exception ex)
             {
@@ -199,7 +192,7 @@ namespace BCI.ViewModels
             try { 
                 PesadasCerradasCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasCerradas());
                 PesadasCerradasCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
-                //PesadasCerradasCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
+                PesadasCerradasCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
                 PesadasCerradasCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
 
                 foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasCerradasCollection)
@@ -216,8 +209,8 @@ namespace BCI.ViewModels
                     }
                 }
                 //PesadasCerradasCollection.ToList().ForEach(x => x.Contrato = ContratosCollection.FirstOrDefault(c => c.NRO_CONTRATO.Equals(x.CONTRATO)));
-                /*PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
-                PesadasCerradasView.SortDescriptions.Add(
+                PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
+                /*PesadasCerradasView.SortDescriptions.Add(
                     new SortDescription("EntryDate", ListSortDirection.Descending));
                 PesadasCerradasView.Refresh();*/
             }
@@ -225,13 +218,18 @@ namespace BCI.ViewModels
             {
                 showError(ex);
             }
-        }
+        }        
 
         public void UpdateInventoryItemsPanel()
         {
-            try { 
+            try
+            {
                 InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(oracleDataManager.GetInventoryItemList());
                 InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
+                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+                OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
+                PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
+                PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());                
             }
             catch (Exception ex)
             {
@@ -258,8 +256,7 @@ namespace BCI.ViewModels
 
         private void UpdateTiposActividadPanel()
         {
-            try { 
-                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(oracleDataManager.GetTipoActividadList());
+            try {                 
                 if (SelectedInventoryItem != null)
                 {
                     TiposActividadView = new CollectionViewSource
@@ -284,8 +281,7 @@ namespace BCI.ViewModels
                 if (SelectedTipoActividad != null)
                 {
                     BtnTaraIsEnabled = true;
-                    BtnBrutoIsEnabled = true;
-                    UpdatePuntoOperacionPanel();
+                    BtnBrutoIsEnabled = true;                    
                     switch (SelectedTipoActividad.Id)
                     {
                         case 1L:
@@ -311,10 +307,10 @@ namespace BCI.ViewModels
                             }
                             break;
                         case 3L:
-                            OrganisationVisibility = Visibility.Hidden;
-                            EstablecimientoVisibility = Visibility.Hidden;
+                            OrganisationVisibility = Visibility.Collapsed;
+                            EstablecimientoVisibility = Visibility.Collapsed;
                             EstabsCollection = EstabServiciosCollection;
-                            PuntoOperacionVisibility = Visibility.Hidden;                        
+                            PuntoOperacionVisibility = Visibility.Collapsed;                        
                             break;
                         default:
                             OrganisationVisibility = Visibility.Visible;
@@ -326,36 +322,8 @@ namespace BCI.ViewModels
                             break;
                     }                
                     UpdateOrganisationPanel();
+                    UpdatePuntoOperacionPanel();
                 }
-            }
-            catch (Exception ex)
-            {
-                showError(ex);
-            }
-        }
-
-        private void UpdatePuntoOperacionPanel()
-        {
-            try { 
-            PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoDescargaList());
-            PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(oracleDataManager.GetPuntoCargaList());
-            if (SelectedTipoActividad != null)
-            {
-                switch (SelectedTipoActividad.Id)
-                {
-                    case 1L:
-                        PuntoOperacionLabel = "Punto de Descarga";
-                        PuntoOperacionVisibility = Visibility.Visible;
-                        break;
-                    case 2L:                        
-                        PuntoOperacionLabel = "Punto de Carga";
-                        PuntoOperacionVisibility = Visibility.Visible;
-                        break;
-                    case 3L:                        
-                        PuntoOperacionVisibility = Visibility.Hidden;
-                        break;
-                }
-            }
             }
             catch (Exception ex)
             {
@@ -365,37 +333,38 @@ namespace BCI.ViewModels
 
         private void UpdateOrganisationPanel()
         {
-            try { 
-            OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(oracleDataManager.GetOrgsComplejoList());
-            if(SelectedInventoryItem != null)
-            {            
-                if (SelectedTipoActividad != null)
-                {                
-                    OrganisationsView = new CollectionViewSource
-                    {
-                        Source = OrganisationsCollection
-                        .Where(p => InventoryItemsCollection
-                            .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
-                            .Any(a => a.ORGANIZATION_ID == p.Id)
-                            )
-                        .Where(p => InventoryItemsCollection
-                            .Where(i => i.TIPO_ACTIVIDAD == SelectedTipoActividad.Id)
-                            .Any(a => a.ORGANIZATION_ID == p.Id))
-                    }.View;
-                }
-                else
+            try
+            {
+                if (SelectedInventoryItem != null)
                 {
-                    OrganisationsView = new CollectionViewSource
+                    if (SelectedTipoActividad != null)
                     {
-                        Source = OrganisationsCollection
-                        .Where(p => InventoryItemsCollection
-                            .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
-                            .Any(a => a.ORGANIZATION_ID == p.Id)                        
-                            )
-                    }.View;
+                        OrganisationsView = new CollectionViewSource
+                        {
+                            Source = OrganisationsCollection
+                            .Where(p => InventoryItemsCollection
+                                .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                                .Any(a => a.ORGANIZATION_ID == p.Id)
+                                )
+                            .Where(p => InventoryItemsCollection
+                                .Where(i => i.TIPO_ACTIVIDAD == SelectedTipoActividad.Id)
+                                .Any(a => a.ORGANIZATION_ID == p.Id))
+                        }.View;
+                    }
+                    else
+                    {
+                        OrganisationsView = new CollectionViewSource
+                        {
+                            Source = OrganisationsCollection
+                            .Where(p => InventoryItemsCollection
+                                .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
+                                .Any(a => a.ORGANIZATION_ID == p.Id)
+                                )
+                        }.View;
+                    }
+                    SelectedOrganisation = (XX_OPM_BCI_ORGS_COMPLEJO)OrganisationsView.CurrentItem;
+                    UpdatePuntoOperacionPanel();
                 }
-                SelectedOrganisation = (XX_OPM_BCI_ORGS_COMPLEJO)OrganisationsView.CurrentItem;
-            }
             }
             catch (Exception ex)
             {
@@ -405,26 +374,54 @@ namespace BCI.ViewModels
 
         public void SelectedOrganisationChanged()
         {
-            try { 
-            if (SelectedOrganisation != null)
+            try
             {
-                if (SelectedTipoActividad != null)
+                UpdatePuntoOperacionPanel();
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+        private void UpdatePuntoOperacionPanel()
+        {
+            try { 
+            if (SelectedTipoActividad != null && SelectedOrganisation != null)
                 {
                     switch (SelectedTipoActividad.Id)
-                    {
-                        case 1L:
-                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));                            
+                    {                        
+                        case 2L:                        
+                            PuntoOperacionLabel = "Punto de Carga";
+                            PuntoOperacionVisibility = Visibility.Visible;
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosCargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
                             break;
-                        case 2L:
-                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosCargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));                            
+                        case 3L:                        
+                            PuntoOperacionVisibility = Visibility.Collapsed;
+                            PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
                             break;
                         default:
+                            PuntoOperacionLabel = "Punto de Descarga";
+                            PuntoOperacionVisibility = Visibility.Visible;
                             PuntosOperacionCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(PuntosDescargaCollection.Where(o => o.Tag.Equals(SelectedOrganisation.Tag)));
                             break;
                     }
                     SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault();
-                }                
+                }
             }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
+       
+
+        public void UpdateEstablecimientoPanel()
+        {
+            try
+            {
+                EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
+                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
             }
             catch (Exception ex)
             {
@@ -447,7 +444,7 @@ namespace BCI.ViewModels
         public void CreateNewPesada()
         {
             try { 
-                UpdateInventoryItemsPanel();
+                //UpdateInventoryItemsPanel();
                 resetEditFields();
             //resetTables();            
             PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
@@ -528,7 +525,7 @@ namespace BCI.ViewModels
             try {
                 SelectedContrato = null;
                 ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
-                ContratoVisibility = Visibility.Hidden;
+                ContratoVisibility = Visibility.Collapsed;
                 if (SelectedInventoryItem != null && SelectedEstab != null && SelectedTipoActividad.Id == 1)
                 {                
                     ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratoByEstablecimientoAndItem(SelectedEstab, SelectedInventoryItem));
@@ -566,7 +563,7 @@ namespace BCI.ViewModels
         private void UpdateNotaRemisionPanel()
         {
             try { 
-            NotaRemisionVisibility = Visibility.Hidden;
+            NotaRemisionVisibility = Visibility.Collapsed;
             if(SelectedContrato != null && SelectedContrato.PESO_ORIGEN == "Y")
             {
                 NotaRemisionVisibility = Visibility.Visible;
@@ -582,8 +579,8 @@ namespace BCI.ViewModels
         {
             try {
                 SelectedLote = null;
-                LoteVisibility = Visibility.Hidden;
-                NewLoteBtnVisibility = Visibility.Hidden;
+                LoteVisibility = Visibility.Collapsed;
+                NewLoteBtnVisibility = Visibility.Collapsed;
                 LotesCollection = new ObservableCollection<XX_OPM_BCI_LOTE>();
                 if (SelectedInventoryItem != null && SelectedEstab != null && SelectedTipoActividad.Id == 1)
                 {                
@@ -629,15 +626,24 @@ namespace BCI.ViewModels
         }
 
         public void Save(){
-            try { 
+            try {                
                 if (PesadaActual!=null)
                 {                                
                         PesadaActual.INVENTORY_ITEM_ID = SelectedInventoryItem.INVENTORY_ITEM_ID;
                         PesadaActual.TIPO_ACTIVIDAD = SelectedTipoActividad.Id;
-                        PesadaActual.ORGANIZATION_ID = SelectedOrganisation.Id;
-                        PesadaActual.PUNTO_DESCARGA = SelectedPuntoOperacion.Id.ToString();
+                        if (SelectedOrganisation != null)
+                        {
+                            PesadaActual.ORGANIZATION_ID = SelectedOrganisation.Id;
+                        }
+                        if (SelectedPuntoOperacion != null)
+                        {
+                            PesadaActual.PUNTO_DESCARGA = SelectedPuntoOperacion.Id.ToString();
+                        }                        
                         PesadaActual.MATRICULA = SelectedMatricula;
-                        PesadaActual.ESTABLECIMIENTO = SelectedEstab.Id;
+                        if(SelectedEstab != null)
+                        {
+                            PesadaActual.ESTABLECIMIENTO = SelectedEstab.Id;
+                        }                    
                         if (SelectedContrato != null)
                         {
                             PesadaActual.CONTRATO = SelectedContrato.NRO_CONTRATO;
@@ -736,6 +742,8 @@ namespace BCI.ViewModels
                 SelectedContrato = null;
                 SelectedLote = null;
                 SelectedObervaciones = null;
+                SelectedRemisionNro = null;
+                SelectedRemisionPeso = null;
                 UpdateLotePanel();
                 //UpdateContratoPanel();
                 UpdateNotaRemisionPanel();
@@ -776,22 +784,22 @@ namespace BCI.ViewModels
                     MessageBox.Show("Debe seleccionar un tipo de actividad");                
                     return false;
                 }
-                if (SelectedOrganisation == null)
+                if (SelectedOrganisation == null && SelectedTipoActividad.Id != 3)
                 {
-                    MessageBox.Show("Debe seleccionar una organizacion");                
+                    MessageBox.Show("Debe seleccionar una organizacion");              
                     return false;
                 }
-                if (SelectedPuntoOperacion == null)
+                if (SelectedPuntoOperacion == null && SelectedTipoActividad.Id != 3)
                 {
                     MessageBox.Show("Debe seleccionar un " + PuntoOperacionLabel);                
                     return false;
                 }
-                if (SelectedMatricula == null)
+                if (SelectedMatricula == null || SelectedMatricula.Length < 7)
                 {
-                    MessageBox.Show("Debe ingresar un Nro de Chapa");                
+                    MessageBox.Show("Debe ingresar un Nro de Chapa valido");                
                     return false;
                 }
-                if (SelectedEstab == null)
+                if (SelectedEstab == null && SelectedTipoActividad.Id != 3)
                 {
                     MessageBox.Show("Debe seleccionar un Establcimiento");                
                     return false;
@@ -801,7 +809,7 @@ namespace BCI.ViewModels
                     MessageBox.Show("Este articulo requiere asignacion de un Lote");                
                     return false;
                 }            
-                if (SelectedContrato == null && !SelectedEstab.ES_SOCIO.Equals("Si") && SelectedTipoActividad.Id == 1)
+                if (SelectedContrato == null && SelectedTipoActividad.Id == 1 && !SelectedEstab.ES_SOCIO.Equals("Si"))
                 {
                     MessageBox.Show("Este proveedor debe tener un contrato habilitado");
                     return false;
@@ -833,7 +841,7 @@ namespace BCI.ViewModels
         private void serialStart()
         {
             try {
-                serialPort.PortName = "COM1";
+                serialPort.PortName = Properties.Settings.Default.SerialPort;
                 serialPort.BaudRate = 9600;
                 serialPort.DataBits = 8;
                 serialPort.Parity = Parity.None;
@@ -889,7 +897,7 @@ namespace BCI.ViewModels
 
         public void showError(Exception ex)
         {
-            showNotification(ex.Message);
+            //showNotification(ex.Message);
             StatusColor = new SolidColorBrush(Colors.Red);
             ActualException = ex;
             ErrorLinkVisibility = Visibility.Visible;
