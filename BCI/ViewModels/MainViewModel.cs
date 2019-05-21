@@ -107,8 +107,7 @@ namespace BCI.ViewModels
                 timer.Interval = 10000;
                 timer.Elapsed += timer_Elapsed;
                 timer.Start();
-                isLoading = false;
-                ticketPrinterManager.ImprimirTicketRecMuestra(completeDataPesada(oracleDataManager.getLatestPesada()));
+                isLoading = false;                
             }
             catch (Exception ex)
             {
