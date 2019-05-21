@@ -159,6 +159,22 @@ namespace BCI
             }
         }
 
+        public XX_OPM_BCI_PESADAS_ALL getLatestPesada()
+        {
+            using (var dbConnection = GetConnection())
+            {                
+                dbConnection.Open();
+                OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
+                oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
+                dbConnection.SetSessionInfo(oracleGlobalization);
+                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
+                    "FROM XX_OPM_BCI_PESADAS_ALL p " +
+                    "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
+                    "ON p.PESADA_ID = v.PESADA_ID " +
+                    "WHERE p.CREATION_DATE = (SELECT MAX(CREATION_DATE) FROM XX_OPM_BCI_PESADAS_ALL)").Result.FirstOrDefault();
+            }            
+        }
+
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItem(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
         {
             using (var dbConnection = GetConnection())
@@ -217,7 +233,7 @@ namespace BCI
 
         public async void insertNewPesada(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            var param = new DynamicParameters();
+            var param = new DynamicParameters();            
             param.Add("ORG_ID", pesada.ORG_ID);
             param.Add("ORGANIZATION_ID", pesada.ORGANIZATION_ID);
             param.Add("TIPO_ACTIVIDAD", pesada.TIPO_ACTIVIDAD);
@@ -255,7 +271,7 @@ namespace BCI
                 ":CREATED_BY, :CREATION_DATE, :LAST_UPDATED_BY, :LAST_UPDATE_DATE)";
             using (var dbConnection = GetConnection())
             {                
-                var affectedRows = await dbConnection.ExecuteAsync(sql, param);
+                var affectedRows = await dbConnection.ExecuteAsync(sql, param);                
             }
         }
 

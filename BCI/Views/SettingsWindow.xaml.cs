@@ -39,8 +39,22 @@ namespace BCI
 
         private void Guardar_Click(object sender, RoutedEventArgs e)
             {
-            Properties.Settings.Default.SerialPort = SerialPortAutoCompleteComboBox.SelectedItem.ToString();
-            Properties.Settings.Default.TicketPrinter = TicketPrinterAutoCompleteComboBox.SelectedItem.ToString();
+            if (SerialPortAutoCompleteComboBox.SelectedItem != null)
+            {
+                Properties.Settings.Default.SerialPort = SerialPortAutoCompleteComboBox.SelectedItem.ToString();
+            }
+            else{
+                Properties.Settings.Default.SerialPort = null;
+            }
+            if (TicketPrinterAutoCompleteComboBox != null)
+            {
+                Properties.Settings.Default.TicketPrinter = TicketPrinterAutoCompleteComboBox.SelectedItem.ToString();
+            }
+            else
+            {
+                Properties.Settings.Default.TicketPrinter = null;
+            }
+
             Properties.Settings.Default.Save();
             this.Close();
             }
