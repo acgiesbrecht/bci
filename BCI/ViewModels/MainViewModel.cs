@@ -30,7 +30,7 @@ namespace BCI.ViewModels
         public int? PesoBruto { get; set; }
         public int? PesoTara { get; set; }
 
-        private SerialPort serialPort = new SerialPort();
+        private SerialPort serialPort;
         public OracleDataManager oracleDataManager = new OracleDataManager();
         public XX_OPM_BCI_ITEMS_V SelectedInventoryItem { get; set; }
         public ObservableCollection<XX_OPM_BCI_ITEMS_V> InventoryItemsCollection { get; set; }
@@ -81,7 +81,12 @@ namespace BCI.ViewModels
             set
             {
                 autoBascula = value;
-                if (autoBascula) { serialStart(); } else { serialStop(); }
+                if (autoBascula) {
+                    serialStart();
+                }
+                else {
+                    serialStop();
+                }
             }
         }
         public bool ManualBascula { get { return !AutoBascula; } }
@@ -305,10 +310,10 @@ namespace BCI.ViewModels
                             EstablecimientoLabel = "Cliente";
                             EstablecimientoVisibility = Visibility.Visible;
                             EstabsCollection = EstabsARCollection;
-                            if (NewPesada)
+                            /*if (NewPesada)
                             {
-                                BtnBrutoIsEnabled = false;
-                            }
+                                BtnBrutoIsEnabled = false; //--- Desactivado para venta de servicios
+                            }*/
                             break;
                         case 3L:
                             OrganisationVisibility = Visibility.Collapsed;
@@ -866,6 +871,7 @@ namespace BCI.ViewModels
         private void serialStart()
         {
             try {
+                serialPort = new SerialPort();
                 serialPort.PortName = Properties.Settings.Default.SerialPort;
                 serialPort.BaudRate = 9600;
                 serialPort.DataBits = 8;
@@ -883,9 +889,11 @@ namespace BCI.ViewModels
 
         private void serialStop()
         {
-            try { 
-                if (serialPort.IsOpen){
+            try {
+                PesoActual = null;                
+                if (serialPort.IsOpen){                    
                     serialPort.Close();
+                    showNotification("Sistea en Manual");
                 }
             }
             catch (Exception ex)
