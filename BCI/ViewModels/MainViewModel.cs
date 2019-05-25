@@ -81,10 +81,12 @@ namespace BCI.ViewModels
             set
             {
                 autoBascula = value;
-                if (autoBascula) {
+                if (autoBascula)
+                {
                     serialStart();
                 }
-                else {
+                else
+                {
                     serialStop();
                 }
             }
@@ -104,7 +106,8 @@ namespace BCI.ViewModels
 
         public MainViewModel()
         {
-            try {
+            try
+            {
                 isLoading = true;
                 resetEditFields();
                 resetTables();
@@ -112,7 +115,7 @@ namespace BCI.ViewModels
                 timer.Interval = 10000;
                 timer.Elapsed += timer_Elapsed;
                 timer.Start();
-                isLoading = false;                
+                isLoading = false;
             }
             catch (Exception ex)
             {
@@ -122,7 +125,8 @@ namespace BCI.ViewModels
 
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            try {
+            try
+            {
                 if (SelectedInventoryItem == null)
                 {
                     UpdatePesadasPendientesDatagrid();
@@ -163,7 +167,8 @@ namespace BCI.ViewModels
 
         private void UpdatePesadasPendientesDatagrid()
         {
-            try {
+            try
+            {
                 PesadasPendientesCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasPendientes());
                 PesadasPendientesCollection.ToList().ForEach(x => completeDataPesada(x));
                 /*PesadasPendientesCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
@@ -190,7 +195,8 @@ namespace BCI.ViewModels
                 PesadasPendientesView.SortDescriptions.Add(
                     new SortDescription("EntryDate", ListSortDirection.Ascending));
                 PesadasPendientesView.Refresh();*/
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 showError(ex);
             }
@@ -198,7 +204,8 @@ namespace BCI.ViewModels
 
         private void UpdatePesadasCerradasDatagrid()
         {
-            try {
+            try
+            {
                 PesadasCerradasCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasCerradas());
                 PesadasCerradasCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
                 PesadasCerradasCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
@@ -248,7 +255,8 @@ namespace BCI.ViewModels
 
         public void SelectedInventoryItemChanged()
         {
-            try {
+            try
+            {
                 if (SelectedInventoryItem != null)
                 {
                     UpdateTiposActividadPanel();
@@ -265,7 +273,8 @@ namespace BCI.ViewModels
 
         private void UpdateTiposActividadPanel()
         {
-            try {
+            try
+            {
                 if (SelectedInventoryItem != null)
                 {
                     TiposActividadView = new CollectionViewSource
@@ -286,7 +295,8 @@ namespace BCI.ViewModels
 
         public void SelectedTipoActividadChanged()
         {
-            try {
+            try
+            {
                 if (SelectedTipoActividad != null)
                 {
                     BtnTaraIsEnabled = true;
@@ -394,7 +404,8 @@ namespace BCI.ViewModels
         }
         private void UpdatePuntoOperacionPanel()
         {
-            try {
+            try
+            {
                 if (SelectedTipoActividad != null && SelectedOrganisation != null)
                 {
                     switch (SelectedTipoActividad.Id)
@@ -440,7 +451,8 @@ namespace BCI.ViewModels
 
         public void SelectedEstabChanged()
         {
-            try {
+            try
+            {
                 UpdateLotePanel();
                 UpdateContratoPanel();
             }
@@ -452,7 +464,8 @@ namespace BCI.ViewModels
 
         public void CreateNewPesada()
         {
-            try {
+            try
+            {
                 //UpdateInventoryItemsPanel();
                 resetEditFields();
                 //resetTables();            
@@ -468,17 +481,18 @@ namespace BCI.ViewModels
             }
         }
 
-        public void SelectedPesadaPendientesChanged()
+        public async void SelectedPesadaPendientesChanged()
         {
-            try {
+            try
+            {
                 if (!isLoading && SelectedPesadaPendiente != null)
                 {
                     resetEditFields();
-                    PesadaActual = oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
+                    PesadaActual = await oracleDataManager.GetPesadaByID(SelectedPesadaPendiente.PESADA_ID);
                     if (!PesadaActual.ESTADO.Equals("Completo"))
                     {
                         //MessageBox.Show("Aun no hay datos de calidad registradas.");      
-                        showNotification("Aun no hay datos de calidad registradas.");
+                        showNotification("Aun no hay datos de calidad registradas.", false);
                         return;
                     }
 
@@ -489,10 +503,13 @@ namespace BCI.ViewModels
                     SelectedOrganisation = OrganisationsCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ORGANIZATION_ID));
 
                     SelectedMatricula = PesadaActual.MATRICULA;
-                    if (SelectedTipoActividad.Id == 2) {
+                    if (SelectedTipoActividad.Id == 2)
+                    {
                         SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.PUNTO_DESCARGA));
                         SelectedEstab = EstabsARCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ESTABLECIMIENTO));
-                    } else {
+                    }
+                    else
+                    {
                         SelectedPuntoOperacion = PuntosOperacionCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.PUNTO_DESCARGA));
                         SelectedEstab = EstabsAPCollection.FirstOrDefault(i => i.Id.Equals(PesadaActual.ESTABLECIMIENTO));
                     }
@@ -531,7 +548,8 @@ namespace BCI.ViewModels
 
         private void UpdateContratoPanel()
         {
-            try {
+            try
+            {
                 SelectedContrato = null;
                 ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratosList());
                 ContratoVisibility = Visibility.Collapsed;
@@ -560,7 +578,8 @@ namespace BCI.ViewModels
 
         public void SelectedContratoChanged()
         {
-            try {
+            try
+            {
                 UpdateNotaRemisionPanel();
             }
             catch (Exception ex)
@@ -571,7 +590,8 @@ namespace BCI.ViewModels
 
         private void UpdateNotaRemisionPanel()
         {
-            try {
+            try
+            {
                 NotaRemisionVisibility = Visibility.Collapsed;
                 if (SelectedContrato != null && SelectedContrato.PESO_ORIGEN == "Y")
                 {
@@ -586,7 +606,8 @@ namespace BCI.ViewModels
 
         private void UpdateLotePanel()
         {
-            try {
+            try
+            {
                 SelectedLote = null;
                 LoteVisibility = Visibility.Collapsed;
                 NewLoteBtnVisibility = Visibility.Collapsed;
@@ -614,8 +635,10 @@ namespace BCI.ViewModels
             }
         }
 
-        public void CreateNewLoteAlgodon() {
-            try {
+        public void CreateNewLoteAlgodon()
+        {
+            try
+            {
                 XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();
                 XX_OPM_BCI_LOTE newLote = new XX_OPM_BCI_LOTE();
 
@@ -634,8 +657,10 @@ namespace BCI.ViewModels
             }
         }
 
-        public void Save() {
-            try {
+        public async void Save()
+        {
+            try
+            {
                 if (PesadaActual != null)
                 {
                     PesadaActual.INVENTORY_ITEM_ID = SelectedInventoryItem.INVENTORY_ITEM_ID;
@@ -701,10 +726,11 @@ namespace BCI.ViewModels
                             PesadaActual.FECHA_PESO_TARA = DateTime.Now;
                             PesadaActual.MODO_PESO_TARA = AutoBascula == true ? 'A' : 'M';
                         }
-                        oracleDataManager.insertNewPesada(PesadaActual);
-                        ticketPrinterManager.ImprimirTicketRecMuestra(completeDataPesada(oracleDataManager.getLatestPesada()));
+                        await oracleDataManager.insertNewPesada(PesadaActual);
+                        ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(oracleDataManager.getLatestPesada()));
                     }
-                    else if (UpdatePesada) {
+                    else if (UpdatePesada)
+                    {
                         if (PesadaActual.PESO_BRUTO == null && PesoBruto != null)
                         {
                             PesadaActual.PESO_BRUTO = PesoBruto;
@@ -718,8 +744,8 @@ namespace BCI.ViewModels
                             PesadaActual.MODO_PESO_TARA = AutoBascula == true ? 'A' : 'M';
                         }
                         PesadaActual.LAST_UPDATE_DATE = DateTime.Now;
-                        oracleDataManager.updatePesada(PesadaActual);
-                        ticketPrinterManager.ImprimirTicket(completeDataPesada(PesadaActual));
+                        await oracleDataManager.updatePesada(PesadaActual);
+                        imprimirTicket(PesadaActual);
                     }
                     resetEditFields();
                     resetTables();
@@ -736,7 +762,8 @@ namespace BCI.ViewModels
 
         public void resetEditFields()
         {
-            try {
+            try
+            {
                 UpdatePesada = false;
                 NewPesada = false;
                 PesoActual = null;
@@ -773,7 +800,8 @@ namespace BCI.ViewModels
 
         public void resetTables()
         {
-            try {
+            try
+            {
                 SelectedPesadaPendiente = null;
             }
             catch (Exception ex)
@@ -784,7 +812,8 @@ namespace BCI.ViewModels
 
         public Boolean validate()
         {
-            try {
+            try
+            {
                 if (SelectedInventoryItem == null)
                 {
                     MessageBox.Show("Debe seleccionar un articulo");
@@ -854,7 +883,7 @@ namespace BCI.ViewModels
             pesada.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(pesada.INVENTORY_ITEM_ID));
             pesada.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(pesada.TIPO_ACTIVIDAD));
             pesada.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(pesada.ORGANIZATION_ID));
-            
+
             if (pesada.TIPO_ACTIVIDAD == 2)
             {
                 pesada.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(pesada.ESTABLECIMIENTO));
@@ -868,32 +897,14 @@ namespace BCI.ViewModels
             return pesada;
         }
 
-        private void serialStart()
+        public async void imprimirAutorizacion(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            try {
-                serialPort = new SerialPort();
-                serialPort.PortName = Properties.Settings.Default.SerialPort;
-                serialPort.BaudRate = 9600;
-                serialPort.DataBits = 8;
-                serialPort.Parity = Parity.None;
-                serialPort.StopBits = StopBits.One;
-                serialPort.ReadTimeout = 400;
-                serialPort.ReadBufferSize = 64;
-                serialPort.Open();
-                serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(SerialPortRecieve);
-            } catch (Exception ex)
+            try
             {
-                showError(ex);
-            }
-        }
-
-        private void serialStop()
-        {
-            try {
-                PesoActual = null;                
-                if (serialPort.IsOpen){                    
-                    serialPort.Close();
-                    showNotification("Sistea en Manual");
+                string msg = await oracleDataManager.imprimirAutorizacion(pesada);
+                if (msg.ToUpper().Contains("ERROR"))
+                {
+                    showNotification(msg, true);
                 }
             }
             catch (Exception ex)
@@ -902,37 +913,115 @@ namespace BCI.ViewModels
             }
         }
 
-            private void SerialPortRecieve(object sender, SerialDataReceivedEventArgs e)
+        public async void imprimirCertificado(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            try
             {
-                try
+                string msg = await oracleDataManager.imprimirCertificado(pesada);
+                if (msg.ToUpper().Contains("ERROR"))
                 {
-                    string reading = serialPort.ReadLine();
-                    PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                    showNotification(msg, true);
                 }
-                catch (Exception ex)
-                {
-                    PesoActual = null;
-                    showError(ex);
-                }
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
 
+        public async void imprimirTicket(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            try
+            {
+                await ticketPrinterManager.imprimirTicket(completeDataPesada(pesada));
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
+        private void serialStart()
+        {
+            try
+            {
+                serialPort = new SerialPort();
+                serialPort.PortName = Properties.Settings.Default.SerialPort == "" ? "COM1" : Properties.Settings.Default.SerialPort;
+                serialPort.BaudRate = 9600;
+                serialPort.DataBits = 8;
+                serialPort.Parity = Parity.None;
+                serialPort.StopBits = StopBits.One;
+                serialPort.ReadTimeout = 400;
+                serialPort.ReadBufferSize = 64;
+                serialPort.Open();
+                serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(SerialPortRecieve);
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
+        private void serialStop()
+        {
+            try
+            {
+                PesoActual = null;
+                if (serialPort.IsOpen)
+                {
+                    serialPort.Close();
+                    showNotification("Sistea en Manual", false);
+                }
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
+        private void SerialPortRecieve(object sender, SerialDataReceivedEventArgs e)
+        {
+            try
+            {
+                string reading = serialPort.ReadLine();
+                PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+            }
+            catch (Exception ex)
+            {
+                PesoActual = null;
+                showError(ex);
             }
 
-        public void showNotification(String message)
+        }
+
+        public void showNotification(String message, bool isError)
         {
             NotificationWindow notificationWindow = new NotificationWindow();
             Application curApp = Application.Current;
             Window mainWindow = curApp.MainWindow;
+            if (!mainWindow.IsVisible)
+            {
+                return;
+            }
             notificationWindow.Owner = mainWindow;
             notificationWindow.Message = message;
             notificationWindow.ShowTitleBar = false;
-            notificationWindow.BorderBrush = new SolidColorBrush(Colors.Red);
-            notificationWindow.Background = new SolidColorBrush(Colors.Pink);
-            notificationWindow.ShowDialog();            
+            if (isError)
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Red);
+                notificationWindow.Background = new SolidColorBrush(Colors.Pink);
+            }
+            else
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                notificationWindow.Background = new SolidColorBrush(Colors.LightYellow);
+            }
+            notificationWindow.ShowDialog();
         }
 
         public void showError(Exception ex)
         {
-            //showNotification(ex.Message);
+            showNotification(ex.Message, true);
             StatusColor = new SolidColorBrush(Colors.Red);
             ActualException = ex;
             ErrorLinkVisibility = Visibility.Visible;

@@ -261,5 +261,20 @@ namespace BCI
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog();
             }
+
+        private void CerradasGridTicketMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.imprimirTicket((XX_OPM_BCI_PESADAS_ALL)PesadasCompletasDataGrid.SelectedItem);
         }
+
+        private void CerradasGridCertificadoMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.imprimirCertificado((XX_OPM_BCI_PESADAS_ALL)PesadasCompletasDataGrid.SelectedItem);
+        }
+
+        private void PendientesGridAutorizacionMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.imprimirAutorizacion((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
+        }
+    }
 }

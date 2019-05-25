@@ -15,21 +15,21 @@ namespace BCI
     {
 
         public List<XX_OPM_BCI_ITEMS_V> GetInventoryItemList()
-        {            
-                using (var dbConnection = GetConnection())
-                {
-                dbConnection.Open();                
+        {
+            using (var dbConnection = GetConnection())
+            {
+                dbConnection.Open();
                 OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
                 oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
                 dbConnection.SetSessionInfo(oracleGlobalization);
                 return dbConnection.QueryAsync<XX_OPM_BCI_ITEMS_V>("Select * FROM APPS.XX_OPM_BCI_ITEMS_V ORDER BY DESCRIPCION_ITEM").Result.ToList();
-                }            
+            }
         }
 
         public XX_OPM_BCI_ITEMS_V GetInventoryItemById(long id)
         {
             using (var dbConnection = GetConnection())
-            {                
+            {
                 return dbConnection.QueryFirstAsync<XX_OPM_BCI_ITEMS_V>("SELECT * FROM APPS.XX_OPM_BCI_ITEMS_V WHERE INVENTORY_ITEM_ID = " + id.ToString()).Result;
             }
         }
@@ -117,7 +117,7 @@ namespace BCI
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasPendientes()
         {
             return GetPesadas(" WHERE ESTADO = 'Pendiente' OR ESTADO = 'Completo'" +
-                "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");            
+                "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");
         }
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasCerradas()
@@ -141,28 +141,31 @@ namespace BCI
             }
         }
 
-        public XX_OPM_BCI_PESADAS_ALL GetPesadaByID(int id)
+        public async Task<XX_OPM_BCI_PESADAS_ALL> GetPesadaByID(int id)
         {
-            using (var dbConnection = GetConnection())
+            return await Task.Run(() =>
             {
-                var param = new DynamicParameters();
-                param.Add("PESADA_ID", id);
-                dbConnection.Open();
-                OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
-                oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
-                dbConnection.SetSessionInfo(oracleGlobalization);
-                return dbConnection.QueryAsync<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
-                    "FROM XX_OPM_BCI_PESADAS_ALL p " +
-                    "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
-                    "ON p.PESADA_ID = v.PESADA_ID " +
-                    "WHERE p.PESADA_ID = :PESADA_ID", param).Result.FirstOrDefault();
-            }
+                using (var dbConnection = GetConnection())
+                {
+                    var param = new DynamicParameters();
+                    param.Add("PESADA_ID", id);
+                    dbConnection.Open();
+                    OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
+                    oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
+                    dbConnection.SetSessionInfo(oracleGlobalization);
+                    return dbConnection.Query<XX_OPM_BCI_PESADAS_ALL>("SELECT p.*, COALESCE(v.ESTADO, 'Pendiente') AS ESTADO, COALESCE(v.DISPOSICION, 'Pendiente') AS DISPOSICION " +
+                        "FROM XX_OPM_BCI_PESADAS_ALL p " +
+                        "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
+                        "ON p.PESADA_ID = v.PESADA_ID " +
+                        "WHERE p.PESADA_ID = :PESADA_ID", param).FirstOrDefault();
+                }
+            });
         }
 
         public XX_OPM_BCI_PESADAS_ALL getLatestPesada()
         {
             using (var dbConnection = GetConnection())
-            {                
+            {
                 dbConnection.Open();
                 OracleGlobalization oracleGlobalization = dbConnection.GetSessionInfo();
                 oracleGlobalization.Language = "LATIN AMERICAN SPANISH";
@@ -172,7 +175,7 @@ namespace BCI
                     "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
                     "ON p.PESADA_ID = v.PESADA_ID " +
                     "WHERE p.CREATION_DATE = (SELECT MAX(CREATION_DATE) FROM XX_OPM_BCI_PESADAS_ALL)").Result.FirstOrDefault();
-            }            
+            }
         }
 
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItem(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
@@ -182,7 +185,7 @@ namespace BCI
                 var param = new DynamicParameters();
                 param.Add("ESTAB", estab.Id);
                 param.Add("INVENTORY_ITEM_ID", item.INVENTORY_ITEM_ID);
-                List<XX_OPM_BCI_CONTRATOS_V> result; 
+                List<XX_OPM_BCI_CONTRATOS_V> result;
                 result = dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
                     "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
                     "AND PROVEEDOR = :ESTAB " +
@@ -231,92 +234,130 @@ namespace BCI
             }
         }
 
-        public async void insertNewPesada(XX_OPM_BCI_PESADAS_ALL pesada)
+        public async Task<int> insertNewPesada(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            var param = new DynamicParameters();            
-            param.Add("ORG_ID", pesada.ORG_ID);
-            param.Add("ORGANIZATION_ID", pesada.ORGANIZATION_ID);
-            param.Add("TIPO_ACTIVIDAD", pesada.TIPO_ACTIVIDAD);
-            param.Add("INVENTORY_ITEM_ID", pesada.INVENTORY_ITEM_ID);
-            param.Add("PUNTO_DESCARGA", pesada.PUNTO_DESCARGA);
-            param.Add("ESTABLECIMIENTO", pesada.ESTABLECIMIENTO);
-            param.Add("OBSERVACIONES", pesada.OBSERVACIONES);
-            param.Add("NRO_BASCULA", pesada.NRO_BASCULA);
-            param.Add("LOTE", pesada.LOTE);
-            param.Add("CONTRATO", pesada.CONTRATO);
-            param.Add("MATRICULA", pesada.MATRICULA);
-            param.Add("PESO_BRUTO", pesada.PESO_BRUTO);
-            param.Add("MODO_PESO_BRUTO", pesada.MODO_PESO_BRUTO);
-            param.Add("FECHA_PESO_BRUTO", pesada.FECHA_PESO_BRUTO);
-            param.Add("PESO_TARA", pesada.PESO_TARA);
-            param.Add("FECHA_PESO_TARA", pesada.FECHA_PESO_TARA);
-            param.Add("MODO_PESO_TARA", pesada.MODO_PESO_TARA);
-            param.Add("PESO_ORIGEN", pesada.PESO_ORIGEN);
-            param.Add("NRO_NOTA_REMISION", pesada.NRO_NOTA_REMISION);
-            param.Add("CREATED_BY", pesada.CREATED_BY);
-            param.Add("CREATION_DATE", pesada.CREATION_DATE);
-            param.Add("LAST_UPDATED_BY", pesada.LAST_UPDATED_BY);
-            param.Add("LAST_UPDATE_DATE", pesada.LAST_UPDATE_DATE);
-            string sql = "INSERT INTO XX_OPM_BCI_PESADAS_ALL (ORG_ID, ORGANIZATION_ID, TIPO_ACTIVIDAD, " +
-                "INVENTORY_ITEM_ID, PUNTO_DESCARGA, ESTABLECIMIENTO, " +
-                "OBSERVACIONES, NRO_BASCULA, LOTE, CONTRATO, MATRICULA, " +
-                "PESO_BRUTO, MODO_PESO_BRUTO, FECHA_PESO_BRUTO, " +
-                "PESO_TARA, MODO_PESO_TARA, FECHA_PESO_TARA, PESO_ORIGEN, NRO_NOTA_REMISION, " +
-                "CREATED_BY, CREATION_DATE, LAST_UPDATED_BY, LAST_UPDATE_DATE) " +
-                "Values (:ORG_ID, :ORGANIZATION_ID, :TIPO_ACTIVIDAD, " +
-                ":INVENTORY_ITEM_ID, :PUNTO_DESCARGA, :ESTABLECIMIENTO, " +
-                ":OBSERVACIONES, :NRO_BASCULA, :LOTE, :CONTRATO, :MATRICULA, " +
-                ":PESO_BRUTO, :MODO_PESO_BRUTO, :FECHA_PESO_BRUTO, " +
-                ":PESO_TARA, :MODO_PESO_TARA, :FECHA_PESO_TARA, :PESO_ORIGEN, :NRO_NOTA_REMISION, " +
-                ":CREATED_BY, :CREATION_DATE, :LAST_UPDATED_BY, :LAST_UPDATE_DATE)";
-            using (var dbConnection = GetConnection())
-            {                
-                var affectedRows = await dbConnection.ExecuteAsync(sql, param);                
-            }
+            return await Task.Run(() =>
+            {
+                var param = new DynamicParameters();
+                param.Add("ORG_ID", pesada.ORG_ID);
+                param.Add("ORGANIZATION_ID", pesada.ORGANIZATION_ID);
+                param.Add("TIPO_ACTIVIDAD", pesada.TIPO_ACTIVIDAD);
+                param.Add("INVENTORY_ITEM_ID", pesada.INVENTORY_ITEM_ID);
+                param.Add("PUNTO_DESCARGA", pesada.PUNTO_DESCARGA);
+                param.Add("ESTABLECIMIENTO", pesada.ESTABLECIMIENTO);
+                param.Add("OBSERVACIONES", pesada.OBSERVACIONES);
+                param.Add("NRO_BASCULA", pesada.NRO_BASCULA);
+                param.Add("LOTE", pesada.LOTE);
+                param.Add("CONTRATO", pesada.CONTRATO);
+                param.Add("MATRICULA", pesada.MATRICULA);
+                param.Add("PESO_BRUTO", pesada.PESO_BRUTO);
+                param.Add("MODO_PESO_BRUTO", pesada.MODO_PESO_BRUTO);
+                param.Add("FECHA_PESO_BRUTO", pesada.FECHA_PESO_BRUTO);
+                param.Add("PESO_TARA", pesada.PESO_TARA);
+                param.Add("FECHA_PESO_TARA", pesada.FECHA_PESO_TARA);
+                param.Add("MODO_PESO_TARA", pesada.MODO_PESO_TARA);
+                param.Add("PESO_ORIGEN", pesada.PESO_ORIGEN);
+                param.Add("NRO_NOTA_REMISION", pesada.NRO_NOTA_REMISION);
+                param.Add("CREATED_BY", pesada.CREATED_BY);
+                param.Add("CREATION_DATE", pesada.CREATION_DATE);
+                param.Add("LAST_UPDATED_BY", pesada.LAST_UPDATED_BY);
+                param.Add("LAST_UPDATE_DATE", pesada.LAST_UPDATE_DATE);
+                string sql = "INSERT INTO XX_OPM_BCI_PESADAS_ALL (ORG_ID, ORGANIZATION_ID, TIPO_ACTIVIDAD, " +
+                    "INVENTORY_ITEM_ID, PUNTO_DESCARGA, ESTABLECIMIENTO, " +
+                    "OBSERVACIONES, NRO_BASCULA, LOTE, CONTRATO, MATRICULA, " +
+                    "PESO_BRUTO, MODO_PESO_BRUTO, FECHA_PESO_BRUTO, " +
+                    "PESO_TARA, MODO_PESO_TARA, FECHA_PESO_TARA, PESO_ORIGEN, NRO_NOTA_REMISION, " +
+                    "CREATED_BY, CREATION_DATE, LAST_UPDATED_BY, LAST_UPDATE_DATE) " +
+                    "Values (:ORG_ID, :ORGANIZATION_ID, :TIPO_ACTIVIDAD, " +
+                    ":INVENTORY_ITEM_ID, :PUNTO_DESCARGA, :ESTABLECIMIENTO, " +
+                    ":OBSERVACIONES, :NRO_BASCULA, :LOTE, :CONTRATO, :MATRICULA, " +
+                    ":PESO_BRUTO, :MODO_PESO_BRUTO, :FECHA_PESO_BRUTO, " +
+                    ":PESO_TARA, :MODO_PESO_TARA, :FECHA_PESO_TARA, :PESO_ORIGEN, :NRO_NOTA_REMISION, " +
+                    ":CREATED_BY, :CREATION_DATE, :LAST_UPDATED_BY, :LAST_UPDATE_DATE)";
+                using (var dbConnection = GetConnection())
+                {
+                    var affectedRows = dbConnection.Execute(sql, param);
+                    return affectedRows;
+                }
+            });
         }
 
-        public async void updatePesada(XX_OPM_BCI_PESADAS_ALL pesada)
+        public async Task<int> updatePesada(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            var param = new DynamicParameters();
-            param.Add("PESADA_ID", pesada.PESADA_ID);
-            param.Add("PUNTO_DESCARGA", pesada.PUNTO_DESCARGA);
-            param.Add("ESTABLECIMIENTO", pesada.ESTABLECIMIENTO);
-            param.Add("OBSERVACIONES", pesada.OBSERVACIONES);            
-            param.Add("LOTE", pesada.LOTE);
-            param.Add("CONTRATO", pesada.CONTRATO);
-            param.Add("MATRICULA", pesada.MATRICULA);
-            param.Add("PESO_BRUTO", pesada.PESO_BRUTO);
-            param.Add("MODO_PESO_BRUTO", pesada.MODO_PESO_BRUTO);
-            param.Add("FECHA_PESO_BRUTO", pesada.FECHA_PESO_BRUTO);
-            param.Add("PESO_TARA", pesada.PESO_TARA);
-            param.Add("MODO_PESO_TARA", pesada.MODO_PESO_TARA);
-            param.Add("FECHA_PESO_TARA", pesada.FECHA_PESO_TARA);
-            param.Add("PESO_ORIGEN", pesada.PESO_ORIGEN);
-            param.Add("NRO_NOTA_REMISION", pesada.NRO_NOTA_REMISION);
-            param.Add("LAST_UPDATED_BY", pesada.LAST_UPDATED_BY);
-            param.Add("LAST_UPDATE_DATE", pesada.LAST_UPDATE_DATE);
-            string sql = "UPDATE XX_OPM_BCI_PESADAS_ALL SET " +
-                "PUNTO_DESCARGA = :PUNTO_DESCARGA, ESTABLECIMIENTO = :ESTABLECIMIENTO, " +
-                "LOTE = :LOTE, CONTRATO = :CONTRATO, MATRICULA = :MATRICULA, " +
-                "PESO_BRUTO = :PESO_BRUTO, MODO_PESO_BRUTO = :MODO_PESO_BRUTO, FECHA_PESO_BRUTO = :FECHA_PESO_BRUTO, " +
-                "PESO_TARA = :PESO_TARA, MODO_PESO_TARA = :MODO_PESO_TARA, " +
-                "FECHA_PESO_TARA = :FECHA_PESO_TARA, PESO_ORIGEN = :PESO_ORIGEN, NRO_NOTA_REMISION = :NRO_NOTA_REMISION, " +
-                "OBSERVACIONES = :OBSERVACIONES, " +
-                "LAST_UPDATED_BY = :LAST_UPDATED_BY, LAST_UPDATE_DATE = :LAST_UPDATE_DATE" +
-                " WHERE PESADA_ID = :PESADA_ID";
-            using (var dbConnection = GetConnection())
+            return await Task.Run(() =>
             {
-                var affectedRows = await dbConnection.ExecuteAsync(sql, param);
-            }
+                var param = new DynamicParameters();
+                param.Add("PESADA_ID", pesada.PESADA_ID);
+                param.Add("PUNTO_DESCARGA", pesada.PUNTO_DESCARGA);
+                param.Add("ESTABLECIMIENTO", pesada.ESTABLECIMIENTO);
+                param.Add("OBSERVACIONES", pesada.OBSERVACIONES);
+                param.Add("LOTE", pesada.LOTE);
+                param.Add("CONTRATO", pesada.CONTRATO);
+                param.Add("MATRICULA", pesada.MATRICULA);
+                param.Add("PESO_BRUTO", pesada.PESO_BRUTO);
+                param.Add("MODO_PESO_BRUTO", pesada.MODO_PESO_BRUTO);
+                param.Add("FECHA_PESO_BRUTO", pesada.FECHA_PESO_BRUTO);
+                param.Add("PESO_TARA", pesada.PESO_TARA);
+                param.Add("MODO_PESO_TARA", pesada.MODO_PESO_TARA);
+                param.Add("FECHA_PESO_TARA", pesada.FECHA_PESO_TARA);
+                param.Add("PESO_ORIGEN", pesada.PESO_ORIGEN);
+                param.Add("NRO_NOTA_REMISION", pesada.NRO_NOTA_REMISION);
+                param.Add("LAST_UPDATED_BY", pesada.LAST_UPDATED_BY);
+                param.Add("LAST_UPDATE_DATE", pesada.LAST_UPDATE_DATE);
+                string sql = "UPDATE XX_OPM_BCI_PESADAS_ALL SET " +
+                    "PUNTO_DESCARGA = :PUNTO_DESCARGA, ESTABLECIMIENTO = :ESTABLECIMIENTO, " +
+                    "LOTE = :LOTE, CONTRATO = :CONTRATO, MATRICULA = :MATRICULA, " +
+                    "PESO_BRUTO = :PESO_BRUTO, MODO_PESO_BRUTO = :MODO_PESO_BRUTO, FECHA_PESO_BRUTO = :FECHA_PESO_BRUTO, " +
+                    "PESO_TARA = :PESO_TARA, MODO_PESO_TARA = :MODO_PESO_TARA, " +
+                    "FECHA_PESO_TARA = :FECHA_PESO_TARA, PESO_ORIGEN = :PESO_ORIGEN, NRO_NOTA_REMISION = :NRO_NOTA_REMISION, " +
+                    "OBSERVACIONES = :OBSERVACIONES, " +
+                    "LAST_UPDATED_BY = :LAST_UPDATED_BY, LAST_UPDATE_DATE = :LAST_UPDATE_DATE" +
+                    " WHERE PESADA_ID = :PESADA_ID";
+                using (var dbConnection = GetConnection())
+                {
+                    var affectedRows = dbConnection.Execute(sql, param);
+                    return affectedRows;
+                }
+            });
+        }
+
+        public async Task<string> imprimirAutorizacion(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            return await Task.Run(() =>
+            {
+                var param = new DynamicParameters();
+                param.Add("p_pesada_id", pesada.PESADA_ID);
+                param.Add("p_msg", "", DbType.String, ParameterDirection.Output);
+                using (var dbConnection = GetConnection())
+                {
+                    var message = dbConnection.Execute("xx_opm_bci_ext_pkg.p_ticket", param, commandType: CommandType.StoredProcedure);
+                    return param.Get<string>("p_msg").ToString();
+                }
+            });
+        }
+
+        public async Task<string> imprimirCertificado(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            return await Task.Run(() =>
+            {
+                var param = new DynamicParameters();
+                param.Add("p_pesada_id", pesada.PESADA_ID);
+                param.Add("p_msg", "", DbType.String, ParameterDirection.Output);
+                using (var dbConnection = GetConnection())
+                {
+                    var message = dbConnection.Execute("xx_opm_bci_ext_pkg.p_certif", param, commandType: CommandType.StoredProcedure);
+                    return param.Get<string>("p_msg").ToString();
+                }
+            });
         }
 
         public OracleConnection GetConnection()
         {
             const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
-            var connection = new OracleConnection(connectionString);            
+            var connection = new OracleConnection(connectionString);
             return connection;
         }
-        
+
         //alter session set nls_language = 'LATIN AMERICAN SPANISH';
 
     }
