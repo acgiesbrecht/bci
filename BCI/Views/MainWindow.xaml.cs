@@ -30,6 +30,9 @@ namespace BCI
         public MainWindow()
         {
             isLoading = true;
+            NotificationWindow notificationWindow = new NotificationWindow();
+            notificationWindow.Owner = this;
+
             DataContext = viewModel;
             InitializeComponent();
             try { 
@@ -122,8 +125,8 @@ namespace BCI
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
         {
-            try { 
-                viewModel.loadData();
+            try {   
+                //viewModel.loadData();
                 reset();
                 viewModel.resetEditFields();
             }catch (Exception ex)
@@ -255,7 +258,8 @@ namespace BCI
 
         private void ItemsUpdateBtn_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.UpdateInventoryItemsPanel();
+            //viewModel.UpdateInventoryItemsPanel();
+            viewModel.loadLOV();
         }
 
         private void SettingsBtn_Click(object sender, RoutedEventArgs e)
@@ -277,6 +281,26 @@ namespace BCI
         private void PendientesGridAutorizacionMenuItem_Click(object sender, RoutedEventArgs e)
         {
             viewModel.imprimirAutorizacion((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
+        }
+
+        public void showNotification(string message, bool isError)
+        {
+            //Application.Current.Dispatcher.Invoke(new Action(() =>
+            //{            
+            notificationWindow.Message = message;
+            notificationWindow.ShowTitleBar = false;
+            if (isError)
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Red);
+                notificationWindow.Background = new SolidColorBrush(Colors.Pink);
+            }
+            else
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                notificationWindow.Background = new SolidColorBrush(Colors.LightYellow);
+            }
+            notificationWindow.ShowDialog();
+            //}));
         }
     }
 }

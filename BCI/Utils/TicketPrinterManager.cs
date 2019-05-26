@@ -18,9 +18,9 @@ namespace BCI
             TicketPrinterName = Properties.Settings.Default.TicketPrinter;
         }
 
-        public async Task imprimirTicket(XX_OPM_BCI_PESADAS_ALL pesada)
+        public void imprimirTicket(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 string str = "";
 
@@ -122,9 +122,9 @@ namespace BCI
                 printpos(str);
             });
         }
-        public async Task imprimirTicketRecAlgodon(XX_OPM_BCI_PESADAS_ALL pesada)
+        public void imprimirTicketRecAlgodon(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 string str = "";
 
@@ -174,9 +174,9 @@ namespace BCI
                 printpos(str);
             });
         }
-        public async Task imprimirTicketRecMuestra(XX_OPM_BCI_PESADAS_ALL pesada)
+        public void imprimirTicketRecMuestra(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            await Task.Run(() =>
+            Task.Run(() =>
             {
                 StringBuilder st = new StringBuilder();
                 string str = "";
