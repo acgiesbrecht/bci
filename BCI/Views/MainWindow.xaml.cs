@@ -105,6 +105,7 @@ namespace BCI
                 viewModel.CreateNewPesada();
             
                 InventoryItemsAutoCompleteComboBox.IsEnabled = true;
+                InventoryItemsAutoCompleteComboBox.IsEnabled = true;
                 TipoActividadAutoCompleteComboBox.IsEnabled = true;
                 OrganisationAutoCompleteComboBox.IsEnabled = true;
                 PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
@@ -169,7 +170,8 @@ namespace BCI
             try { 
                 viewModel.resetEditFields();            
             
-                InventoryItemsAutoCompleteComboBox.IsEnabled = false;            
+                InventoryItemsAutoCompleteComboBox.IsEnabled = false;     
+                ItemsUpdateBtn.IsEnabled = false;
                 TipoActividadAutoCompleteComboBox.IsEnabled = false;            
                 OrganisationAutoCompleteComboBox.IsEnabled = false;            
                 PuntosOperacionAutoCompleteComboBox.IsEnabled = false;            

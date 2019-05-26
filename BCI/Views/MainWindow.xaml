@@ -530,12 +530,12 @@
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Chapa" />
                             <DataGridTextColumn
-                                Width="200"
+                                Width="180"
                                 Binding="{Binding InventoryItem}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Articulo" />
                             <DataGridTextColumn
-                                Width="350"
+                                Width="230"
                                 Binding="{Binding Establecimiento}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Establecimiento" />
@@ -544,6 +544,11 @@
                                 Binding="{Binding TipoActividad}"
                                 ClipboardContentBinding="{x:Null}"
                                 Header="Actividad" />
+                            <DataGridTextColumn
+                                Width="100"
+                                Binding="{Binding DISPOSICION}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Dispocicion" />
                             <DataGridTextColumn
                                 Width="60"
                                 Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"
@@ -566,6 +571,18 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="60"
+                                Binding="{Binding PesoNeto, StringFormat=\{0:N0\}}"
+                                ClipboardContentBinding="{x:Null}"
+                                Header="Neto">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Right" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>

@@ -102,6 +102,21 @@ namespace BCI.Models
             }
         }        
 
+        public int? PesoNeto
+        {
+            get
+            {
+                if (FECHA_PESO_BRUTO != null && FECHA_PESO_TARA != null)
+                {
+                    return PESO_BRUTO - PESO_TARA;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
     }
 }
