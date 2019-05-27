@@ -30,14 +30,16 @@ namespace BCI
         public MainWindow()
         {
             isLoading = true;
-            NotificationWindow notificationWindow = new NotificationWindow();
-            notificationWindow.Owner = this;
 
             DataContext = viewModel;
+            viewModel.NotificationEvent += NotificationEvent;
+
             InitializeComponent();
-            try { 
+
+            try
+            {
                 reset();
-            
+
                 if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
                 {
                     this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
@@ -53,21 +55,44 @@ namespace BCI
             }
             isLoading = false;
         }
-        
+
+        private void NotificationEvent(object sender, string msg, bool isError)
+        {
+            NotificationWindow notificationWindow = new NotificationWindow();
+            if (this.IsActive)
+            {
+                notificationWindow.Owner = this;
+            }
+            notificationWindow.Message = msg;
+            notificationWindow.ShowTitleBar = false;
+            if (isError)
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Red);
+                notificationWindow.Background = new SolidColorBrush(Colors.Pink);
+            }
+            else
+            {
+                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Yellow);
+                notificationWindow.Background = new SolidColorBrush(Colors.LightYellow);
+            }
+            notificationWindow.ShowDialog();
+        }
+
         private void InventoryItemsAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            viewModel.SelectedInventoryItemChanged();                   
+            viewModel.SelectedInventoryItemChanged();
         }
 
         private void TipoActividadAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            viewModel.SelectedTipoActividadChanged();            
+            viewModel.SelectedTipoActividadChanged();
         }
 
         private void OrganisationAutoCompleteComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            try { 
-                viewModel.SelectedOrganisationChanged();                
+            try
+            {
+                viewModel.SelectedOrganisationChanged();
             }
             catch (Exception ex)
             {
@@ -82,7 +107,8 @@ namespace BCI
 
         private void BtnBruto_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+            try
+            {
                 viewModel.PesoBruto = viewModel.PesoActual;
             }
             catch (Exception ex)
@@ -93,7 +119,8 @@ namespace BCI
 
         private void BtnTara_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+            try
+            {
                 viewModel.PesoTara = viewModel.PesoActual;
             }
             catch (Exception ex)
@@ -101,23 +128,26 @@ namespace BCI
                 viewModel.showError(ex);
             }
         }
-        
+
         private void BtnNewPesada_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+            try
+            {
                 viewModel.CreateNewPesada();
-            
+
                 InventoryItemsAutoCompleteComboBox.IsEnabled = true;
                 InventoryItemsAutoCompleteComboBox.IsEnabled = true;
                 TipoActividadAutoCompleteComboBox.IsEnabled = true;
                 OrganisationAutoCompleteComboBox.IsEnabled = true;
                 PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
                 MatriculaTextBox.IsEnabled = true;
-                EstablecimientoAutoCompleteComboBox.IsEnabled = true;           
+                EstablecimientoAutoCompleteComboBox.IsEnabled = true;
                 ContratoAutoCompleteComboBox.IsEnabled = true;
                 LoteAutoCompleteComboBox.IsEnabled = true;
+                RemisionTextBox.IsEnabled = true;
                 ObservacionesTextBox.IsEnabled = true;
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 viewModel.showError(ex);
             }
@@ -125,11 +155,13 @@ namespace BCI
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
         {
-            try {   
+            try
+            {
                 //viewModel.loadData();
                 reset();
                 viewModel.resetEditFields();
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 viewModel.showError(ex);
             }
@@ -147,7 +179,8 @@ namespace BCI
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            try { 
+            try
+            {
                 if (!viewModel.validate())
                 {
                     return;
@@ -170,25 +203,27 @@ namespace BCI
 
         private void reset()
         {
-            try { 
-                viewModel.resetEditFields();            
-            
-                InventoryItemsAutoCompleteComboBox.IsEnabled = false;     
+            try
+            {
+                viewModel.resetEditFields();
+
+                InventoryItemsAutoCompleteComboBox.IsEnabled = false;
                 ItemsUpdateBtn.IsEnabled = false;
-                TipoActividadAutoCompleteComboBox.IsEnabled = false;            
-                OrganisationAutoCompleteComboBox.IsEnabled = false;            
-                PuntosOperacionAutoCompleteComboBox.IsEnabled = false;            
-                MatriculaTextBox.IsEnabled = false;            
-                EstablecimientoAutoCompleteComboBox.IsEnabled = false;            
-                ContratoAutoCompleteComboBox.IsEnabled = false;            
-                LoteAutoCompleteComboBox.IsEnabled = false;    
+                TipoActividadAutoCompleteComboBox.IsEnabled = false;
+                OrganisationAutoCompleteComboBox.IsEnabled = false;
+                PuntosOperacionAutoCompleteComboBox.IsEnabled = false;
+                MatriculaTextBox.IsEnabled = false;
+                EstablecimientoAutoCompleteComboBox.IsEnabled = false;
+                ContratoAutoCompleteComboBox.IsEnabled = false;
+                LoteAutoCompleteComboBox.IsEnabled = false;
+                RemisionTextBox.IsEnabled = false;
                 ObservacionesTextBox.IsEnabled = false;
             }
             catch (Exception ex)
             {
                 viewModel.showError(ex);
             }
-        }        
+        }
 
         private void NewLoteBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -197,8 +232,9 @@ namespace BCI
 
         private void ClearBrutoBtn_Click(object sender, RoutedEventArgs e)
         {
-            try { 
-            viewModel.PesoBruto = 0;
+            try
+            {
+                viewModel.PesoBruto = 0;
             }
             catch (Exception ex)
             {
@@ -207,8 +243,9 @@ namespace BCI
         }
         private void ClearTaraBtn_Click(object sender, RoutedEventArgs e)
         {
-            try { 
-            viewModel.PesoTara = 0;
+            try
+            {
+                viewModel.PesoTara = 0;
             }
             catch (Exception ex)
             {
@@ -221,7 +258,7 @@ namespace BCI
             viewModel.ErrorLinkVisibility = Visibility.Hidden;
             viewModel.StatusColor = this.WindowTitleBrush;
             ErrorWindow errorWindow = new ErrorWindow();
-            errorWindow.ActualException = viewModel.ActualException;            
+            errorWindow.ActualException = viewModel.ActualException;
             errorWindow.ShowDialog();
         }
 
@@ -232,18 +269,20 @@ namespace BCI
 
         private void PesadasPendientesDataGrid_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            try { 
-            if (!isLoading)
+            try
             {
-                reset();
-                PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
-                MatriculaTextBox.IsEnabled = true;
-                EstablecimientoAutoCompleteComboBox.IsEnabled = true;
-                ContratoAutoCompleteComboBox.IsEnabled = true;
-                LoteAutoCompleteComboBox.IsEnabled = true;
-                ObservacionesTextBox.IsEnabled = true;
-                viewModel.SelectedPesadaPendientesChanged();
-            }
+                if (!isLoading)
+                {
+                    reset();
+                    PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
+                    MatriculaTextBox.IsEnabled = true;
+                    EstablecimientoAutoCompleteComboBox.IsEnabled = true;
+                    ContratoAutoCompleteComboBox.IsEnabled = true;
+                    LoteAutoCompleteComboBox.IsEnabled = true;
+                    RemisionTextBox.IsEnabled = true;
+                    ObservacionesTextBox.IsEnabled = true;
+                    viewModel.SelectedPesadaPendientesChanged();
+                }
             }
             catch (Exception ex)
             {
@@ -263,10 +302,10 @@ namespace BCI
         }
 
         private void SettingsBtn_Click(object sender, RoutedEventArgs e)
-            {
+        {
             SettingsWindow settingsWindow = new SettingsWindow();
             settingsWindow.ShowDialog();
-            }
+        }
 
         private void CerradasGridTicketMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -283,24 +322,5 @@ namespace BCI
             viewModel.imprimirAutorizacion((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
         }
 
-        public void showNotification(string message, bool isError)
-        {
-            //Application.Current.Dispatcher.Invoke(new Action(() =>
-            //{            
-            notificationWindow.Message = message;
-            notificationWindow.ShowTitleBar = false;
-            if (isError)
-            {
-                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Red);
-                notificationWindow.Background = new SolidColorBrush(Colors.Pink);
-            }
-            else
-            {
-                notificationWindow.BorderBrush = new SolidColorBrush(Colors.Yellow);
-                notificationWindow.Background = new SolidColorBrush(Colors.LightYellow);
-            }
-            notificationWindow.ShowDialog();
-            //}));
-        }
     }
 }

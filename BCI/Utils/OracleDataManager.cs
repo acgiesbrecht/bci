@@ -313,6 +313,7 @@ namespace BCI
                 param.Add("CREATION_DATE", pesada.CREATION_DATE);
                 param.Add("LAST_UPDATED_BY", pesada.LAST_UPDATED_BY);
                 param.Add("LAST_UPDATE_DATE", pesada.LAST_UPDATE_DATE);
+                param.Add("R_ID", null, DbType.Int32, ParameterDirection.ReturnValue);                
                 string sql = "INSERT INTO XX_OPM_BCI_PESADAS_ALL (ORG_ID, ORGANIZATION_ID, TIPO_ACTIVIDAD, " +
                     "INVENTORY_ITEM_ID, PUNTO_DESCARGA, ESTABLECIMIENTO, " +
                     "OBSERVACIONES, NRO_BASCULA, LOTE, CONTRATO, MATRICULA, " +
@@ -324,11 +325,12 @@ namespace BCI
                     ":OBSERVACIONES, :NRO_BASCULA, :LOTE, :CONTRATO, :MATRICULA, " +
                     ":PESO_BRUTO, :MODO_PESO_BRUTO, :FECHA_PESO_BRUTO, " +
                     ":PESO_TARA, :MODO_PESO_TARA, :FECHA_PESO_TARA, :PESO_ORIGEN, :NRO_NOTA_REMISION, " +
-                    ":CREATED_BY, :CREATION_DATE, :LAST_UPDATED_BY, :LAST_UPDATE_DATE)";
+                    ":CREATED_BY, :CREATION_DATE, :LAST_UPDATED_BY, :LAST_UPDATE_DATE)" +
+                    " RETURNING PESADA_ID INTO :R_ID";
                 using (var dbConnection = GetConnection())
                 {
-                    var affectedRows = dbConnection.Execute(sql, param);
-                    return affectedRows;
+                    var affectedRows = dbConnection.Execute(sql, param);                    
+                    return param.Get<int>("R_ID");
                 }
             }).Result;
         }

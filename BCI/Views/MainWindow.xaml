@@ -259,7 +259,7 @@
                         <StackPanel
                         Name="NotaRemisionPanel"
                         Style="{StaticResource PanelStyle}"
-                        Visibility="{Binding NotaRemisionVisibility}">
+                        >
                             <Label Style="{StaticResource LabelColumnStyle}">Nota de Remision</Label>
                             <Label>N°</Label>
                             <xctk:MaskedTextBox
@@ -271,8 +271,9 @@
                             Style="{StaticResource TextBoxStyle}"
                             ValueDataType="{x:Type s:String}"
                             Value="{Binding SelectedRemisionNro}" />
-                            <Label>Peso Neto</Label>
+                            <Label Visibility="{Binding NotaRemisionVisibility}">Peso (Kg)</Label>
                             <TextBox                            
+                                Visibility="{Binding NotaRemisionVisibility}"
                             Width="100"
                             FontWeight="Bold"
                             FontSize="14"
@@ -548,7 +549,7 @@
                                 Width="100"
                                 Binding="{Binding DISPOSICION}"
                                 ClipboardContentBinding="{x:Null}"
-                                Header="Dispocicion" />
+                                Header="Disposicion" />
                             <DataGridTextColumn
                                 Width="60"
                                 Binding="{Binding PESO_BRUTO, StringFormat=\{0:N0\}}"

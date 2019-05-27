@@ -20,8 +20,16 @@ namespace BCI.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /*public event EventHandler<NotificationEventArgs<string>> showNotification;
-Notify(DoSomething, new NotificationEventArgs<string>("Message"));*/
+        public delegate void NotificationEventHandler(object sender, string msg, bool isError);
+        public event NotificationEventHandler NotificationEvent;
+
+        private void showNotification(string msg, bool isError)
+        {
+            if (NotificationEvent != null)
+            {
+                NotificationEvent.Invoke(this, msg, isError);
+            }            
+        }
 
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
         public bool NewPesada { get; set; }
@@ -110,7 +118,7 @@ Notify(DoSomething, new NotificationEventArgs<string>("Message"));*/
         public MainViewModel()
         {
             try
-            {
+            {                
                 isLoading = true;                
                 resetEditFields();
                 resetTables();
@@ -736,12 +744,11 @@ Notify(DoSomething, new NotificationEventArgs<string>("Message"));*/
                             PesadaActual.PESO_TARA = PesoTara;
                             PesadaActual.FECHA_PESO_TARA = DateTime.Now;
                             PesadaActual.MODO_PESO_TARA = AutoBascula == true ? 'A' : 'M';
-                        }
-                        oracleDataManager.insertNewPesada(PesadaActual);
+                        }                        
+                        PesadaActual.PESADA_ID = oracleDataManager.insertNewPesada(PesadaActual);
                         try
-                        {
-                            XX_OPM_BCI_PESADAS_ALL latestPesada = oracleDataManager.getLatestPesada();
-                            ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(latestPesada));
+                        {                            
+                            ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(PesadaActual));
                         }
                         catch (Exception ex)
                         {
