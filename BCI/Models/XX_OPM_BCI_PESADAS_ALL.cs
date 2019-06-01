@@ -41,6 +41,7 @@ namespace BCI.Models
         public int LAST_UPDATED_BY { get; set; }
         public string ESTADO { get; set; }
         public string DISPOSICION { get; set; }
+        public long? AUTORIZ_REQ_ID { get; set; }
 
         public XX_OPM_BCI_PESADAS_ALL()
         {

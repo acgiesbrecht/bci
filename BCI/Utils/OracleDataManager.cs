@@ -58,7 +58,7 @@ namespace BCI
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.Query<XX_OPM_BCI_ESTAB>(
-                        " Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION AS Descripcion, RUC, COALESCE(ES_SOCIO, 'No') AS ES_SOCIO" +
+                        " Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, RAZON_SOCIAL AS RazonSocial, RUC, COALESCE(ES_SOCIO, 'No') AS ES_SOCIO" +
                         " FROM APPS.XX_OPM_BCI_ESTAB_AP_V ORDER BY RAZON_SOCIAL").ToList();
                 }
             }).Result;
@@ -71,7 +71,7 @@ namespace BCI
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.Query<XX_OPM_BCI_ESTAB>(
-                            " Select CODIGO AS Id, RAZON_SOCIAL AS RazonSocial, DESCRIPCION as Descripcion, RUC" +
+                            " Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, RAZON_SOCIAL AS RazonSocial, RUC" +
                             " FROM APPS.XX_OPM_BCI_ESTAB_AR_V ORDER BY RAZON_SOCIAL").ToList();
                 }
             }).Result;
@@ -407,6 +407,7 @@ namespace BCI
         public OracleConnection GetConnection()
         {
             const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
+            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
             var connection = new OracleConnection(connectionString);
             return connection;
         }

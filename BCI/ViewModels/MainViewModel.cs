@@ -28,7 +28,7 @@ namespace BCI.ViewModels
             if (NotificationEvent != null)
             {
                 NotificationEvent.Invoke(this, msg, isError);
-            }            
+            }
         }
 
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
@@ -115,11 +115,13 @@ namespace BCI.ViewModels
 
         private TicketPrinterManager ticketPrinterManager = new TicketPrinterManager();
 
+        bool SerialPortPendingClose = false;
+
         public MainViewModel()
         {
             try
-            {                
-                isLoading = true;                
+            {
+                isLoading = true;
                 resetEditFields();
                 resetTables();
                 loadData();
@@ -201,7 +203,11 @@ namespace BCI.ViewModels
             {
                 PesadasPendientesCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasPendientes());
                 PesadasPendientesCollection.ToList().ForEach(x => completeDataPesada(x));
-
+                PesadasPendientesCollection.ToList().ForEach(x =>
+                {
+                    if (x.AUTORIZ_REQ_ID == null)
+                        imprimirAutorizacion(x);
+                });
                 PesadasPendientesView = new CollectionViewSource { Source = PesadasPendientesCollection }.View;
             }
             catch (Exception ex)
@@ -216,23 +222,6 @@ namespace BCI.ViewModels
             {
                 PesadasCerradasCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasCerradas());
                 PesadasCerradasCollection.ToList().ForEach(x => completeDataPesada(x));
-                /*PesadasCerradasCollection.ToList().ForEach(x => x.InventoryItem = InventoryItemsCollection.FirstOrDefault(c => c.INVENTORY_ITEM_ID.Equals(x.INVENTORY_ITEM_ID)));
-                PesadasCerradasCollection.ToList().ForEach(x => x.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(x.TIPO_ACTIVIDAD)));
-                PesadasCerradasCollection.ToList().ForEach(x => x.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(x.ORGANIZATION_ID)));
-
-                foreach (XX_OPM_BCI_PESADAS_ALL p in PesadasCerradasCollection)
-                {
-                    if (p.TIPO_ACTIVIDAD == 2)
-                    {
-                        p.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                        //      p.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
-                    }
-                    else
-                    {
-                        p.Establecimiento = EstabsAPCollection.FirstOrDefault(c => c.Id.Equals(p.ESTABLECIMIENTO));
-                        //     p.PuntoOperacion = PuntosDescargaCollection.FirstOrDefault(c => c.Id.Equals(p.PUNTO_DESCARGA));
-                    }
-                }*/
 
                 PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
             }
@@ -242,36 +231,31 @@ namespace BCI.ViewModels
             }
         }
 
-        public void UpdateInventoryItemsPanel()
+        /*public void UpdateInventoryItemsPanel()
         {
             try
             {
-                /*                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(await oracleDataManager.GetInventoryItemList());
+                                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(await oracleDataManager.GetInventoryItemList());
                                 InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
                                 TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(await oracleDataManager.GetTipoActividadList());
                                 OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(await oracleDataManager.GetOrgsComplejoList());
                                 PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoDescargaList());
                                 PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoCargaList());
                                 EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabAPList());
-                                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabARList());             */
+                                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabARList());             
             }
             catch (Exception ex)
             {
                 showError(ex);
             }
-        }
+        }*/
 
         public void SelectedInventoryItemChanged()
         {
-            //Task.Run(() =>
-            //{
             try
             {
-                if (SelectedInventoryItem != null)
-                {
-                    UpdateTiposActividadPanel();
-                    UpdateOrganisationPanel();
-                }
+                UpdateTiposActividadPanel();
+                UpdateOrganisationPanel();
                 UpdateLotePanel();
                 UpdateContratoPanel();
             }
@@ -279,7 +263,6 @@ namespace BCI.ViewModels
             {
                 showError(ex);
             }
-            //});
         }
 
         private void UpdateTiposActividadPanel()
@@ -295,6 +278,8 @@ namespace BCI.ViewModels
                             .Where(i => i.INVENTORY_ITEM_ID == SelectedInventoryItem.INVENTORY_ITEM_ID)
                             .Any(a => a.TIPO_ACTIVIDAD == p.Id))
                     }.View;
+                    SelectedTipoActividad = null; //poner en null para disparar cambio de habilitacion de botones Bruto/Tara
+                    TiposActividadView.MoveCurrentToFirst();
                     SelectedTipoActividad = (XX_OPM_BCI_TIPO_ACTIVIDAD)TiposActividadView.CurrentItem;
                 }
             }
@@ -331,10 +316,15 @@ namespace BCI.ViewModels
                             EstablecimientoLabel = "Cliente";
                             EstablecimientoVisibility = Visibility.Visible;
                             EstabsCollection = EstabsARCollection;
-                            /*if (NewPesada)
+                            if (NewPesada)
                             {
-                                BtnBrutoIsEnabled = false; //--- Desactivado para venta de servicios
-                            }*/
+                                BtnBrutoIsEnabled = false;
+                                if (SelectedInventoryItem.DESCRIPCION_ITEM.ToUpper().Contains("ENTRADA"))
+                                {
+                                    BtnBrutoIsEnabled = true; //--- para venta de servicios
+                                    BtnTaraIsEnabled = false; //--- para venta de servicios
+                                }
+                            }
                             break;
                         case 3L:
                             OrganisationVisibility = Visibility.Collapsed;
@@ -476,8 +466,8 @@ namespace BCI.ViewModels
         public void CreateNewPesada()
         {
             try
-            {                                
-                resetEditFields();                
+            {
+                resetEditFields();
                 PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
                 NewPesada = true;
                 BtnBrutoIsEnabled = true;
@@ -744,11 +734,22 @@ namespace BCI.ViewModels
                             PesadaActual.PESO_TARA = PesoTara;
                             PesadaActual.FECHA_PESO_TARA = DateTime.Now;
                             PesadaActual.MODO_PESO_TARA = AutoBascula == true ? 'A' : 'M';
-                        }                        
+                        }
                         PesadaActual.PESADA_ID = oracleDataManager.insertNewPesada(PesadaActual);
                         try
-                        {                            
-                            ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(PesadaActual));
+                        {
+                            if (PesadaActual.TIPO_ACTIVIDAD == 1 || PesadaActual.TIPO_ACTIVIDAD == 2)
+                            {
+                                ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(PesadaActual));
+                            }
+                            else if (PesadaActual.TIPO_ACTIVIDAD == 3 && PesoBruto != null && PesoTara != null)
+                            {
+                                imprimirTicket(PesadaActual);
+                            }
+                            if (PesadaActual.TIPO_ACTIVIDAD == 2)
+                            {
+                                imprimirAutorizacion(completeDataPesada(PesadaActual));
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -771,7 +772,21 @@ namespace BCI.ViewModels
                         }
                         PesadaActual.LAST_UPDATE_DATE = DateTime.Now;
                         oracleDataManager.updatePesada(PesadaActual);
-                        imprimirTicket(PesadaActual);
+                        try
+                        {
+                            if (PesadaActual.TIPO_ACTIVIDAD == 1)
+                            {
+                                imprimirCertificado(PesadaActual);
+                            }
+                            else
+                            {
+                                imprimirTicket(PesadaActual);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            showError(ex);
+                        }
                     }
                     resetEditFields();
                     resetTables();
@@ -927,10 +942,13 @@ namespace BCI.ViewModels
         {
             try
             {
-                string msg = oracleDataManager.imprimirAutorizacion(pesada);
-                if (msg.ToUpper().Contains("ERROR"))
+                if (pesada.ESTADO.Equals("Completo"))
                 {
-                    showNotification(msg, true);
+                    string msg = oracleDataManager.imprimirAutorizacion(pesada);
+                    if (msg.ToUpper().Contains("ERROR"))
+                    {
+                        showNotification(msg, true);
+                    }
                 }
             }
             catch (Exception ex)
@@ -992,12 +1010,16 @@ namespace BCI.ViewModels
         {
             try
             {
+                SerialPortPendingClose = true;
+                Thread.Sleep(serialPort.ReadTimeout);
+                serialPort.DtrEnable = false;
+                serialPort.RtsEnable = false;
+                serialPort.DiscardInBuffer();
+                serialPort.DiscardOutBuffer();
+                serialPort.Close();
+                SerialPortPendingClose = false;
+                //showNotification("Sistea en Manual", false);
                 PesoActual = null;
-                if (serialPort.IsOpen)
-                {
-                    serialPort.Close();
-                    showNotification("Sistea en Manual", false);
-                }
             }
             catch (Exception ex)
             {
@@ -1009,27 +1031,32 @@ namespace BCI.ViewModels
         {
             try
             {
-                string reading = serialPort.ReadLine();
-                PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                if (!SerialPortPendingClose)
+                {
+                    string reading = serialPort.ReadLine();
+                    PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                }
+                else
+                {
+                    serialPort.DataReceived -= SerialPortRecieve;
+                }
             }
             catch (Exception ex)
             {
                 PesoActual = null;
                 showError(ex);
             }
-
+            //});                        
         }
-
-        
 
         public void showError(Exception ex)
         {
             showNotification(ex.Message, true);
             //Application.Current.Dispatcher.Invoke(new Action(() =>
             //{
-                StatusColor = new SolidColorBrush(Colors.Red);
-                ActualException = ex;
-                ErrorLinkVisibility = Visibility.Visible;
+            StatusColor = new SolidColorBrush(Colors.Red);
+            ActualException = ex;
+            ErrorLinkVisibility = Visibility.Visible;
             //}));
         }
 
