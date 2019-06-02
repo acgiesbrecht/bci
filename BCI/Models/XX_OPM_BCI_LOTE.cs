@@ -9,7 +9,14 @@ namespace BCI.Models
 {
     public class XX_OPM_BCI_LOTE
     {
-        
+        public XX_OPM_BCI_LOTE()
+        {            
+        }
+        public XX_OPM_BCI_LOTE(string newId)
+        {
+            this.ID = newId;
+        }
+
         [ExplicitKey]
         public string ID { get; set; }
         public string Descripcion

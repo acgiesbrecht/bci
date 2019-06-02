@@ -324,5 +324,9 @@ namespace BCI
             viewModel.imprimirAutorizacion((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
         }
 
+        private void MetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            viewModel.serialStop();
+        }
     }
 }

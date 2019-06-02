@@ -648,15 +648,18 @@ namespace BCI.ViewModels
         {
             try
             {
-                XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();
-                XX_OPM_BCI_LOTE newLote = new XX_OPM_BCI_LOTE();
+                XX_OPM_BCI_LOTE maxLote = oracleDataManager.GetMaxLoteCurrentYear();                
 
                 string Year = maxLote.ID.Substring(0, 2);
                 string LoteCodigo = maxLote.ID.Substring(3, 3);
 
-                newLote.ID = Year + "-" +
+                XX_OPM_BCI_LOTE newLote = new XX_OPM_BCI_LOTE(Year + "-" +
                     (int.Parse(LoteCodigo) + 1).ToString("D3") + "-" +
-                    SelectedEstab.Id;
+                    SelectedEstab.Id);
+
+                /*newLote.ID = Year + "-" +
+                    (int.Parse(LoteCodigo) + 1).ToString("D3") + "-" +
+                    SelectedEstab.Id;*/
                 LotesCollection.Add(newLote);
                 SelectedLote = newLote;
             }
@@ -988,7 +991,9 @@ namespace BCI.ViewModels
         private void serialStart()
         {
             try
-            {
+            {                
+               serialStop();
+                
                 serialPort = new SerialPort();
                 serialPort.PortName = Properties.Settings.Default.SerialPort == "" ? "COM1" : Properties.Settings.Default.SerialPort;
                 serialPort.BaudRate = 9600;
@@ -1006,10 +1011,12 @@ namespace BCI.ViewModels
             }
         }
 
-        private void serialStop()
+        public void serialStop()
         {
             try
             {
+                if (serialPort != null && serialPort.IsOpen)
+                {                    
                 SerialPortPendingClose = true;
                 Thread.Sleep(serialPort.ReadTimeout);
                 serialPort.DtrEnable = false;
@@ -1019,7 +1026,8 @@ namespace BCI.ViewModels
                 serialPort.Close();
                 SerialPortPendingClose = false;
                 //showNotification("Sistea en Manual", false);
-                PesoActual = null;
+                PesoActual = null;                    
+                }
             }
             catch (Exception ex)
             {

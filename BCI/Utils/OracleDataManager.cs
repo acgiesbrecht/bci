@@ -253,7 +253,49 @@ namespace BCI
                 {
                     var param = new DynamicParameters();
                     param.Add("ESTAB", EstablecimientoCodigo);
-                    return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+                    //return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+                    
+                    //---------------HARDCODING DE MIGRACION---LOTES PRE EXISTENTES---------------
+                    List<XX_OPM_BCI_LOTE> res = dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+                                        
+                    if(DateTime.Now.Year == 2019)
+                    {                    
+                        if (EstablecimientoCodigo.Equals("0132")) //19-001-0132 //19-009-0132
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-009-0132"));
+                            res.Add(new XX_OPM_BCI_LOTE("19-001-0132"));                            
+                        }
+                        else if (EstablecimientoCodigo.Equals("0210")) //19-002-0210
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-002-0210"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0214")) //19-003-0214
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-003-0214"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0267")) //19-004-0267
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-004-0267"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0128")) //19-005-0128
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-005-0128"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0330")) //19-006-0330
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-006-0330"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0199")) //19-007-0199
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-007-0199"));
+                        }
+                        else if (EstablecimientoCodigo.Equals("0012")) //19-008-0012
+                        {
+                            res.Add(new XX_OPM_BCI_LOTE("19-008-0012"));
+                        }                        
+                    }
+                    return res;
+                    //---------------------------------
                 }
             }).Result;
         }
@@ -278,9 +320,20 @@ namespace BCI
             {
                 using (var dbConnection = GetConnection())
                 {
-                    return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT COALESCE(MAX(LOTE), CONCAT(TO_CHAR(SYSDATE, 'YY'), '-000-0000')) AS ID " +
+                    /*return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT COALESCE(MAX(LOTE), CONCAT(TO_CHAR(SYSDATE, 'YY'), '-000-0000')) AS ID " +
+                                        "FROM XX_OPM_BCI_PESADAS_ALL " +
+                                        "WHERE LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%')").Result.Single();*/
+
+                    //------- HARDCODE MIGRACION cureent max lote =>19-009-0132
+                    XX_OPM_BCI_LOTE res = dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT COALESCE(MAX(LOTE), CONCAT(TO_CHAR(SYSDATE, 'YY'), '-000-0000')) AS ID " +
                                         "FROM XX_OPM_BCI_PESADAS_ALL " +
                                         "WHERE LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%')").Result.Single();
+                    if (DateTime.Now.Year == 2019 && int.Parse(res.ID.Substring(3, 3)) < 9)
+                    {
+                        res.ID = "19-009-0132";
+                    }
+                    return res;
+
                 }
             }).Result;
         }
@@ -406,8 +459,8 @@ namespace BCI
 
         public OracleConnection GetConnection()
         {
-            const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
-            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
+            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
+            const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
             var connection = new OracleConnection(connectionString);
             return connection;
         }
