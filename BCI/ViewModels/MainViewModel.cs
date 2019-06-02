@@ -827,7 +827,7 @@ namespace BCI.ViewModels
                 //UpdateContratoPanel();
                 UpdateNotaRemisionPanel();
 
-                AutoBascula = true;
+                //AutoBascula = true;
 
                 BtnBrutoIsEnabled = false;
                 BtnTaraIsEnabled = false;

@@ -25,16 +25,17 @@ namespace BCI
     public partial class MainWindow : MetroWindow, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        MainViewModel viewModel = new MainViewModel();
+        MainViewModel viewModel;
         public bool isLoading { get; set; }
         public MainWindow()
         {
-            isLoading = true;
-
-            DataContext = viewModel;
-            viewModel.NotificationEvent += NotificationEvent;
+            isLoading = true;            
 
             InitializeComponent();
+
+            viewModel = new MainViewModel();
+            DataContext = viewModel;
+            viewModel.NotificationEvent += NotificationEvent;
 
             try
             {
@@ -54,6 +55,7 @@ namespace BCI
                 viewModel.showError(ex);
             }
             isLoading = false;
+            viewModel.AutoBascula = true;
         }
 
         private void NotificationEvent(object sender, string msg, bool isError)
