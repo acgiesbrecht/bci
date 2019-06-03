@@ -16,8 +16,8 @@ namespace BCI
 
         public List<XX_OPM_BCI_ITEMS_V> GetInventoryItemList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     dbConnection.Open();
@@ -26,55 +26,55 @@ namespace BCI
                     dbConnection.SetSessionInfo(oracleGlobalization);
                     return dbConnection.QueryAsync<XX_OPM_BCI_ITEMS_V>("Select * FROM APPS.XX_OPM_BCI_ITEMS_V ORDER BY DESCRIPCION_ITEM").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public XX_OPM_BCI_ITEMS_V GetInventoryItemById(long id)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.QueryFirstAsync<XX_OPM_BCI_ITEMS_V>("SELECT * FROM APPS.XX_OPM_BCI_ITEMS_V WHERE INVENTORY_ITEM_ID = " + id.ToString()).Result;
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratosList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.Query<XX_OPM_BCI_CONTRATOS_V>("Select * FROM XX_OPM_BCI_CONTRATOS_V").ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_ESTAB> GetEstabAPList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.Query<XX_OPM_BCI_ESTAB>(
                         " Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, RAZON_SOCIAL AS RazonSocial, RUC, COALESCE(ES_SOCIO, 'No') AS ES_SOCIO" +
                         " FROM APPS.XX_OPM_BCI_ESTAB_AP_V ORDER BY RAZON_SOCIAL").ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_ESTAB> GetEstabARList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.Query<XX_OPM_BCI_ESTAB>(
                             " Select CODIGO AS Id, SIGNIFICADO AS Significado, DESCRIPCION AS Descripcion, RAZON_SOCIAL AS RazonSocial, RUC" +
                             " FROM APPS.XX_OPM_BCI_ESTAB_AR_V ORDER BY RAZON_SOCIAL").ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         /*public List<XX_OPM_BCI_ESTAB> GetEstabAllList()
@@ -219,8 +219,8 @@ namespace BCI
 
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItem(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     var param = new DynamicParameters();
@@ -242,13 +242,13 @@ namespace BCI
                     }
                     return result;
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_LOTE> GetLotesAlgodonByEstablecimiento(string EstablecimientoCodigo)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     var param = new DynamicParameters();
@@ -297,13 +297,13 @@ namespace BCI
                     return res;
                     //---------------------------------
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_LOTE> GetLotesDAE()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                                 /*return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL " +
@@ -311,13 +311,13 @@ namespace BCI
                                     " ORDER BY LOTE").Result.ToList();*/
                     return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("Select CODIGO AS ID FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_LOTES_DAE'").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public XX_OPM_BCI_LOTE GetMaxLoteCurrentYear()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     /*return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT COALESCE(MAX(LOTE), CONCAT(TO_CHAR(SYSDATE, 'YY'), '-000-0000')) AS ID " +
@@ -335,13 +335,13 @@ namespace BCI
                     return res;
 
                 }
-            }).Result;
+           // }).Result;
         }
 
         public int insertNewPesada(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 var param = new DynamicParameters();
                 param.Add("ORG_ID", pesada.ORG_ID);
                 param.Add("ORGANIZATION_ID", pesada.ORGANIZATION_ID);
@@ -385,13 +385,13 @@ namespace BCI
                     var affectedRows = dbConnection.Execute(sql, param);                    
                     return param.Get<int>("R_ID");
                 }
-            }).Result;
+            //}).Result;
         }
 
         public int updatePesada(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 var param = new DynamicParameters();
                 param.Add("PESADA_ID", pesada.PESADA_ID);
                 param.Add("PUNTO_DESCARGA", pesada.PUNTO_DESCARGA);
@@ -424,13 +424,13 @@ namespace BCI
                     var affectedRows = dbConnection.Execute(sql, param);
                     return affectedRows;
                 }
-            }).Result;
+            //}).Result;
         }
 
         public string imprimirAutorizacion(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+           // {
                 var param = new DynamicParameters();
                 param.Add("p_pesada_id", pesada.PESADA_ID);
                 param.Add("p_msg", "", DbType.String, ParameterDirection.Output);
@@ -439,13 +439,13 @@ namespace BCI
                     var message = dbConnection.Execute("xx_opm_bci_ext_pkg.p_ticket", param, commandType: CommandType.StoredProcedure);
                     return param.Get<string>("p_msg").ToString();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public string imprimirCertificado(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 var param = new DynamicParameters();
                 param.Add("p_pesada_id", pesada.PESADA_ID);
                 param.Add("p_msg", "", DbType.String, ParameterDirection.Output);
@@ -454,7 +454,7 @@ namespace BCI
                     var message = dbConnection.Execute("xx_opm_bci_ext_pkg.p_certif", param, commandType: CommandType.StoredProcedure);
                     return param.Get<string>("p_msg").ToString();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public OracleConnection GetConnection()
