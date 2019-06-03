@@ -459,8 +459,8 @@ namespace BCI
 
         public OracleConnection GetConnection()
         {
-            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
-            const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
+            const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
+            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
             var connection = new OracleConnection(connectionString);
             return connection;
         }
