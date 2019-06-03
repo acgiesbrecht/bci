@@ -43,11 +43,11 @@ namespace BCI
 
                 if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
                 {
-                    this.Title = "BCI - TEST - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                    this.Title = "BCI - " + ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
                 }
                 else
                 {
-                    this.Title = "BCI - TEST - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                    this.Title = "BCI - " + Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 }
             }
             catch (Exception ex)
