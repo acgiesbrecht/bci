@@ -443,6 +443,7 @@ namespace BCI.ViewModels
             {
                 EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabAPList());
                 EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(oracleDataManager.GetEstabARList());
+                SelectedTipoActividadChanged();
             }
             catch (Exception ex)
             {
