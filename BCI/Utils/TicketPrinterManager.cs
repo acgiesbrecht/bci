@@ -20,8 +20,8 @@ namespace BCI
 
         public void imprimirTicket(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            Task.Run(() =>
-            {
+           // Task.Run(() =>
+           // {
                 string str = "";
 
                 // header-----------------------------------------------------------------------
@@ -50,12 +50,13 @@ namespace BCI
 
                 str += Chr(27) + Chr(33) + Chr(5) + "Chapa N°: " + Chr(27) + Chr(33) + Chr(13) + pesada.MATRICULA + Environment.NewLine;
 
+            if (pesada.Establecimiento != null) { 
                 str += Chr(27) + Chr(33) + Chr(5) + "Establecimiento: ";
                 if (pesada.Establecimiento.RazonSocial.Length > 31)
                     str += Chr(27) + Chr(100) + Chr(1);
-                str += Chr(27) + Chr(33) + Chr(13) + pesada.Establecimiento.RazonSocial + Environment.NewLine;
-
-                str += Chr(27) + Chr(33) + Chr(5) + "Articulo: ";
+                str += Chr(27) + Chr(33) + Chr(13) + pesada.Establecimiento.Significado + Environment.NewLine;
+            }
+            str += Chr(27) + Chr(33) + Chr(5) + "Articulo: ";
                 if (pesada.InventoryItem.DESCRIPCION_ITEM.Length > 23)
                     str += Chr(27) + Chr(100) + Chr(1);
                 str += Chr(27) + Chr(33) + Chr(13) + pesada.InventoryItem.DESCRIPCION_ITEM + Environment.NewLine;
@@ -71,6 +72,10 @@ namespace BCI
                     {
                         str += Chr(27) + Chr(33) + Chr(13) + pesada.LOTE + Environment.NewLine;
                     }
+                }
+
+                if (pesada.OBSERVACIONES != null) {
+                    str += Chr(27) + Chr(33) + Chr(5) + "Obs.: " + Chr(27) + Chr(33) + Chr(13) + pesada.OBSERVACIONES + Environment.NewLine;
                 }
 
                 str += Chr(27) + Chr(97) + Chr(1); // alineacion centrada
@@ -120,12 +125,12 @@ namespace BCI
                 str += Chr(27) + Chr(100) + Chr(6) + " "; // FEED 6
 
                 printpos(str);
-            });
+            //});
         }
         public void imprimirTicketRecAlgodon(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            Task.Run(() =>
-            {
+            //Task.Run(() =>
+            //{
                 string str = "";
 
                 // header-----------------------------------------------------------------------
@@ -172,12 +177,12 @@ namespace BCI
                 str += Chr(27) + Chr(100) + Chr(6) + " "; // FEED 6
 
                 printpos(str);
-            });
+            //});
         }
         public void imprimirTicketRecMuestra(XX_OPM_BCI_PESADAS_ALL pesada)
         {
-            Task.Run(() =>
-            {
+            //Task.Run(() =>
+            //{
                 StringBuilder st = new StringBuilder();
                 string str = "";
                 /*
@@ -293,7 +298,7 @@ namespace BCI
                 st.Append(Chr(27) + Chr(100) + Chr(6) + " "); // FEED 6
 
                 printpos(st.ToString());
-            });
+            //});
 
         }
 

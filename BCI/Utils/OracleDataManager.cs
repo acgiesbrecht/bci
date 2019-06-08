@@ -91,46 +91,46 @@ namespace BCI
 
         public List<XX_OPM_BCI_ORGS_COMPLEJO> GetOrgsComplejoList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.QueryAsync<XX_OPM_BCI_ORGS_COMPLEJO>("Select CODIGO AS Id, SIGNIFICADO AS Tag, DESCRIPCION AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_ORGS_COMPLEJO'").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_PUNTO_OPERACION> GetPuntoDescargaList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.QueryAsync<XX_OPM_BCI_PUNTO_OPERACION>("Select CODIGO AS Id, SIGNIFICADO AS Description, TAG AS Tag FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_PUNTO_DESCARGA'").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_PUNTO_OPERACION> GetPuntoCargaList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.QueryAsync<XX_OPM_BCI_PUNTO_OPERACION>("Select CODIGO AS Id, SIGNIFICADO AS Description, TAG AS Tag FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_PUNTO_CARGA'").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_TIPO_ACTIVIDAD> GetTipoActividadList()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     return dbConnection.QueryAsync<XX_OPM_BCI_TIPO_ACTIVIDAD>("Select CODIGO AS Id, SIGNIFICADO AS Description FROM APPS.XX_OPM_BCI_LOOKUPS_V WHERE LOOKUP_TYPE = 'XX_OPM_BCI_TIPO_ACTIVIDAD'").Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         /*public List<string> GetLoteList()
@@ -143,26 +143,26 @@ namespace BCI
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasPendientes()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 return GetPesadas(" WHERE ESTADO = 'Pendiente' OR ESTADO = 'Completo'" +
                 "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasCerradas()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 return GetPesadas(" WHERE ESTADO = 'Cerrado'" +
                 "ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC");
-            }).Result;
+            //}).Result;
         }
 
         private List<XX_OPM_BCI_PESADAS_ALL> GetPesadas(String where)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     dbConnection.Open();
@@ -174,13 +174,13 @@ namespace BCI
                         "LEFT JOIN XX_OPM_BCI_PESADAS_ESTADOS_V v " +
                         "ON p.PESADA_ID = v.PESADA_ID" + where).Result.ToList();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public XX_OPM_BCI_PESADAS_ALL GetPesadaByID(int id)
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     var param = new DynamicParameters();
@@ -195,13 +195,13 @@ namespace BCI
                         "ON p.PESADA_ID = v.PESADA_ID " +
                         "WHERE p.PESADA_ID = :PESADA_ID", param).FirstOrDefault();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public XX_OPM_BCI_PESADAS_ALL getLatestPesada()
         {
-            return Task.Run(() =>
-            {
+            //return Task.Run(() =>
+            //{
                 using (var dbConnection = GetConnection())
                 {
                     dbConnection.Open();
@@ -214,7 +214,7 @@ namespace BCI
                         "ON p.PESADA_ID = v.PESADA_ID " +
                         "WHERE p.CREATION_DATE = (SELECT MAX(CREATION_DATE) FROM XX_OPM_BCI_PESADAS_ALL)").Result.FirstOrDefault();
                 }
-            }).Result;
+            //}).Result;
         }
 
         public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItem(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
@@ -256,7 +256,7 @@ namespace BCI
                     //return dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
                     
                     //---------------HARDCODING DE MIGRACION---LOTES PRE EXISTENTES---------------
-                    List<XX_OPM_BCI_LOTE> res = dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') ORDER BY LOTE", param).Result.ToList();
+                    List<XX_OPM_BCI_LOTE> res = dbConnection.QueryAsync<XX_OPM_BCI_LOTE>("SELECT DISTINCT LOTE AS ID FROM XX_OPM_BCI_PESADAS_ALL WHERE LOTE LIKE CONCAT('%-', :ESTAB) AND LOTE LIKE CONCAT(TO_CHAR(SYSDATE, 'YY'), '%') AND LIQ_YN IS NULL ORDER BY LOTE", param).Result.ToList();
                                         
                     if(DateTime.Now.Year == 2019)
                     {                    

@@ -745,13 +745,13 @@ namespace BCI.ViewModels
                             {
                                 ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(PesadaActual));
                             }
-                            else if (PesadaActual.TIPO_ACTIVIDAD == 3 && PesoBruto != null && PesoTara != null)
+                            else if ((PesadaActual.TIPO_ACTIVIDAD == 3 || PesadaActual.TIPO_ACTIVIDAD == 4) && PesoBruto != null && PesoTara != null)
                             {
                                 imprimirTicket(PesadaActual);
                             }
                             if (PesadaActual.TIPO_ACTIVIDAD == 2)
                             {
-                                imprimirAutorizacion(completeDataPesada(PesadaActual));
+                                //imprimirAutorizacion(completeDataPesada(PesadaActual));
                             }
                         }
                         catch (Exception ex)

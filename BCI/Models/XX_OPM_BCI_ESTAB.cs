@@ -13,12 +13,12 @@ namespace BCI.Models
 
         [ExplicitKey]
         public string Id { get; set; }
-        public string Signifado { get; set; }
+        public string Significado { get; set; }
         public string Descripcion { get; set; }
         public string RazonSocial { get; set; }
         public string RUC { get; set; }        
         public string ES_SOCIO { get; set; }
-        public string Description => RazonSocial + AdditionalData;
+        public string Description => Significado + AdditionalData;
         public string AdditionalData {
             get { 
                 if(Descripcion == null){

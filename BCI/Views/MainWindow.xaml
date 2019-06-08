@@ -32,7 +32,7 @@
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
             <Style x:Key="PanelStyle" TargetType="{x:Type StackPanel}">
@@ -44,22 +44,22 @@
                 <Setter Property="VerticalContentAlignment" Value="Center" />
                 <Setter Property="AutoMoveFocus" Value="True" />
                 <Setter Property="AutoWordSelection" Value="True" />
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontWeight" Value="Bold" />
             </Style>
             <Style x:Key="LabelColumnStyle" TargetType="{x:Type Label}">
                 <Setter Property="Width" Value="150" />
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="HorizontalContentAlignment" Value="Left" />
             </Style>
             <Style x:Key="ComboStyle" TargetType="{x:Type dotNetKitControls:AutoCompleteComboBox}">
                 <Setter Property="VerticalContentAlignment" Value="Center" />
             </Style>
             <Style TargetType="{x:Type DataGrid}">
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
             <Style TargetType="{x:Type TabControl}">
-                <Setter Property="FontSize" Value="14" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
             <!--<Style TargetType="{x:Type Button}"
                     BasedOn="{StaticResource MetroFlatButton}" />-->
@@ -84,7 +84,7 @@
                             Padding="5"
                             Click="BtnNewPesada_Click"
                             Content="Nueva Pesada"
-                            FontSize="14" />
+                            FontSize="18" />
                         </StackPanel>
                         <StackPanel Style="{StaticResource PanelStyle}">
                             <Label Style="{StaticResource LabelColumnStyle}">Articulo</Label>
@@ -196,7 +196,7 @@
                                 <dotNetKitControls:AutoCompleteComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel>
-                                            <TextBlock FontWeight="Bold" Text="{Binding RazonSocial}" />
+                                            <TextBlock FontWeight="Bold" Text="{Binding Significado}" />
                                             <TextBlock FontWeight="Light">
                                             RUC:<Run Text="{Binding RUC, Mode=OneTime}" />
                                             <Run Text="{Binding Descripcion, Mode=OneTime}" />
@@ -256,7 +256,7 @@
                             Width="65"
                             Click="NewLoteBtn_Click"
                             Content="Nuevo"
-                            FontSize="14"
+                            FontSize="16"
                             Visibility="{Binding NewLoteBtnVisibility}" />
                         </StackPanel>
                         <StackPanel
@@ -279,7 +279,7 @@
                                 Visibility="{Binding NotaRemisionVisibility}"
                             Width="100"
                             FontWeight="Bold"
-                            FontSize="14"
+                            FontSize="16"
                             HorizontalContentAlignment="Right"                                                                                    
                             Text="{Binding SelectedRemisionPeso}" />
                         </StackPanel>
@@ -308,13 +308,15 @@
                                     Margin="5"
                                     Content="Automatico"
                                     GroupName="Bascula"
-                                    IsChecked="{Binding AutoBascula}" />
+                                    IsChecked="{Binding AutoBascula}"
+                                    FontSize="16"/>
                             <RadioButton
                                     Name="ManualRadioButton"
                                     Grid.Column="1"
                                     Margin="5"
                                     Content="Manual"
-                                    GroupName="Bascula" />
+                                    GroupName="Bascula" 
+                                    FontSize="16"/>
                         </StackPanel>
                         <StackPanel Margin="5" Orientation="Horizontal">
                             <TextBox
@@ -339,7 +341,7 @@
                                         Margin="2"
                                         Click="BtnBruto_Click"
                                         Content="Bruto"
-                                        FontSize="14"
+                                        FontSize="18"
                                         IsEnabled="{Binding BtnBrutoIsEnabled}" />
                                 <Button
                                         Name="BtnTara"
@@ -348,21 +350,21 @@
                                         Margin="2"
                                         Click="BtnTara_Click"
                                         Content="Tara"
-                                        FontSize="14"
+                                        FontSize="18"
                                         IsEnabled="{Binding BtnTaraIsEnabled}" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label
-                                    Width="80"
+                                    Width="100"
                                     Content="Peso Bruto"
-                                    FontSize="14" />
+                                    FontSize="18" />
                             <Label
-                                    Width="50"
+                                    Width="75"
                                     HorizontalContentAlignment="Right"
                                     Background="White"
                                     Content="{Binding PesoBruto, StringFormat=\{0:N0\}}"
-                                    FontSize="14"
+                                    FontSize="18"
                                     FontWeight="Bold" />
                             <Label Content="Kg" FontSize="14" />
                             <Button
@@ -373,16 +375,16 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label
-                                    Width="80"
+                                    Width="100"
                                     Content="Peso Tara"
-                                    FontSize="14" />
+                                    FontSize="18" />
                             <Label
                                     x:Name="PesoTaraLabel"
-                                    Width="50"
+                                    Width="75"
                                     HorizontalContentAlignment="Right"
                                     Background="White"
                                     Content="{Binding PesoTara, StringFormat=\{0:N0\}}"
-                                    FontSize="14"
+                                    FontSize="18"
                                     FontWeight="Bold" />
                             <Label Content="Kg" FontSize="14" />
                             <Button
@@ -400,7 +402,7 @@
                                     Padding="5"
                                     Click="BtnGuardar_Click"
                                     Content="Guardar"
-                                    FontSize="14"
+                                    FontSize="18"
                                     IsEnabled="{Binding BtnGuardarIsEnabled}" />
                             <Button
                                     Name="BtnCancel"
@@ -410,7 +412,7 @@
                                     Padding="5"
                                     Click="BtnCancelar_Click"
                                     Content="Cancelar"
-                                    FontSize="14" />
+                                    FontSize="18" />
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
@@ -421,7 +423,7 @@
             Grid.IsSharedSizeScope="True"
             Orientation="Vertical">
             <TabControl Margin="5">
-                <TabItem Header="Pendientes">
+                <TabItem Header="Pendientes" FontSize="18">
                     <DataGrid
                         Name="PesadasPendientesDataGrid"
                         Height="240"
@@ -438,6 +440,7 @@
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.ContextMenu>
                             <ContextMenu>
+                                <MenuItem Header="Imprimir Ticket de Muestra" Name="PendientesGridTicketMuestraMenuItem" Click="PendientesGridTicketMuestraMenuItem_Click" />
                                 <MenuItem Header="Imprimir Autorizacion" Name="PendientesGridAutorizacionMenuItem" Click="PendientesGridAutorizacionMenuItem_Click"/>
                             </ContextMenu>
                         </DataGrid.ContextMenu>

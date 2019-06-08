@@ -195,6 +195,7 @@ namespace BCI
                 if (result == MessageBoxResult.Yes)
                 {
                     viewModel.Save();
+                    reset();                    
                 }
             }
             catch (Exception ex)
@@ -327,6 +328,16 @@ namespace BCI
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
             viewModel.serialStop();
+        }
+
+        private void PendientesGridMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PendientesGridTicketMuestraMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.imprimirTicket((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
         }
     }
 }
