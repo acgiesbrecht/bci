@@ -185,57 +185,7 @@ namespace BCI
             //{
                 StringBuilder st = new StringBuilder();
                 string str = "";
-                /*
-            // header-----------------------------------------------------------------------
-
-            str += Chr(27) + Chr(116) + Chr(16); // Code PAge WPC1252
-
-            str += Chr(27) + Chr(114) + Chr(0); // color negro
-            str += Chr(27) + Chr(97) + Chr(1); // alineacion centrada
-            str += Chr(27) + Chr(33) + Chr(5) + "COOPERATIVA CHORTITZER LTDA." + Environment.NewLine;
-            str += Chr(27) + Chr(33) + Chr(0) + "Complejo Industrial" + Environment.NewLine;
-            str += Chr(27) + Chr(33) + Chr(12) + "BASCULA" + Environment.NewLine + Environment.NewLine;
-
-            str += Chr(27) + Chr(33) + Chr(92) + "MUESTRA DE MATERIA PRIMA" + Environment.NewLine + Environment.NewLine;
-
-            str += Chr(27) + Chr(33) + Chr(56) + "N°: " + pesada.PESADA_ID.ToString() + Environment.NewLine + Environment.NewLine;
-
-            // ------------------------------------------------------------------------------
-
-
-
-            str += Chr(27) + Chr(97) + Chr(0); // alineacion izq
-
-            str += Chr(27) + Chr(33) + Chr(5) + "Fecha:  " + Chr(27) + Chr(33) + Chr(13) + pesada.EntryDate + Environment.NewLine;
-
-            str += Chr(27) + Chr(33) + Chr(5) + "Chapa N°: " + Chr(27) + Chr(33) + Chr(13) + pesada.MATRICULA + Environment.NewLine;
-
-            // str += Chr(27) + Chr(33) + Chr(5) + "Empresa/Productor: " + vbCrLf
-            // If sEmp.Length > 31 Then
-            // str += Chr(27) + Chr(100) + Chr(1)
-            // End If
-            // str += Chr(27) + Chr(33) + Chr(5) + sEmp + vbCrLf
-
-            str += Chr(27) + Chr(33) + Chr(5) + "Producto: " + Environment.NewLine + Environment.NewLine;
-            str += Chr(27) + Chr(33) + Chr(56) + pesada.InventoryItem.DESCRIPCION_ITEM + Environment.NewLine;
-
-            str += Chr(27) + Chr(33) + Chr(56) + "Camión OK?" + Environment.NewLine + "SI_____  NO_____" + Environment.NewLine + Environment.NewLine;
-            str += Chr(27) + Chr(33) + Chr(56) + "Carga OK?" + Environment.NewLine + "SI_____  NO_____" + Environment.NewLine + Environment.NewLine;
-
-            str += Chr(27) + Chr(97) + Chr(1); // alineacion centrada
-
-            str += Chr(27) + Chr(33) + Chr(5) + new string('-', 40);
-
-            str += Chr(27) + Chr(97) + Chr(0) + Environment.NewLine + Environment.NewLine + Environment.NewLine; // alineacion izq
-
-            str += Chr(27) + Chr(97) + Chr(1) + Chr(27) + Chr(33) + Chr(5) + "Firma Bascula:__________________" + Environment.NewLine;
-            // str += Chr(27) + Chr(33) + Chr(5) + Now.ToString + vbCrLf
-
-            str += Chr(27) + Chr(100) + Chr(6) + " "; // FEED 6
-
-            printpos(str);
-
-                */
+            
                 // header-----------------------------------------------------------------------
 
                 st.Append(Chr(27) + Chr(116) + Chr(16)); // Code PAge WPC1252
@@ -260,14 +210,18 @@ namespace BCI
 
                 st.Append(Chr(27) + Chr(33) + Chr(5) + "Chapa N°: " + Chr(27) + Chr(33) + Chr(13) + pesada.MATRICULA + Environment.NewLine);
 
-                // str += Chr(27) + Chr(33) + Chr(5) + "Empresa/Productor: " + vbCrLf
-                // If sEmp.Length > 31 Then
-                // str += Chr(27) + Chr(100) + Chr(1)
-                // End If
-                // str += Chr(27) + Chr(33) + Chr(5) + sEmp + vbCrLf
+                st.Append(Chr(27) + Chr(33) + Chr(5) + "Tipo de Actividad°: " + Chr(27) + Chr(33) + Chr(13) + pesada.TipoActividad.Description + Environment.NewLine);
 
-                //st.Append(Chr(27) + Chr(33) + Chr(5) + "Producto: " + Environment.NewLine + Environment.NewLine);
-                st.Append(Chr(27) + Chr(33) + Chr(5) + Environment.NewLine + Environment.NewLine);
+                st.Append(Chr(27) + Chr(33) + Chr(5) + "RUC: " + Chr(27) + Chr(33) + Chr(13) + pesada.Establecimiento.RUC + Environment.NewLine);
+
+            // str += Chr(27) + Chr(33) + Chr(5) + "Empresa/Productor: " + vbCrLf
+            // If sEmp.Length > 31 Then
+            // str += Chr(27) + Chr(100) + Chr(1)
+            // End If
+            // str += Chr(27) + Chr(33) + Chr(5) + sEmp + vbCrLf
+
+            //st.Append(Chr(27) + Chr(33) + Chr(5) + "Producto: " + Environment.NewLine + Environment.NewLine);
+            st.Append(Chr(27) + Chr(33) + Chr(5) + Environment.NewLine + Environment.NewLine);
                 st.Append(Chr(27) + Chr(33) + Chr(56) + pesada.InventoryItem.DESCRIPCION_ITEM + Environment.NewLine);
 
                 if (pesada.LOTE != null)

@@ -989,6 +989,18 @@ namespace BCI.ViewModels
             }
         }
 
+        public void imprimirTicketMuestra(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            try
+            {
+                ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
         private void serialStart()
         {
             try

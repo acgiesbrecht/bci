@@ -337,7 +337,7 @@ namespace BCI
 
         private void PendientesGridTicketMuestraMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            viewModel.imprimirTicket((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
+            viewModel.imprimirTicketMuestra((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
         }
     }
 }
