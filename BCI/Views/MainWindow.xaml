@@ -330,7 +330,7 @@
                                     FontWeight="Bold"
                                     Foreground="#FFBFDEBF"
                                     IsEnabled="{Binding ManualBascula}"
-                                    MaxLength="5"
+                                    MaxLength="6"
                                     Text="{Binding Path=PesoActual, Mode=TwoWay}"
                                     TextAlignment="Right" />
                             <StackPanel Orientation="Vertical">

@@ -1,18 +1,13 @@
 ﻿using BCI.Models;
+using RJCP.IO.Ports;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO.Ports;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace BCI.ViewModels
 {
@@ -41,7 +36,7 @@ namespace BCI.ViewModels
         public int? PesoBruto { get; set; }
         public int? PesoTara { get; set; }
 
-        private SerialPort serialPort;
+        private SerialPortStream serialPort;
         public OracleDataManager oracleDataManager = new OracleDataManager();
         public XX_OPM_BCI_ITEMS_V SelectedInventoryItem { get; set; }
         public ObservableCollection<XX_OPM_BCI_ITEMS_V> InventoryItemsCollection { get; set; }
@@ -914,6 +909,11 @@ namespace BCI.ViewModels
                     MessageBox.Show("Falta ingresar un peso");
                     return false;
                 }
+                if (PesoBruto < PesoTara && UpdatePesada)
+                {
+                    MessageBox.Show("El peso bruto no puede ser menor al peso tara");
+                    return false;
+                }
                 return true;
             }
             catch (Exception ex)
@@ -1006,17 +1006,18 @@ namespace BCI.ViewModels
             try
             {                
                serialStop();
-                
-                serialPort = new SerialPort();
+
+                //serialPort = new SerialPort();
+                serialPort = new SerialPortStream();
                 serialPort.PortName = Properties.Settings.Default.SerialPort == "" ? "COM1" : Properties.Settings.Default.SerialPort;
                 serialPort.BaudRate = 9600;
                 serialPort.DataBits = 8;
-                serialPort.Parity = Parity.None;
-                serialPort.StopBits = StopBits.One;
+                serialPort.Parity = RJCP.IO.Ports.Parity.None;
+                serialPort.StopBits = RJCP.IO.Ports.StopBits.One;
                 serialPort.ReadTimeout = 400;
                 serialPort.ReadBufferSize = 64;
                 serialPort.Open();
-                serialPort.DataReceived += new System.IO.Ports.SerialDataReceivedEventHandler(SerialPortRecieve);
+                serialPort.DataReceived += SerialPortRecieve;
             }
             catch (Exception ex)
             {
@@ -1048,7 +1049,7 @@ namespace BCI.ViewModels
             }
         }
 
-        private void SerialPortRecieve(object sender, SerialDataReceivedEventArgs e)
+        private void SerialPortRecieve(object sender, RJCP.IO.Ports.SerialDataReceivedEventArgs e)
         {
             try
             {
