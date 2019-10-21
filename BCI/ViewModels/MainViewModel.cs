@@ -1005,6 +1005,7 @@ namespace BCI.ViewModels
         {
             try
             {
+                
                 string msg = oracleDataManager.cancelarPesada(pesada);
                 
                 showNotification(msg, false);
