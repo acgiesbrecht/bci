@@ -442,6 +442,7 @@
                             <ContextMenu>
                                 <MenuItem Header="Imprimir Ticket de Muestra" Name="PendientesGridTicketMuestraMenuItem" Click="PendientesGridTicketMuestraMenuItem_Click" />
                                 <MenuItem Header="Imprimir Autorizacion" Name="PendientesGridAutorizacionMenuItem" Click="PendientesGridAutorizacionMenuItem_Click"/>
+                                <MenuItem Header="Cancelar Pesada" Name="PendientesGridCancelarMenuItem" Click="PendientesGridCancelarMenuItem_Click" />
                             </ContextMenu>
                         </DataGrid.ContextMenu>
                         <DataGrid.Columns>

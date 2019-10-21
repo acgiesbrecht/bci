@@ -339,5 +339,17 @@ namespace BCI
         {
             viewModel.imprimirTicketMuestra((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);
         }
+
+        private void PendientesGridCancelarMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Está seguro que desea cancelar el registro actual?",
+                                             "Confirmation",
+                                             MessageBoxButton.YesNo,
+                                             MessageBoxImage.Question);            
+            if (result == MessageBoxResult.Yes)
+            {
+                viewModel.cancelarPesada((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);                
+            }
+        }
     }
 }

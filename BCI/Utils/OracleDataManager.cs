@@ -457,6 +457,21 @@ namespace BCI
             //}).Result;
         }
 
+        public string cancelarPesada(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            //return Task.Run(() =>
+            //{
+            var param = new DynamicParameters();
+            param.Add("p_pesada_id", pesada.PESADA_ID);
+            param.Add("p_msg", "", DbType.String, ParameterDirection.Output);
+            using (var dbConnection = GetConnection())
+            {
+                var message = dbConnection.Execute("xx_opm_bci_ext_pkg.p_cancel_pesada", param, commandType: CommandType.StoredProcedure);
+                return param.Get<string>("p_msg").ToString();
+            }
+            //}).Result;
+        }
+
         public OracleConnection GetConnection()
         {
             //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";

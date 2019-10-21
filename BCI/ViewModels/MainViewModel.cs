@@ -1001,6 +1001,22 @@ namespace BCI.ViewModels
             }
         }
 
+        public void cancelarPesada(XX_OPM_BCI_PESADAS_ALL pesada)
+        {
+            try
+            {
+                string msg = oracleDataManager.cancelarPesada(pesada);
+                
+                showNotification(msg, false);
+                
+                UpdatePesadasPendientesDatagrid();
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
         private void serialStart()
         {
             try
