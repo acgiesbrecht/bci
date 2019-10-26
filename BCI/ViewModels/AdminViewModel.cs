@@ -65,6 +65,7 @@ namespace BCI.ViewModels
         public Exception ActualException { get; set; }
         public Brush StatusColor { get; set; }
 
+        public bool BtnGuardarIsEnabled { get; set; }
         public AdminViewModel()
         {
             try
@@ -379,7 +380,9 @@ namespace BCI.ViewModels
                     {
                         UpdateLotePanel();
                     }
-                    SelectedObervaciones = SelectedPesada.OBSERVACIONES;                    
+                    SelectedObervaciones = SelectedPesada.OBSERVACIONES;
+
+                    BtnGuardarIsEnabled = true;
                 }
             }
             catch (Exception ex)
@@ -588,6 +591,79 @@ namespace BCI.ViewModels
             return pesada;
         }
 
+        public void Save()
+        {
+            try
+            {
+                if (SelectedPesada != null)
+                {
+                    if (SelectedPesada.LIQ_YN.Equals('Y'))
+                    {
+                        showNotification("Pesada ya lquidada. Debe anularse la liquidacion antes de poder realizar cambios a la pesada.", false); 
+                        return; 
+                    }
+                    /*SelectedPesada.INVENTORY_ITEM_ID = SelectedInventoryItem.INVENTORY_ITEM_ID;
+                    SelectedPesada.TIPO_ACTIVIDAD = SelectedTipoActividad.Id;
+                    if (SelectedOrganisation != null)
+                    {
+                        SelectedPesada.ORGANIZATION_ID = SelectedOrganisation.Id;
+                    }*/
+                    if (SelectedPuntoOperacion != null)
+                    {
+                        SelectedPesada.PUNTO_DESCARGA = SelectedPuntoOperacion.Id.ToString();
+                    }
+                    SelectedPesada.MATRICULA = SelectedMatricula;
+                    if (SelectedEstab != null)
+                    {
+                        SelectedPesada.ESTABLECIMIENTO = SelectedEstab.Id;
+                    }
+                    if (SelectedContrato != null)
+                    {
+                        SelectedPesada.CONTRATO = SelectedContrato.NRO_CONTRATO;
+                    }
+                    else
+                    {
+                        SelectedPesada.CONTRATO = null;
+                    }
+                    if (SelectedRemisionNro != null && !SelectedRemisionNro.Replace("-", "").Trim().Equals(""))
+                    {
+                        SelectedPesada.NRO_NOTA_REMISION = SelectedRemisionNro;
+                    }
+                    else
+                    {
+                        SelectedPesada.NRO_NOTA_REMISION = null;
+                    }
+                    if (SelectedRemisionPeso != null)
+                    {
+                        SelectedPesada.PESO_ORIGEN = SelectedRemisionPeso;
+                    }
+                    else
+                    {
+                        SelectedPesada.PESO_ORIGEN = null;
+                    }
+                    if (SelectedLote != null)
+                    {
+                        SelectedPesada.LOTE = SelectedLote.ID;
+                    }
+                    else
+                    {
+                        SelectedPesada.LOTE = null;
+                    }
+                    SelectedPesada.OBSERVACIONES = SelectedObervaciones;
+                    
+                    SelectedPesada.LAST_UPDATE_DATE = DateTime.Now;
+                    oracleDataManager.updatePesada(SelectedPesada);
+                                            
+                    resetEditFields();
+                    resetTables();                    
+                    UpdatePesadasCerradasDatagrid();
+                }
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
         private void showNotification(string msg, bool isError)
         {
             if (NotificationEvent != null)

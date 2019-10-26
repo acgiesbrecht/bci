@@ -144,7 +144,7 @@ namespace BCI.Views
                 //MessageBoxResult result = await this.ShowMessage("This is the title", "Some message");
                 if (result == MessageBoxResult.Yes)
                 {
-                    //viewModel.Save();
+                    viewModel.Save();
                     reset();
                 }
             }
@@ -194,7 +194,7 @@ namespace BCI.Views
                     MatriculaTextBox.IsEnabled = true;
                     EstablecimientoAutoCompleteComboBox.IsEnabled = true;
                     ContratoAutoCompleteComboBox.IsEnabled = true;
-                    LoteAutoCompleteComboBox.IsEnabled = true;
+                    //LoteAutoCompleteComboBox.IsEnabled = true;
                     RemisionTextBox.IsEnabled = true;
                     ObservacionesTextBox.IsEnabled = true;
                     viewModel.SelectedPesadaChanged();

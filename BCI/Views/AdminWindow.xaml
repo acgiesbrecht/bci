@@ -353,7 +353,28 @@
                             Text="{Binding SelectedObervaciones}" />
             </StackPanel>
             <StackPanel Style="{StaticResource PanelStyle}" />
-        </StackPanel>
+                <StackPanel Margin="10" Orientation="Horizontal">
+                    <Button
+                                    Name="BtnGuardar"
+                                    Width="100"
+                                    Height="35"
+                                    Margin="2"
+                                    Padding="5"
+                                    Click="BtnGuardar_Click"
+                                    Content="Guardar"
+                                    FontSize="18"
+                                    IsEnabled="{Binding BtnGuardarIsEnabled}" />
+                    <Button
+                                    Name="BtnCancel"
+                                    Width="100"
+                                    Height="35"
+                                    Margin="2"
+                                    Click="BtnCancelar_Click"
+                                    Padding="5"                                    
+                                    Content="Cancelar"
+                                    FontSize="18" />
+                </StackPanel>
+            </StackPanel>
     </StackPanel>
     <StatusBar Background="{Binding StatusColor}">
             <StatusBarItem Visibility="{Binding ErrorLinkVisibility}">

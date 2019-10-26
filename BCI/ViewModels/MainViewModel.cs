@@ -111,6 +111,7 @@ namespace BCI.ViewModels
         private TicketPrinterManager ticketPrinterManager = new TicketPrinterManager();
 
         bool SerialPortPendingClose = false;
+        public bool GridConextMenuIsOpen { get; set; }
 
         public MainViewModel()
         {
@@ -135,7 +136,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                if (SelectedInventoryItem == null)
+                if (SelectedInventoryItem == null && !GridConextMenuIsOpen)
                 {
                     UpdatePesadasPendientesDatagrid();
                 }

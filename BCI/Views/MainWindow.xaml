@@ -439,7 +439,7 @@
                         Style="{StaticResource AzureDataGrid}"
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.ContextMenu>
-                            <ContextMenu>
+                            <ContextMenu IsOpen="{Binding GridConextMenuIsOpen}">
                                 <MenuItem Header="Imprimir Ticket de Muestra" Name="PendientesGridTicketMuestraMenuItem" Click="PendientesGridTicketMuestraMenuItem_Click" />
                                 <MenuItem Header="Imprimir Autorizacion" Name="PendientesGridAutorizacionMenuItem" Click="PendientesGridAutorizacionMenuItem_Click"/>
                                 <Separator/>
@@ -517,7 +517,7 @@
                         Style="{StaticResource AzureDataGrid}"
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.ContextMenu>
-                            <ContextMenu>
+                            <ContextMenu IsOpen="{Binding GridConextMenuIsOpen}">
                                 <MenuItem Header="Imprimir Ticket" Click="CerradasGridTicketMenuItem_Click"/>
                                 <MenuItem Header="Imprimir Certificado" Name="CerradasGridCertificadoMenuItem" Click="CerradasGridCertificadoMenuItem_Click" />
                                 <Separator/>

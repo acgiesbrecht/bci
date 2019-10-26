@@ -35,6 +35,9 @@ namespace BCI.Models
         public char? MODO_PESO_TARA { get; set; }
         public DateTime? FECHA_PESO_TARA { get; set; }
         public char? CANCELADO { get; set; }
+        public char? CC_YN { get; set; }
+        public char? INV_YN { get; set; }
+        public char? LIQ_YN { get; set; }
         public DateTime CREATION_DATE { get; set; }
         public int CREATED_BY { get; set; }
         public DateTime LAST_UPDATE_DATE { get; set; }
