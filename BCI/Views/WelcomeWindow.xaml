@@ -34,7 +34,7 @@
             Grid.IsSharedSizeScope="True"
             Orientation="Vertical">
                 <Button Name="ButtonBascula"  Content="Bascula" Margin="5" Height="70" FontSize="40"  Click="ButtonBascula_Click" />
-                <Button Name="ButtonAdmin" Content="Administracion" Margin="5" Height="70" FontSize="40" Click="ButtonAdmin_Click"/>
+                <Button Name="ButtonAdmin" Content="Administracion" Margin="5" Height="70" FontSize="40" Click="ButtonAdmin_Click" IsEnabled="False"/>
             </StackPanel>
         </DockPanel>
     </Grid>

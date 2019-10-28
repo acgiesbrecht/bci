@@ -517,7 +517,7 @@
                         Style="{StaticResource AzureDataGrid}"
                         VerticalScrollBarVisibility="Visible">
                         <DataGrid.ContextMenu>
-                            <ContextMenu IsOpen="{Binding GridConextMenuIsOpen}">
+                            <ContextMenu>
                                 <MenuItem Header="Imprimir Ticket" Click="CerradasGridTicketMenuItem_Click"/>
                                 <MenuItem Header="Imprimir Certificado" Name="CerradasGridCertificadoMenuItem" Click="CerradasGridCertificadoMenuItem_Click" />
                                 <Separator/>
