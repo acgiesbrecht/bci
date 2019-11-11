@@ -313,6 +313,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Views\WelcomePasswordWindow.xaml.cs">
+      <DependentUpon>WelcomePasswordWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\WelcomeWindow.xaml.cs">
       <DependentUpon>WelcomeWindow.xaml</DependentUpon>
     </Compile>
@@ -741,6 +744,10 @@
     <Page Include="Views\NotificationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\WelcomePasswordWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\WelcomeWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

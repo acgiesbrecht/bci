@@ -64,7 +64,18 @@
             DockPanel.Dock="Bottom"
             Grid.IsSharedSizeScope="True"
             Orientation="Vertical">
-        <GroupBox Header="Pesadas Cerradas" Margin="3">
+        <StackPanel Margin="10" Orientation="Horizontal">
+            <Button
+                                    Name="BtnUpdateCerradasGrid"
+                                    Width="150"
+                                    Height="35"
+                                    Margin="2"
+                                    Padding="5"
+                                    Click="BtnUpdateCerradasGrid_Click"
+                                    Content="Actualizar Lista"
+                                    FontSize="18"/>
+        </StackPanel>
+        <GroupBox Header="Pesadas Cerradas" Margin="10">
             <DataGrid
                         Name="PesadasCerradasDataGrid"
                         Height="260"

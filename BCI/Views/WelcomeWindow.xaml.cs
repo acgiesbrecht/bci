@@ -28,9 +28,12 @@ namespace BCI
 
         private void ButtonAdmin_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            AdminWindow adminWindow = new AdminWindow();
-            adminWindow.Show();
-            this.Close();
+            WelcomePasswordWindow passwordDialog = new WelcomePasswordWindow();
+            if (passwordDialog.ShowDialog() == true){
+                AdminWindow adminWindow = new AdminWindow();
+                adminWindow.Show();
+                this.Close();
+            }            
         }
     }
     }

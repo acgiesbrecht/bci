@@ -217,5 +217,11 @@ namespace BCI.Views
             viewModel.loadLOV();
         }
 
+        private void BtnUpdateCerradasGrid_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.loadData();
+            reset();
+            viewModel.resetEditFields();
+        }
     }
 }
