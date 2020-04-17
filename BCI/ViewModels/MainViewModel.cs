@@ -136,9 +136,11 @@ namespace BCI.ViewModels
         {
             try
             {
-                if (SelectedInventoryItem == null && !GridConextMenuIsOpen)
+                //if (SelectedPesadaPendiente == null && !GridConextMenuIsOpen)
+                if (!GridConextMenuIsOpen)
                 {
                     UpdatePesadasPendientesDatagrid();
+                    //UpdatePesadasCerradasDatagrid();
                 }
             }
             catch (Exception ex)
@@ -748,7 +750,7 @@ namespace BCI.ViewModels
                             }
                             if (PesadaActual.TIPO_ACTIVIDAD == 2)
                             {
-                                //imprimirAutorizacion(completeDataPesada(PesadaActual));
+                                imprimirAutorizacion(completeDataPesada(PesadaActual));
                             }
                         }
                         catch (Exception ex)
@@ -810,7 +812,7 @@ namespace BCI.ViewModels
                 PesoActual = null;
                 PesoBruto = null;
                 PesoTara = null;
-                PesadaActual = null;
+                PesadaActual = null;                
 
                 SelectedInventoryItem = null;
                 SelectedTipoActividad = null;
@@ -947,7 +949,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                if (pesada.ESTADO.Equals("Completo"))
+                if (pesada.ESTADO.Equals("Completo") || pesada.TIPO_ACTIVIDAD == 2)
                 {
                     string msg = oracleDataManager.imprimirAutorizacion(pesada);
                     if (msg.ToUpper().Contains("ERROR"))
@@ -1012,6 +1014,7 @@ namespace BCI.ViewModels
                 showNotification(msg, false);
                 
                 UpdatePesadasPendientesDatagrid();
+                UpdatePesadasCerradasDatagrid();
             }
             catch (Exception ex)
             {

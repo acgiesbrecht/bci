@@ -157,7 +157,7 @@ namespace BCI
                 return GetPesadas(" WHERE v.ESTADO = 'Cerrado'" +
                 //"ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC "
                 " ORDER BY p.PESADA_ID DESC "
-                + " FETCH NEXT 1000 ROWS ONLY");
+                + " FETCH NEXT 2000 ROWS ONLY");
             //}).Result;
         }
 

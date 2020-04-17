@@ -237,7 +237,7 @@ namespace BCI
         {
             try
             {
-                viewModel.PesoBruto = 0;
+                viewModel.PesoBruto = null;
             }
             catch (Exception ex)
             {
@@ -248,7 +248,7 @@ namespace BCI
         {
             try
             {
-                viewModel.PesoTara = 0;
+                viewModel.PesoTara = null;
             }
             catch (Exception ex)
             {
