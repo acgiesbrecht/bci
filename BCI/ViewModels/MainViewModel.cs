@@ -291,6 +291,8 @@ namespace BCI.ViewModels
         {
             try
             {
+                BtnTaraIsEnabled = false;
+                BtnBrutoIsEnabled = false;
                 if (SelectedTipoActividad != null)
                 {
                     BtnTaraIsEnabled = true;
@@ -316,7 +318,7 @@ namespace BCI.ViewModels
                             EstabsCollection = EstabsARCollection;
                             if (NewPesada)
                             {
-                                BtnBrutoIsEnabled = false;
+                                //BtnBrutoIsEnabled = false; desactivado hasta implementar Venta Interna
                                 if (SelectedInventoryItem.DESCRIPCION_ITEM.ToUpper().Contains("ENTRADA"))
                                 {
                                     BtnBrutoIsEnabled = true; //--- para venta de servicios

@@ -148,6 +148,9 @@ namespace BCI
                 LoteAutoCompleteComboBox.IsEnabled = true;
                 RemisionTextBox.IsEnabled = true;
                 ObservacionesTextBox.IsEnabled = true;
+
+                BtnBruto.IsEnabled = false;
+                BtnTara.IsEnabled = false;
             }
             catch (Exception ex)
             {
