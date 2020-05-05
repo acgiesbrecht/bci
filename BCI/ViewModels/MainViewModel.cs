@@ -80,6 +80,9 @@ namespace BCI.ViewModels
         public ICollectionView PesadasPendientesView { get; set; }
         public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasCerradasCollection { get; set; }
         public ICollectionView PesadasCerradasView { get; set; }
+        public ObservableCollection<XX_OPM_BCI_PESADAS_ALL> PesadasAnuladasCollection { get; set; }
+        public ICollectionView PesadasAnuladasView { get; set; }
+
         private bool autoBascula;
         public bool AutoBascula
         {
@@ -188,6 +191,7 @@ namespace BCI.ViewModels
             {
                 UpdatePesadasPendientesDatagrid();
                 UpdatePesadasCerradasDatagrid();
+                UpdatePesadasAnuladasDatagrid();
             }
             catch (Exception ex)
             {
@@ -222,6 +226,21 @@ namespace BCI.ViewModels
                 PesadasCerradasCollection.ToList().ForEach(x => completeDataPesada(x));
 
                 PesadasCerradasView = new CollectionViewSource { Source = PesadasCerradasCollection }.View;
+            }
+            catch (Exception ex)
+            {
+                showError(ex);
+            }
+        }
+
+        private void UpdatePesadasAnuladasDatagrid()
+        {
+            try
+            {
+                PesadasAnuladasCollection = new ObservableCollection<XX_OPM_BCI_PESADAS_ALL>(oracleDataManager.GetPesadasAnuladas());
+                PesadasAnuladasCollection.ToList().ForEach(x => completeDataPesada(x));
+
+                PesadasAnuladasView = new CollectionViewSource { Source = PesadasAnuladasCollection }.View;
             }
             catch (Exception ex)
             {
@@ -471,8 +490,8 @@ namespace BCI.ViewModels
                 resetEditFields();
                 PesadaActual = new XX_OPM_BCI_PESADAS_ALL();
                 NewPesada = true;
-                BtnBrutoIsEnabled = true;
-                BtnTaraIsEnabled = true;
+                //BtnBrutoIsEnabled = true;
+                //BtnTaraIsEnabled = true;
                 BtnGuardarIsEnabled = true;
             }
             catch (Exception ex)
@@ -797,6 +816,7 @@ namespace BCI.ViewModels
                     //loadData();
                     UpdatePesadasPendientesDatagrid();
                     UpdatePesadasCerradasDatagrid();
+                    UpdatePesadasAnuladasDatagrid();
                 }
             }
             catch (Exception ex)
@@ -1017,6 +1037,7 @@ namespace BCI.ViewModels
                 
                 UpdatePesadasPendientesDatagrid();
                 UpdatePesadasCerradasDatagrid();
+                UpdatePesadasAnuladasDatagrid();
             }
             catch (Exception ex)
             {

@@ -161,6 +161,17 @@ namespace BCI
             //}).Result;
         }
 
+        public List<XX_OPM_BCI_PESADAS_ALL> GetPesadasAnuladas()
+        {
+            //return Task.Run(() =>
+            //{
+            return GetPesadas(" WHERE p.CANCELADO = 'Y'" +
+            //"ORDER BY GREATEST(COALESCE(FECHA_PESO_TARA, TO_DATE('1900-01-01', 'YYYY-MM-DD')), COALESCE(FECHA_PESO_BRUTO, TO_DATE('1900-01-01', 'YYYY-MM-DD'))) DESC "
+            " ORDER BY p.PESADA_ID DESC "
+            + " FETCH NEXT 2000 ROWS ONLY");
+            //}).Result;
+        }
+
         private List<XX_OPM_BCI_PESADAS_ALL> GetPesadas(String where)
         {
             //return Task.Run(() =>
