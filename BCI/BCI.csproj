@@ -33,7 +33,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>138</ApplicationRevision>
+    <ApplicationRevision>143</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -62,10 +62,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>5B118CE6EFCB899AA361CC3252EE9D4FBFB14649</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0E859F45862DDD32ED6FFC0F5D9F9E4184783313</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>bci-sign.pfx</ManifestKeyFile>
+    <ManifestKeyFile>BCI_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -351,6 +351,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="bci-sign.pfx" />
+    <None Include="BCI_TemporaryKey.pfx" />
     <None Include="CinBascula_TemporaryKey.pfx" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

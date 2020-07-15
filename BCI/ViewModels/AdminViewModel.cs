@@ -405,7 +405,7 @@ namespace BCI.ViewModels
                 {
                     //                    Task.WaitAll(Task.Run(async () =>
                     //                    {
-                    ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratoByEstablecimientoAndItem(SelectedEstab, SelectedInventoryItem));
+                    ContratosCollection = new ObservableCollection<XX_OPM_BCI_CONTRATOS_V>(oracleDataManager.GetContratoByEstablecimientoAndItemAll(SelectedEstab, SelectedInventoryItem));
 
                     if (ContratosCollection.Count > 0)
                     {

@@ -763,7 +763,7 @@ namespace BCI.ViewModels
                         {
                             if ((PesadaActual.TIPO_ACTIVIDAD == 1 || PesadaActual.TIPO_ACTIVIDAD == 2 || PesadaActual.TIPO_ACTIVIDAD == 4) && (PesoBruto == null || PesoTara == null))
                             {
-                                ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(PesadaActual));
+                                imprimirTicketMuestra(PesadaActual);
                             }
                             else if ((PesadaActual.TIPO_ACTIVIDAD == 3) && PesoBruto != null && PesoTara != null)
                             {
@@ -1018,7 +1018,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
+               ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
             }
             catch (Exception ex)
             {

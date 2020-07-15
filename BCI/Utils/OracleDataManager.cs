@@ -258,6 +258,32 @@ namespace BCI
             //}).Result;
         }
 
+        public List<XX_OPM_BCI_CONTRATOS_V> GetContratoByEstablecimientoAndItemAll(XX_OPM_BCI_ESTAB estab, XX_OPM_BCI_ITEMS_V item)
+        {
+            //return Task.Run(() =>
+            //{
+            using (var dbConnection = GetConnection())
+            {
+                var param = new DynamicParameters();
+                param.Add("ESTAB", estab.Id);
+                param.Add("INVENTORY_ITEM_ID", item.INVENTORY_ITEM_ID);
+                List<XX_OPM_BCI_CONTRATOS_V> result;
+                result = dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
+                        "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
+                        "AND PROVEEDOR = :ESTAB " +                        
+                        "", param).Result.ToList();
+                if (result.Count == 0 && !estab.ES_SOCIO.Equals("Si"))
+                {
+                    result = dbConnection.QueryAsync<XX_OPM_BCI_CONTRATOS_V>("select * from XX_OPM_BCI_CONTRATOS_V " +
+                        "WHERE INVENTORY_ITEM_ID = :INVENTORY_ITEM_ID " +
+                        "AND PROVEEDOR IS NULL " +                        
+                        "", param).Result.ToList();
+                }
+                return result;
+            }
+            //}).Result;
+        }
+
         public List<XX_OPM_BCI_LOTE> GetLotesAlgodonByEstablecimiento(string EstablecimientoCodigo)
         {
             //return Task.Run(() =>
@@ -487,13 +513,9 @@ namespace BCI
 
         public OracleConnection GetConnection()
         {
-            //const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;";
-            const string connectionString = "Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;";
-            var connection = new OracleConnection(connectionString);
-            return connection;
-        }
-
-        //alter session set nls_language = 'LATIN AMERICAN SPANISH';
+            //return new OracleConnection("Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=orca.chortitzer.com.py)(PORT=1522)) (CONNECT_DATA=(SERVICE_NAME=TEST))); User Id=XXBCI;Password=XXBCI;");
+            return new OracleConnection("Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=tiburon.chortitzer.com.py)(PORT=1521)) (CONNECT_DATA=(SERVICE_NAME=PROD))); User Id=XXBCI;Password=XXBCI;");
+        }        
 
     }
 }
