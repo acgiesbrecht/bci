@@ -4,10 +4,13 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
+using uPLibrary.Networking.M2Mqtt;
 
 namespace BCI.ViewModels
 {
@@ -26,7 +29,15 @@ namespace BCI.ViewModels
             }
         }
 
+        long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra = 1L;
+        long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta = 2L;
+        long XX_OPM_BCI_TIPO_ACTIVIDAD_Servicio = 3L;
+        long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna = 4L;
+        long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna = 5L;
+
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
+
+        public MqttClient mqttClient = new MqttClient("192.168.1.26");
         public bool NewPesada { get; set; }
         public bool UpdatePesada { get; set; }
         public bool NewOrUpdatePesada { get; set; }
@@ -121,6 +132,7 @@ namespace BCI.ViewModels
             try
             {
                 isLoading = true;
+                mqttClient.Connect("bci");
                 resetEditFields();
                 resetTables();
                 loadData();
@@ -207,8 +219,12 @@ namespace BCI.ViewModels
                 PesadasPendientesCollection.ToList().ForEach(x => completeDataPesada(x));
                 PesadasPendientesCollection.ToList().ForEach(x =>
                 {
-                    if (x.AUTORIZ_REQ_ID == null)
-                        imprimirAutorizacion(x);
+                    if (x.AUTORIZ_REQ_ID == null && x.ESTADO.Equals("Completo"))
+                    {
+                        if (x.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra || x.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna) { 
+                            imprimirAutorizacion(x);
+                        }
+                    }
                 });
                 PesadasPendientesView = new CollectionViewSource { Source = PesadasPendientesCollection }.View;
             }
@@ -252,14 +268,14 @@ namespace BCI.ViewModels
         {
             try
             {
-                                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(await oracleDataManager.GetInventoryItemList());
-                                InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
-                                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(await oracleDataManager.GetTipoActividadList());
-                                OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(await oracleDataManager.GetOrgsComplejoList());
-                                PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoDescargaList());
-                                PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoCargaList());
-                                EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabAPList());
-                                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabARList());             
+                InventoryItemsCollection = new ObservableCollection<XX_OPM_BCI_ITEMS_V>(await oracleDataManager.GetInventoryItemList());
+                InventoryItemsView = new CollectionViewSource { Source = InventoryItemsCollection.Where(p => p.ORGANIZATION_ID != 0 && p == InventoryItemsCollection.First(i => i.CODIGO_ITEM == p.CODIGO_ITEM)) }.View;
+                TiposActividadCollection = new ObservableCollection<XX_OPM_BCI_TIPO_ACTIVIDAD>(await oracleDataManager.GetTipoActividadList());
+                OrganisationsCollection = new ObservableCollection<XX_OPM_BCI_ORGS_COMPLEJO>(await oracleDataManager.GetOrgsComplejoList());
+                PuntosDescargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoDescargaList());
+                PuntosCargaCollection = new ObservableCollection<XX_OPM_BCI_PUNTO_OPERACION>(await oracleDataManager.GetPuntoCargaList());
+                EstabsAPCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabAPList());
+                EstabsARCollection = new ObservableCollection<XX_OPM_BCI_ESTAB>(await oracleDataManager.GetEstabARList());             
             }
             catch (Exception ex)
             {
@@ -761,15 +777,19 @@ namespace BCI.ViewModels
                         PesadaActual.PESADA_ID = oracleDataManager.insertNewPesada(PesadaActual);
                         try
                         {
-                            if ((PesadaActual.TIPO_ACTIVIDAD == 1 || PesadaActual.TIPO_ACTIVIDAD == 2 || PesadaActual.TIPO_ACTIVIDAD == 4) && (PesoBruto == null || PesoTara == null))
+                            if ((PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra || 
+                                PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Venta || 
+                                PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna ||
+                                PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna) 
+                                && (PesoBruto == null || PesoTara == null))
                             {
                                 imprimirTicketMuestra(PesadaActual);
                             }
-                            else if ((PesadaActual.TIPO_ACTIVIDAD == 3) && PesoBruto != null && PesoTara != null)
+                            else if ((PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Servicio) && PesoBruto != null && PesoTara != null)
                             {
                                 imprimirTicket(PesadaActual);
                             }
-                            if (PesadaActual.TIPO_ACTIVIDAD == 2)
+                            if (PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Venta || PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna)
                             {
                                 imprimirAutorizacion(completeDataPesada(PesadaActual));
                             }
@@ -797,7 +817,8 @@ namespace BCI.ViewModels
                         oracleDataManager.updatePesada(PesadaActual);
                         try
                         {
-                            if (PesadaActual.TIPO_ACTIVIDAD == 1)
+                            if (PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra ||
+                                PesadaActual.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna)
                             {
                                 imprimirCertificado(PesadaActual);
                             }
@@ -954,7 +975,7 @@ namespace BCI.ViewModels
             pesada.TipoActividad = TiposActividadCollection.FirstOrDefault(c => c.Id.Equals(pesada.TIPO_ACTIVIDAD));
             pesada.Organisation = OrganisationsCollection.FirstOrDefault(c => c.Id.Equals(pesada.ORGANIZATION_ID));
 
-            if (pesada.TIPO_ACTIVIDAD == 2)
+            if (pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Venta)
             {
                 pesada.Establecimiento = EstabsARCollection.FirstOrDefault(c => c.Id.Equals(pesada.ESTABLECIMIENTO));
                 pesada.PuntoOperacion = PuntosCargaCollection.FirstOrDefault(c => c.Id.Equals(pesada.PUNTO_DESCARGA));
@@ -971,14 +992,16 @@ namespace BCI.ViewModels
         {
             try
             {
-                if (pesada.ESTADO.Equals("Completo") || pesada.TIPO_ACTIVIDAD == 2)
-                {
-                    string msg = oracleDataManager.imprimirAutorizacion(pesada);
+                //if (pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra || pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna) { 
+                //    if (pesada.ESTADO.Equals("Completo")) {
+                mqttClient.Publish("bci/autorizacion", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                string msg = oracleDataManager.imprimirAutorizacion(pesada);                       
                     if (msg.ToUpper().Contains("ERROR"))
                     {
                         showNotification(msg, true);
                     }
-                }
+                //      }
+                //}
             }
             catch (Exception ex)
             {
@@ -990,6 +1013,7 @@ namespace BCI.ViewModels
         {
             try
             {
+                mqttClient.Publish("bci/certificado", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
                 string msg = oracleDataManager.imprimirCertificado(pesada);
                 if (msg.ToUpper().Contains("ERROR"))
                 {
@@ -1006,6 +1030,7 @@ namespace BCI.ViewModels
         {
             try
             {
+                mqttClient.Publish("bci/ticket", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
                 ticketPrinterManager.imprimirTicket(completeDataPesada(pesada));
             }
             catch (Exception ex)
@@ -1018,7 +1043,8 @@ namespace BCI.ViewModels
         {
             try
             {
-               ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
+                mqttClient.Publish("bci/ticketMuestra", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
             }
             catch (Exception ex)
             {
@@ -1101,6 +1127,7 @@ namespace BCI.ViewModels
                 {
                     string reading = serialPort.ReadLine();
                     PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                    mqttClient.Publish("bci/peso", Encoding.UTF8.GetBytes(PesoActual.ToString()));
                 }
                 else
                 {
@@ -1118,6 +1145,7 @@ namespace BCI.ViewModels
         public void showError(Exception ex)
         {
             showNotification(ex.Message, true);
+            mqttClient.Publish("bci/error", Encoding.UTF8.GetBytes(ex.Message.ToString()));
             //Application.Current.Dispatcher.Invoke(new Action(() =>
             //{
             StatusColor = new SolidColorBrush(Colors.Red);

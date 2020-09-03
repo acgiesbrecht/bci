@@ -75,8 +75,8 @@
                     </dotNetKitControls:AutoCompleteComboBox>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Style="{StaticResource PanelStyle}">
-                    <Button Content="Guardar" Margin="5" Click="Guardar_Click"/>
-                    <Button Content="Cancelar" Margin="5" Click="Cancelar_Click"/>
+                    <Button Content="Guardar" Margin="5" Click="Guardar_Click" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
+                    <Button Content="Cancelar" Margin="5" Click="Cancelar_Click" Style="{DynamicResource MahApps.Styles.Button.Flat}"/>
                 </StackPanel>
             </StackPanel>
         </DockPanel>
