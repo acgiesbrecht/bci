@@ -1,4 +1,8 @@
 ﻿using BCI.Models;
+using MQTTnet;
+using MQTTnet.Client;
+using MQTTnet.Client.Options;
+using MQTTnet.Extensions.ManagedClient;
 using RJCP.IO.Ports;
 using System;
 using System.Collections.ObjectModel;
@@ -10,7 +14,6 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using uPLibrary.Networking.M2Mqtt;
 
 namespace BCI.ViewModels
 {
@@ -29,21 +32,21 @@ namespace BCI.ViewModels
             }
         }
 
-        long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra = 1L;
-        long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta = 2L;
-        long XX_OPM_BCI_TIPO_ACTIVIDAD_Servicio = 3L;
-        long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna = 4L;
-        long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna = 5L;
+        public long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra = 1L;
+        public long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta = 2L;
+        public long XX_OPM_BCI_TIPO_ACTIVIDAD_Servicio = 3L;
+        public long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna = 4L;
+        public long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna = 5L;
 
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
 
-        public MqttClient mqttClient = new MqttClient("192.168.1.26");
+        private MqttFactory factory = new MqttFactory();
+        private ManagedMqttClient mqttClient;
         public bool NewPesada { get; set; }
         public bool UpdatePesada { get; set; }
         public bool NewOrUpdatePesada { get; set; }
         public bool isLoading { get; set; }
-
-        public int? PesoActual { get; set; }
+        public int? PesoActual { get; set;}
         public int? PesoBruto { get; set; }
         public int? PesoTara { get; set; }
 
@@ -132,7 +135,30 @@ namespace BCI.ViewModels
             try
             {
                 isLoading = true;
-                mqttClient.Connect("bci");
+                //mqttClient.Connect("bci-test");
+                mqttClient = (ManagedMqttClient)factory.CreateManagedMqttClient();
+                var options = new ManagedMqttClientOptionsBuilder()
+                    .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
+                    .WithClientOptions(new MqttClientOptionsBuilder()
+                    .WithTcpServer("192.168.1.26")
+                    .WithClientId("bci-" + Dns.GetHostName())
+                    .Build())
+                .Build();
+
+                mqttClient.StartAsync(options);
+
+                mqttClient.UseConnectedHandler(async e =>
+                {                    
+                    await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("bci/peso").Build());                    
+                });
+                mqttClient.UseApplicationMessageReceivedHandler(e =>
+                {
+                    if (e.ApplicationMessage.Topic.Equals("bci/peso") && AutoBascula)
+                    {
+                        PesoActual = Int32.Parse(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
+                    }                                        
+                });
+
                 resetEditFields();
                 resetTables();
                 loadData();
@@ -994,7 +1020,7 @@ namespace BCI.ViewModels
             {
                 //if (pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra || pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna) { 
                 //    if (pesada.ESTADO.Equals("Completo")) {
-                mqttClient.Publish("bci/autorizacion", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                mqttPublish("bci/autorizacion", pesada.PESADA_ID);
                 string msg = oracleDataManager.imprimirAutorizacion(pesada);                       
                     if (msg.ToUpper().Contains("ERROR"))
                     {
@@ -1013,7 +1039,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttClient.Publish("bci/certificado", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                mqttPublish("bci/certificado", pesada.PESADA_ID);
                 string msg = oracleDataManager.imprimirCertificado(pesada);
                 if (msg.ToUpper().Contains("ERROR"))
                 {
@@ -1030,7 +1056,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttClient.Publish("bci/ticket", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                mqttPublish("bci/ticket", pesada.PESADA_ID);
                 ticketPrinterManager.imprimirTicket(completeDataPesada(pesada));
             }
             catch (Exception ex)
@@ -1043,7 +1069,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttClient.Publish("bci/ticketMuestra", Encoding.UTF8.GetBytes(pesada.PESADA_ID.ToString()));
+                mqttPublish("bci/ticketMuestra", pesada.PESADA_ID);
                 ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
             }
             catch (Exception ex)
@@ -1126,8 +1152,12 @@ namespace BCI.ViewModels
                 if (!SerialPortPendingClose)
                 {
                     string reading = serialPort.ReadLine();
-                    PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
-                    mqttClient.Publish("bci/peso", Encoding.UTF8.GetBytes(PesoActual.ToString()));
+                    //PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                    int? res = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                    if(res != PesoActual)
+                    {
+                        mqttPublish("bci/peso", PesoActual);
+                    }
                 }
                 else
                 {
@@ -1145,7 +1175,7 @@ namespace BCI.ViewModels
         public void showError(Exception ex)
         {
             showNotification(ex.Message, true);
-            mqttClient.Publish("bci/error", Encoding.UTF8.GetBytes(ex.Message.ToString()));
+            mqttPublish("bci/error", ex.Message);
             //Application.Current.Dispatcher.Invoke(new Action(() =>
             //{
             StatusColor = new SolidColorBrush(Colors.Red);
@@ -1154,5 +1184,20 @@ namespace BCI.ViewModels
             //}));
         }
 
+        private void mqttPublish(String topic, String payload)
+        {            
+            var message = new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                .WithPayload(payload)
+                //.WithExactlyOnceQoS()
+                //.WithRetainFlag()
+                .Build();
+
+            mqttClient.PublishAsync(message, CancellationToken.None);
+        }
+        private void mqttPublish(String topic, int? payload)
+        {
+            mqttPublish(topic, payload.ToString());
+        }
     }
 }

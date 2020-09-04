@@ -190,6 +190,10 @@ namespace BCI.Views
                 if (!isLoading)
                 {
                     reset();
+                    if(viewModel.SelectedPesada.TIPO_ACTIVIDAD != 1) { 
+                        InventoryItemsAutoCompleteComboBox.IsEnabled = true;                    
+                        OrganisationAutoCompleteComboBox.IsEnabled = true;
+                    }
                     PuntosOperacionAutoCompleteComboBox.IsEnabled = true;
                     MatriculaTextBox.IsEnabled = true;
                     EstablecimientoAutoCompleteComboBox.IsEnabled = true;
