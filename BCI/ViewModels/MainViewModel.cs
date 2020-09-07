@@ -38,6 +38,8 @@ namespace BCI.ViewModels
         public long XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna = 4L;
         public long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna = 5L;
 
+        public string mqttTopic_Peso = "cch/lp/cin/bci/bascula-1/peso";
+
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
 
         private MqttFactory factory = new MqttFactory();
@@ -149,11 +151,11 @@ namespace BCI.ViewModels
 
                 mqttClient.UseConnectedHandler(async e =>
                 {                    
-                    await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic("bci/peso").Build());                    
+                    await mqttClient.SubscribeAsync(new MqttTopicFilterBuilder().WithTopic(mqttTopic_Peso).Build());                    
                 });
                 mqttClient.UseApplicationMessageReceivedHandler(e =>
                 {
-                    if (e.ApplicationMessage.Topic.Equals("bci/peso") && AutoBascula)
+                    if (e.ApplicationMessage.Topic.Equals(mqttTopic_Peso) && AutoBascula)
                     {
                         PesoActual = Int32.Parse(Encoding.UTF8.GetString(e.ApplicationMessage.Payload));
                     }                                        
@@ -1151,12 +1153,11 @@ namespace BCI.ViewModels
             {
                 if (!SerialPortPendingClose)
                 {
-                    string reading = serialPort.ReadLine();
-                    //PesoActual = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
+                    string reading = serialPort.ReadLine();                    
                     int? res = int.Parse(reading.Substring(3, reading.Length - 3).Trim());
                     if(res != PesoActual)
                     {
-                        mqttPublish("bci/peso", PesoActual);
+                        mqttPublish(mqttTopic_Peso, res);
                     }
                 }
                 else
