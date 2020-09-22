@@ -39,6 +39,7 @@ namespace BCI.ViewModels
         public long XX_OPM_BCI_TIPO_ACTIVIDAD_Venta_Interna = 5L;
 
         public string mqttTopic_Peso = "cch/lp/cin/bci/bascula-1/peso";
+        public string mqttTopic_Base = "cch/lp/cin/bci/bascula-1/";
 
         public XX_OPM_BCI_PESADAS_ALL PesadaActual;
 
@@ -143,6 +144,7 @@ namespace BCI.ViewModels
                     .WithAutoReconnectDelay(TimeSpan.FromSeconds(5))
                     .WithClientOptions(new MqttClientOptionsBuilder()
                     .WithTcpServer("192.168.1.26")
+                    .WithCredentials("emqx","emqx")
                     .WithClientId("bci-" + Dns.GetHostName())
                     .Build())
                 .Build();
@@ -1022,7 +1024,7 @@ namespace BCI.ViewModels
             {
                 //if (pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra || pesada.TIPO_ACTIVIDAD == XX_OPM_BCI_TIPO_ACTIVIDAD_Compra_Interna) { 
                 //    if (pesada.ESTADO.Equals("Completo")) {
-                mqttPublish("bci/autorizacion", pesada.PESADA_ID);
+                mqttPublish(mqttTopic_Base + "autorizacion", pesada.PESADA_ID);
                 string msg = oracleDataManager.imprimirAutorizacion(pesada);                       
                     if (msg.ToUpper().Contains("ERROR"))
                     {
@@ -1041,7 +1043,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttPublish("bci/certificado", pesada.PESADA_ID);
+                mqttPublish(mqttTopic_Base + "certificado", pesada.PESADA_ID);
                 string msg = oracleDataManager.imprimirCertificado(pesada);
                 if (msg.ToUpper().Contains("ERROR"))
                 {
@@ -1058,7 +1060,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttPublish("bci/ticket", pesada.PESADA_ID);
+                mqttPublish(mqttTopic_Base + "ticket", pesada.PESADA_ID);
                 ticketPrinterManager.imprimirTicket(completeDataPesada(pesada));
             }
             catch (Exception ex)
@@ -1071,7 +1073,7 @@ namespace BCI.ViewModels
         {
             try
             {
-                mqttPublish("bci/ticketMuestra", pesada.PESADA_ID);
+                mqttPublish(mqttTopic_Base + "ticketMuestra", pesada.PESADA_ID);
                 ticketPrinterManager.imprimirTicketRecMuestra(completeDataPesada(pesada));
             }
             catch (Exception ex)
@@ -1176,7 +1178,7 @@ namespace BCI.ViewModels
         public void showError(Exception ex)
         {
             showNotification(ex.Message, true);
-            mqttPublish("bci/error", ex.Message);
+            mqttPublish(mqttTopic_Base + "error", ex.Message);
             //Application.Current.Dispatcher.Invoke(new Action(() =>
             //{
             StatusColor = new SolidColorBrush(Colors.Red);
