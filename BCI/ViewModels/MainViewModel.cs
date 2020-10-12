@@ -132,6 +132,7 @@ namespace BCI.ViewModels
 
         bool SerialPortPendingClose = false;
         public bool GridConextMenuIsOpen { get; set; }
+        public bool GridConextMenuCancelInProgress { get; set; }
 
         public MainViewModel()
         {
@@ -180,12 +181,10 @@ namespace BCI.ViewModels
         void timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             try
-            {
-                //if (SelectedPesadaPendiente == null && !GridConextMenuIsOpen)
-                if (!GridConextMenuIsOpen)
+            {                
+                if (!GridConextMenuIsOpen && !GridConextMenuCancelInProgress)
                 {
-                    UpdatePesadasPendientesDatagrid();
-                    //UpdatePesadasCerradasDatagrid();
+                    UpdatePesadasPendientesDatagrid();                    
                 }
             }
             catch (Exception ex)

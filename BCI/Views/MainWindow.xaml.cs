@@ -342,6 +342,7 @@ namespace BCI
 
         private void PendientesGridCancelarMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            viewModel.GridConextMenuCancelInProgress = true;
             MessageBoxResult result = MessageBox.Show("Está seguro que desea cancelar el registro actual?",
                                              "Confirmation",
                                              MessageBoxButton.YesNo,
@@ -350,6 +351,7 @@ namespace BCI
             {
                 viewModel.cancelarPesada((XX_OPM_BCI_PESADAS_ALL)PesadasPendientesDataGrid.SelectedItem);                
             }
+            viewModel.GridConextMenuCancelInProgress = false;
         }
 
         private void CerradasGridCancelarMenuItem_Click(object sender, RoutedEventArgs e)
